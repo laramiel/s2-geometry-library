@@ -37,38 +37,37 @@ typedef Vector2_d R2Point;
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2R2Rect : public S2Region {
- public:
+public:
   // Construct a rectangle from the given lower-left and upper-right points.
-  inline S2R2Rect(R2Point const& lo, R2Point const& hi);
+  inline S2R2Rect(R2Point const &lo, R2Point const &hi);
 
   // Construct a rectangle from the given intervals in x and y.  The two
   // intervals must either be both empty or both non-empty.
-  inline S2R2Rect(R1Interval const& x, R1Interval const& y);
+  inline S2R2Rect(R1Interval const &x, R1Interval const &y);
 
   // Construct a rectangle that corresponds to the boundary of the given cell
   // is (s,t)-space.  Such rectangles are always a subset of [0,1]x[0,1].
-  static S2R2Rect FromCell(S2Cell const& cell);
-  static S2R2Rect FromCellId(S2CellId const& id);
+  static S2R2Rect FromCell(S2Cell const &cell);
+  static S2R2Rect FromCellId(S2CellId const &id);
 
   // Construct a rectangle from a center point and size in each dimension.
   // Both components of size should be non-negative, i.e. this method cannot
   // be used to create an empty rectangle.
-  static S2R2Rect FromCenterSize(R2Point const& center,
-                                 R2Point const& size);
+  static S2R2Rect FromCenterSize(R2Point const &center, R2Point const &size);
 
   // Convenience method to construct a rectangle containing a single point.
-  static S2R2Rect FromPoint(R2Point const& p);
+  static S2R2Rect FromPoint(R2Point const &p);
 
   // Convenience method to construct the minimal bounding rectangle containing
   // the two given points.  This is equivalent to starting with an empty
   // rectangle and calling AddPoint() twice.  Note that it is different than
   // the S2R2Rect(lo, hi) constructor, where the first point is always
   // used as the lower-left corner of the resulting rectangle.
-  static S2R2Rect FromPointPair(R2Point const& p1, R2Point const& p2);
+  static S2R2Rect FromPointPair(R2Point const &p1, R2Point const &p2);
 
   // Accessor methods.
-  R1Interval const& x() const { return x_; }
-  R1Interval const& y() const { return y_; }
+  R1Interval const &x() const { return x_; }
+  R1Interval const &y() const { return y_; }
   R1Interval *mutable_x() { return &x_; }
   R1Interval *mutable_y() { return &y_; }
   R2Point lo() const { return R2Point(x_.lo(), y_.lo()); }
@@ -99,87 +98,87 @@ class S2R2Rect : public S2Region {
 
   // Return true if the rectangle contains the given point.  Note that
   // rectangles are closed regions, i.e. they contain their boundary.
-  bool Contains(R2Point const& p) const;
+  bool Contains(R2Point const &p) const;
 
   // Return true if and only if the given point is contained in the interior
   // of the region (i.e. the region excluding its boundary).
-  bool InteriorContains(R2Point const& p) const;
+  bool InteriorContains(R2Point const &p) const;
 
   // Return true if and only if the rectangle contains the given other
   // rectangle.
-  bool Contains(S2R2Rect const& other) const;
+  bool Contains(S2R2Rect const &other) const;
 
   // Return true if and only if the interior of this rectangle contains all
   // points of the given other rectangle (including its boundary).
-  bool InteriorContains(S2R2Rect const& other) const;
+  bool InteriorContains(S2R2Rect const &other) const;
 
   // Return true if this rectangle and the given other rectangle have any
   // points in common.
-  bool Intersects(S2R2Rect const& other) const;
+  bool Intersects(S2R2Rect const &other) const;
 
   // Return true if and only if the interior of this rectangle intersects
   // any point (including the boundary) of the given other rectangle.
-  bool InteriorIntersects(S2R2Rect const& other) const;
+  bool InteriorIntersects(S2R2Rect const &other) const;
 
   // Increase the size of the bounding rectangle to include the given point.
   // The rectangle is expanded by the minimum amount possible.
-  void AddPoint(R2Point const& p);
+  void AddPoint(R2Point const &p);
 
   // Return a rectangle that contains all points whose x-distance from this
   // rectangle is at most margin.x(), and whose y-distance from this rectangle
   // is at most margin.y().  Note that any expansion of an empty interval
   // remains empty, and both components of the given margin must be
   // non-negative.
-  S2R2Rect Expanded(R2Point const& margin) const;
+  S2R2Rect Expanded(R2Point const &margin) const;
 
   // Return the smallest rectangle containing the union of this rectangle and
   // the given rectangle.
-  S2R2Rect Union(S2R2Rect const& other) const;
+  S2R2Rect Union(S2R2Rect const &other) const;
 
   // Return the smallest rectangle containing the intersection of this
   // rectangle and the given rectangle.
-  S2R2Rect Intersection(S2R2Rect const& other) const;
+  S2R2Rect Intersection(S2R2Rect const &other) const;
 
   // Return true if two rectangles contains the same set of points.
-  inline bool operator==(S2R2Rect const& other) const;
+  inline bool operator==(S2R2Rect const &other) const;
 
   // Return true if the x- and y-intervals of the two rectangles are the same
   // up to the given tolerance (see r1interval.h for details).
-  bool ApproxEquals(S2R2Rect const& other, double max_error = 1e-15) const;
+  bool ApproxEquals(S2R2Rect const &other, double max_error = 1e-15) const;
 
   // Return the unit-length S2Point corresponding to the given point "p" in
   // the (s,t)-plane.  "p" need not be restricted to the range [0,1]x[0,1].
-  static S2Point ToS2Point(R2Point const& p);
+  static S2Point ToS2Point(R2Point const &p);
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2R2Rect* Clone() const;
+  virtual S2R2Rect *Clone() const;
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
-    return Contains(p);  // The same as Contains() below, just virtual.
+  virtual bool VirtualContainsPoint(S2Point const &p) const {
+    return Contains(p); // The same as Contains() below, just virtual.
   }
-  bool Contains(S2Point const& p) const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual void Encode(Encoder* const encoder) const {
+  bool Contains(S2Point const &p) const;
+  virtual bool Contains(S2Cell const &cell) const;
+  virtual bool MayIntersect(S2Cell const &cell) const;
+  virtual void Encode(Encoder *const encoder) const {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  virtual bool Decode(Decoder *const decoder) { return false; }
 
- private:
+private:
   R1Interval x_;
   R1Interval y_;
 };
 
-inline S2R2Rect::S2R2Rect(R2Point const& lo, R2Point const& hi)
-  : x_(lo.x(), hi.x()), y_(lo.y(), hi.y()) {
+inline S2R2Rect::S2R2Rect(R2Point const &lo, R2Point const &hi)
+    : x_(lo.x(), hi.x()), y_(lo.y(), hi.y()) {
   DCHECK(is_valid());
 }
 
-inline S2R2Rect::S2R2Rect(R1Interval const& x, R1Interval const& y)
-  : x_(x), y_(y) {
+inline S2R2Rect::S2R2Rect(R1Interval const &x, R1Interval const &y)
+    : x_(x), y_(y) {
   DCHECK(is_valid());
 }
 
@@ -192,14 +191,12 @@ inline bool S2R2Rect::is_valid() const {
   return x_.is_empty() == y_.is_empty();
 }
 
-inline bool S2R2Rect::is_empty() const {
-  return x_.is_empty();
-}
+inline bool S2R2Rect::is_empty() const { return x_.is_empty(); }
 
-inline bool S2R2Rect::operator==(S2R2Rect const& other) const {
+inline bool S2R2Rect::operator==(S2R2Rect const &other) const {
   return x_ == other.x_ && y_ == other.y_;
 }
 
-ostream& operator<<(ostream& os, S2R2Rect const& r);
+ostream &operator<<(ostream &os, S2R2Rect const &r);
 
-#endif  // UTIL_GEOMETRY_S2R2RECT_H_
+#endif // UTIL_GEOMETRY_S2R2RECT_H_

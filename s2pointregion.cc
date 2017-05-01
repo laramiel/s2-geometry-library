@@ -2,17 +2,16 @@
 
 #include "s2/s2pointregion.h"
 #include "base/logging.h"
-#include "util/coding/coder.h"
 #include "s2/s2cap.h"
 #include "s2/s2cell.h"
 #include "s2/s2latlngrect.h"
+#include "util/coding/coder.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2PointRegion::~S2PointRegion() {
-}
+S2PointRegion::~S2PointRegion() {}
 
-S2PointRegion* S2PointRegion::Clone() const {
+S2PointRegion *S2PointRegion::Clone() const {
   return new S2PointRegion(point_);
 }
 
@@ -25,12 +24,12 @@ S2LatLngRect S2PointRegion::GetRectBound() const {
   return S2LatLngRect(ll, ll);
 }
 
-bool S2PointRegion::MayIntersect(S2Cell const& cell) const {
+bool S2PointRegion::MayIntersect(S2Cell const &cell) const {
   return cell.Contains(point_);
 }
 
-void S2PointRegion::Encode(Encoder* encoder) const {
-  encoder->Ensure(30);  // sufficient
+void S2PointRegion::Encode(Encoder *encoder) const {
+  encoder->Ensure(30); // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
   for (int i = 0; i < 3; ++i) {
@@ -39,10 +38,11 @@ void S2PointRegion::Encode(Encoder* encoder) const {
   DCHECK_GE(encoder->avail(), 0);
 }
 
-bool S2PointRegion::Decode(Decoder* decoder) {
+bool S2PointRegion::Decode(Decoder *decoder) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber) return false; 
-  
+  if (version > kCurrentEncodingVersionNumber)
+    return false;
+
   for (int i = 0; i < 3; ++i) {
     point_[i] = decoder->getdouble();
   }

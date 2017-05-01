@@ -10,34 +10,33 @@ using std::multimap;
 #include <vector>
 using std::vector;
 
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2/s2edgeindex.h"
-#include "s2/s2region.h"
-#include "s2/s2latlngrect.h"
 #include "s2/s2edgeutil.h"
+#include "s2/s2latlngrect.h"
+#include "s2/s2region.h"
 
 class S2Loop;
 // Defined in the cc file. A helper class for AreBoundariesCrossing.
 class WedgeProcessor;
 
 // Indexing structure to efficiently compute intersections.
-class S2LoopIndex: public S2EdgeIndex {
- public:
-  explicit S2LoopIndex(S2Loop const* loop): loop_(loop) {}
+class S2LoopIndex : public S2EdgeIndex {
+public:
+  explicit S2LoopIndex(S2Loop const *loop) : loop_(loop) {}
   virtual ~S2LoopIndex() {}
 
   // There is no need to overwrite Reset(), as the only data that's
   // used to implement this class is all contained in the loop data.
   // void Reset();
 
-  virtual S2Point const* edge_from(int index) const;
-  virtual S2Point const* edge_to(int index) const;
+  virtual S2Point const *edge_from(int index) const;
+  virtual S2Point const *edge_to(int index) const;
   virtual int num_edges() const;
 
- private:
-  S2Loop const* loop_;
+private:
+  S2Loop const *loop_;
 };
 
 // An S2Loop represents a simple spherical polygon.  It consists of a single
@@ -59,18 +58,18 @@ class S2LoopIndex: public S2EdgeIndex {
 // TODO(user): When doing operations on two loops, always create the
 // edgeindex for the bigger of the two.  Same for polygons.
 class S2Loop : public S2Region {
- public:
+public:
   // Create an empty S2Loop that should be initialized by calling Init() or
   // Decode().
   S2Loop();
 
   // Convenience constructor that calls Init() with the given vertices.
-  explicit S2Loop(vector<S2Point> const& vertices);
+  explicit S2Loop(vector<S2Point> const &vertices);
 
   // Initialize a loop connecting the given vertices.  The last vertex is
   // implicitly connected to the first.  All points should be unit length.
   // Loops must have at least 3 vertices.
-  void Init(vector<S2Point> const& vertices);
+  void Init(vector<S2Point> const &vertices);
 
   // This parameter should be removed as soon as people stop using the
   // deprecated version of IsValid.
@@ -81,15 +80,14 @@ class S2Loop : public S2Region {
   // should always return true.
   bool IsValid() const;
 
-
   // These two versions are deprecated and ignore max_adjacent.
   // DEPRECATED.
-  static bool IsValid(vector<S2Point> const& vertices, int max_adjacent);
+  static bool IsValid(vector<S2Point> const &vertices, int max_adjacent);
   // DEPRECATED.
   bool IsValid(int max_adjacent) const;
 
   // Initialize a loop corresponding to the given cell.
-  explicit S2Loop(S2Cell const& cell);
+  explicit S2Loop(S2Cell const &cell);
 
   ~S2Loop();
 
@@ -111,7 +109,7 @@ class S2Loop : public S2Region {
 
   // For convenience, we make two entire copies of the vertex list available:
   // vertex(n..2*n-1) is mapped to vertex(0..n-1), where n == num_vertices().
-  S2Point const& vertex(int i) const {
+  S2Point const &vertex(int i) const {
     DCHECK_GE(i, 0);
     DCHECK_LT(i, (2 * num_vertices_));
     int j = i - num_vertices();
@@ -163,16 +161,16 @@ class S2Loop : public S2Region {
 
   // Return true if the region contained by this loop is a superset of the
   // region contained by the given other loop.
-  bool Contains(S2Loop const* b) const;
+  bool Contains(S2Loop const *b) const;
 
   // Return true if the region contained by this loop intersects the region
   // contained by the given other loop.
-  bool Intersects(S2Loop const* b) const;
+  bool Intersects(S2Loop const *b) const;
 
   // Given two loops of a polygon (see s2polygon.h for requirements), return
   // true if A contains B.  This version of Contains() is much cheaper since
   // it does not need to check whether the boundaries of the two loops cross.
-  bool ContainsNested(S2Loop const* b) const;
+  bool ContainsNested(S2Loop const *b) const;
 
   // Return +1 if A contains B (i.e. the interior of B is a subset of the
   // interior of A), -1 if the boundaries of A and B cross, and 0 otherwise.
@@ -184,18 +182,18 @@ class S2Loop : public S2Region {
   // crossings in certain situations involving shared edges.  CL 2926852 works
   // around this bug for polygon intersection, but it probably effects other
   // tests.  TODO: fix ContainsOrCrosses() and revert CL 2926852.
-  int ContainsOrCrosses(S2Loop const* b) const;
+  int ContainsOrCrosses(S2Loop const *b) const;
 
   // Return true if two loops have the same boundary.  This is true if and
   // only if the loops have the same vertices in the same cyclic order.
   // (For testing purposes.)
-  bool BoundaryEquals(S2Loop const* b) const;
+  bool BoundaryEquals(S2Loop const *b) const;
 
   // Return true if two loops have the same boundary except for vertex
   // perturbations.  More precisely, the vertices in the two loops must be in
   // the same cyclic order, and corresponding vertex pairs must be separated
   // by no more than "max_error".  (For testing purposes.)
-  bool BoundaryApproxEquals(S2Loop const* b, double max_error = 1e-15) const;
+  bool BoundaryApproxEquals(S2Loop const *b, double max_error = 1e-15) const;
 
   // Return true if the two loop boundaries are within "max_error" of each
   // other along their entire lengths.  The two loops may have different
@@ -205,7 +203,7 @@ class S2Loop : public S2Region {
   // testing whether it is possible to drive two cars all the way around the
   // two loops such that no car ever goes backward and the cars are always
   // within "max_error" of each other.  (For testing purposes.)
-  bool BoundaryNear(S2Loop const* b, double max_error = 1e-15) const;
+  bool BoundaryNear(S2Loop const *b, double max_error = 1e-15) const;
 
   // This method computes the oriented surface integral of some quantity f(x)
   // over the loop interior, given a function f_tri(A,B,C) that returns the
@@ -232,35 +230,35 @@ class S2Loop : public S2Region {
   // Also requires that the default constructor for T must initialize the
   // value to zero.  (This is true for built-in types such as "double".)
   template <class T>
-  T GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&, S2Point const&))
-      const;
+  T GetSurfaceIntegral(T f_tri(S2Point const &, S2Point const &,
+                               S2Point const &)) const;
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
   // GetRectBound() is guaranteed to return exact results, while GetCapBound()
   // is conservative.
-  virtual S2Loop* Clone() const;
+  virtual S2Loop *Clone() const;
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const { return bound_; }
 
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
-    return Contains(p);  // The same as Contains() below, just virtual.
+  virtual bool Contains(S2Cell const &cell) const;
+  virtual bool MayIntersect(S2Cell const &cell) const;
+  virtual bool VirtualContainsPoint(S2Point const &p) const {
+    return Contains(p); // The same as Contains() below, just virtual.
   }
 
   // The point 'p' does not need to be normalized.
-  bool Contains(S2Point const& p) const;
+  bool Contains(S2Point const &p) const;
 
-  virtual void Encode(Encoder* const encoder) const;
-  virtual bool Decode(Decoder* const decoder);
-  virtual bool DecodeWithinScope(Decoder* const decoder);
+  virtual void Encode(Encoder *const encoder) const;
+  virtual bool Decode(Decoder *const decoder);
+  virtual bool DecodeWithinScope(Decoder *const decoder);
 
- private:
+private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
-  explicit S2Loop(S2Loop const* src);
+  explicit S2Loop(S2Loop const *src);
 
   void InitOrigin();
   void InitBound();
@@ -270,11 +268,10 @@ class S2Loop : public S2Region {
   // is copied from the decoder using memcpy. If it is false, vertices_
   // will point to the memory area inside the decoder, and the field
   // owns_vertices_ is set to false.
-  bool DecodeInternal(Decoder* const decoder,
-                      bool within_scope);
+  bool DecodeInternal(Decoder *const decoder, bool within_scope);
 
   // Internal implementation of the Intersects() method above.
-  bool IntersectsInternal(S2Loop const* b) const;
+  bool IntersectsInternal(S2Loop const *b) const;
 
   // Return an index "first" and a direction "dir" (either +1 or -1) such that
   // the vertex sequence (first, first+dir, ..., first+(n-1)*dir) does not
@@ -282,11 +279,11 @@ class S2Loop : public S2Region {
   // the loop vertices to be traversed in a canonical order.  The return
   // values are chosen such that (first, ..., first+n*dir) are in the range
   // [0, 2*n-1] as expected by the vertex() method.
-  int GetCanonicalFirstVertex(int* dir) const;
+  int GetCanonicalFirstVertex(int *dir) const;
 
   // Return the index of a vertex at point "p", or -1 if not found.
   // The return value is in the range 1..num_vertices_ if found.
-  int FindVertex(S2Point const& p) const;
+  int FindVertex(S2Point const &p) const;
 
   // This method checks all edges of this loop (A) for intersection
   // against all edges of B.  If there is any shared vertex , the
@@ -302,8 +299,8 @@ class S2Loop : public S2Region {
   //
   // See Contains(), Intersects() and ContainsOrCrosses() for the
   // three uses of this function.
-  bool AreBoundariesCrossing(
-      S2Loop const* b, WedgeProcessor* wedge_processor) const;
+  bool AreBoundariesCrossing(S2Loop const *b,
+                             WedgeProcessor *wedge_processor) const;
 
   // When the loop is modified (the only cae being Invert() at this time),
   // the indexing structures need to be deleted as they become invalid.
@@ -316,7 +313,7 @@ class S2Loop : public S2Region {
   // take ownership of the memory for vertices_, and the owns_vertices_ field
   // is used to prevent deallocation and overwriting.
   int num_vertices_;
-  S2Point* vertices_;
+  S2Point *vertices_;
   bool owns_vertices_;
 
   S2LatLngRect bound_;
@@ -340,8 +337,8 @@ class S2Loop : public S2Region {
 // in the .h file.
 
 template <class T>
-T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
-                                     S2Point const&)) const {
+T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const &, S2Point const &,
+                                     S2Point const &)) const {
   // We sum "f_tri" over a collection T of oriented triangles, possibly
   // overlapping.  Let the sign of a triangle be +1 if it is CCW and -1
   // otherwise, and let the sign of a point "x" be the sum of the signs of the
@@ -392,7 +389,7 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
     DCHECK(i == 1 || origin.Angle(vertex(i)) < kMaxLength);
     DCHECK(origin == vertex(0) || fabs(origin.DotProd(vertex(0))) < 1e-15);
 
-    if (vertex(i+1).Angle(origin) > kMaxLength) {
+    if (vertex(i + 1).Angle(origin) > kMaxLength) {
       // We are about to create an unstable edge, so choose a new origin O'
       // for the triangle fan.
       S2Point old_origin = origin;
@@ -418,7 +415,7 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
       sum += f_tri(old_origin, vertex(i), origin);
     }
     // Advance the edge (O,V_i) to (O,V_i+1).
-    sum += f_tri(origin, vertex(i), vertex(i+1));
+    sum += f_tri(origin, vertex(i), vertex(i + 1));
   }
   // If the origin is not V_0, we need to sum one more triangle.
   if (origin != vertex(0)) {
@@ -428,4 +425,4 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
   return sum;
 }
 
-#endif  // UTIL_GEOMETRY_S2LOOP_H__
+#endif // UTIL_GEOMETRY_S2LOOP_H__

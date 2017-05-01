@@ -27,7 +27,7 @@ using std::endl;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class R1Interval {
- public:
+public:
   // Constructor.  If lo > hi, the interval is empty.
   R1Interval(double lo, double hi) : bounds_(lo, hi) {}
 
@@ -46,9 +46,7 @@ class R1Interval {
   static inline R1Interval Empty() { return R1Interval(); }
 
   // Convenience method to construct an interval containing a single point.
-  static R1Interval FromPoint(double p) {
-    return R1Interval(p, p);
-  }
+  static R1Interval FromPoint(double p) { return R1Interval(p, p); }
 
   // Convenience method to construct the minimal interval containing
   // the two given points.  This is equivalent to starting with an empty
@@ -64,7 +62,7 @@ class R1Interval {
   double lo() const { return bounds_[0]; }
   double hi() const { return bounds_[1]; }
   double bound(int i) const { return bounds_[i]; }
-  Vector2_d const& bounds() const { return bounds_; }
+  Vector2_d const &bounds() const { return bounds_; }
 
   // Methods to modify one endpoint of an existing R1Interval.  Do not use
   // these methods if you want to replace both endpoints of the interval; use
@@ -85,30 +83,28 @@ class R1Interval {
   // is negative.
   double GetLength() const { return hi() - lo(); }
 
-  bool Contains(double p) const {
-    return p >= lo() && p <= hi();
-  }
+  bool Contains(double p) const { return p >= lo() && p <= hi(); }
 
-  bool InteriorContains(double p) const {
-    return p > lo() && p < hi();
-  }
+  bool InteriorContains(double p) const { return p > lo() && p < hi(); }
 
   // Return true if this interval contains the interval 'y'.
-  bool Contains(R1Interval const& y) const {
-    if (y.is_empty()) return true;
+  bool Contains(R1Interval const &y) const {
+    if (y.is_empty())
+      return true;
     return y.lo() >= lo() && y.hi() <= hi();
   }
 
   // Return true if the interior of this interval contains the entire
   // interval 'y' (including its boundary).
-  bool InteriorContains(R1Interval const& y) const {
-    if (y.is_empty()) return true;
+  bool InteriorContains(R1Interval const &y) const {
+    if (y.is_empty())
+      return true;
     return y.lo() > lo() && y.hi() < hi();
   }
 
   // Return true if this interval intersects the given interval,
   // i.e. if they have any points in common.
-  bool Intersects(R1Interval const& y) const {
+  bool Intersects(R1Interval const &y) const {
     if (lo() <= y.lo()) {
       return y.lo() <= hi() && y.lo() <= y.hi();
     } else {
@@ -118,24 +114,31 @@ class R1Interval {
 
   // Return true if the interior of this interval intersects
   // any point of the given interval (including its boundary).
-  bool InteriorIntersects(R1Interval const& y) const {
+  bool InteriorIntersects(R1Interval const &y) const {
     return y.lo() < hi() && lo() < y.hi() && lo() < hi() && y.lo() <= y.hi();
   }
 
   // Return the Hausdorff distance to the given interval 'y'. For two
   // R1Intervals x and y, this distance is defined as
   //     h(x, y) = max_{p in x} min_{q in y} d(p, q).
-  double GetDirectedHausdorffDistance(R1Interval const& y) const {
-    if (is_empty()) return 0.0;
-    if (y.is_empty()) return HUGE_VAL;
+  double GetDirectedHausdorffDistance(R1Interval const &y) const {
+    if (is_empty())
+      return 0.0;
+    if (y.is_empty())
+      return HUGE_VAL;
     return max(0.0, max(hi() - y.hi(), y.lo() - lo()));
   }
 
   // Expand the interval so that it contains the given point "p".
   void AddPoint(double p) {
-    if (is_empty()) { set_lo(p); set_hi(p); }
-    else if (p < lo()) { set_lo(p); }
-    else if (p > hi()) { set_hi(p); }
+    if (is_empty()) {
+      set_lo(p);
+      set_hi(p);
+    } else if (p < lo()) {
+      set_lo(p);
+    } else if (p > hi()) {
+      set_hi(p);
+    }
   }
 
   // Return an interval that contains all points with a distance "radius" of
@@ -143,44 +146,49 @@ class R1Interval {
   // is always empty.
   R1Interval Expanded(double radius) const {
     DCHECK_GE(radius, 0);
-    if (is_empty()) return *this;
+    if (is_empty())
+      return *this;
     return R1Interval(lo() - radius, hi() + radius);
   }
 
   // Return the smallest interval that contains this interval and the
   // given interval "y".
-  R1Interval Union(R1Interval const& y) const {
-    if (is_empty()) return y;
-    if (y.is_empty()) return *this;
+  R1Interval Union(R1Interval const &y) const {
+    if (is_empty())
+      return y;
+    if (y.is_empty())
+      return *this;
     return R1Interval(min(lo(), y.lo()), max(hi(), y.hi()));
   }
 
   // Return the intersection of this interval with the given interval.
   // Empty intervals do not need to be special-cased.
-  R1Interval Intersection(R1Interval const& y) const {
+  R1Interval Intersection(R1Interval const &y) const {
     return R1Interval(max(lo(), y.lo()), min(hi(), y.hi()));
   }
 
   // Return true if two intervals contain the same set of points.
-  bool operator==(R1Interval const& y) const {
+  bool operator==(R1Interval const &y) const {
     return (lo() == y.lo() && hi() == y.hi()) || (is_empty() && y.is_empty());
   }
 
   // Return true if length of the symmetric difference between the two
   // intervals is at most the given tolerance.
-  bool ApproxEquals(R1Interval const& y, double max_error = 1e-15) const {
-    if (is_empty()) return y.GetLength() <= max_error;
-    if (y.is_empty()) return GetLength() <= max_error;
+  bool ApproxEquals(R1Interval const &y, double max_error = 1e-15) const {
+    if (is_empty())
+      return y.GetLength() <= max_error;
+    if (y.is_empty())
+      return GetLength() <= max_error;
     return fabs(y.lo() - lo()) + fabs(y.hi() - hi()) <= max_error;
   }
 
- private:
+private:
   Vector2_d bounds_;
 };
 DECLARE_POD(R1Interval);
 
-inline ostream& operator<<(ostream& os, R1Interval const& x) {
+inline ostream &operator<<(ostream &os, R1Interval const &x) {
   return os << "[" << x.lo() << ", " << x.hi() << "]";
 }
 
-#endif  // UTIL_GEOMETRY_R1INTERVAL_H_
+#endif // UTIL_GEOMETRY_R1INTERVAL_H_

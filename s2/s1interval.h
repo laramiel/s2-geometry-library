@@ -8,10 +8,10 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-#include <math.h>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "util/math/vector2-inl.h"
+#include <math.h>
 
 // An S1Interval represents a closed interval on a unit circle (also known
 // as a 1-dimensional sphere).  It is capable of representing the empty
@@ -33,7 +33,7 @@ using std::endl;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S1Interval {
- public:
+public:
   // Constructor.  Both endpoints must be in the range -Pi to Pi inclusive.
   // The value -Pi is converted internally to Pi except for the Full()
   // and Empty() intervals.
@@ -65,7 +65,7 @@ class S1Interval {
   double lo() const { return bounds_[0]; }
   double hi() const { return bounds_[1]; }
   double bound(int i) const { return bounds_[i]; }
-  Vector2_d const& bounds() const { return bounds_; }
+  Vector2_d const &bounds() const { return bounds_; }
 
   // Methods to modify one endpoint of an existing S1Interval.  Requires that
   // the resulting S1Interval is valid.  This implies you cannot call this
@@ -76,8 +76,14 @@ class S1Interval {
   // interval; use a constructor instead.  For example:
   //
   //   *lng_bounds = S1Interval(lng_lo, lng_hi);
-  void set_lo(double p) { bounds_[0] = p; DCHECK(is_valid()); }
-  void set_hi(double p) { bounds_[1] = p; DCHECK(is_valid()); }
+  void set_lo(double p) {
+    bounds_[0] = p;
+    DCHECK(is_valid());
+  }
+  void set_hi(double p) {
+    bounds_[1] = p;
+    DCHECK(is_valid());
+  }
 
   // An interval is valid if neither bound exceeds Pi in absolute value,
   // and the value -Pi appears only in the Empty() and Full() intervals.
@@ -120,29 +126,29 @@ class S1Interval {
 
   // Return true if the interval contains the given interval 'y'.
   // Works for empty, full, and singleton intervals.
-  bool Contains(S1Interval const& y) const;
+  bool Contains(S1Interval const &y) const;
 
   // Returns true if the interior of this interval contains the entire
   // interval 'y'.  Note that x.InteriorContains(x) is true only when
   // x is the empty or full interval, and x.InteriorContains(S1Interval(p,p))
   // is equivalent to x.InteriorContains(p).
-  bool InteriorContains(S1Interval const& y) const;
+  bool InteriorContains(S1Interval const &y) const;
 
   // Return true if the two intervals contain any points in common.
   // Note that the point +/-Pi has two representations, so the intervals
   // [-Pi,-3] and [2,Pi] intersect, for example.
-  bool Intersects(S1Interval const& y) const;
+  bool Intersects(S1Interval const &y) const;
 
   // Return true if the interior of this interval contains any point of the
   // interval 'y' (including its boundary).  Works for empty, full, and
   // singleton intervals.
-  bool InteriorIntersects(S1Interval const& y) const;
+  bool InteriorIntersects(S1Interval const &y) const;
 
   // Return the Hausdorff distance to the given interval 'y'. For two
   // S1Intervals x and y, this distance is defined by
   //     h(x, y) = max_{p in x} min_{q in y} d(p, q),
   // where d(.,.) is measured along S1.
-  double GetDirectedHausdorffDistance(S1Interval const& y) const;
+  double GetDirectedHausdorffDistance(S1Interval const &y) const;
 
   // Expand the interval by the minimum amount necessary so that it
   // contains the given point "p" (an angle in the range [-Pi, Pi]).
@@ -155,21 +161,21 @@ class S1Interval {
 
   // Return the smallest interval that contains this interval and the
   // given interval "y".
-  S1Interval Union(S1Interval const& y) const;
+  S1Interval Union(S1Interval const &y) const;
 
   // Return the smallest interval that contains the intersection of this
   // interval with "y".  Note that the region of intersection may
   // consist of two disjoint intervals.
-  S1Interval Intersection(S1Interval const& y) const;
+  S1Interval Intersection(S1Interval const &y) const;
 
   // Return true if two intervals contains the same set of points.
-  inline bool operator==(S1Interval const& y) const;
+  inline bool operator==(S1Interval const &y) const;
 
   // Return true if the length of the symmetric difference between the two
   // intervals is at most the given tolerance.
-  bool ApproxEquals(S1Interval const& y, double max_error = 1e-15) const;
+  bool ApproxEquals(S1Interval const &y, double max_error = 1e-15) const;
 
- private:
+private:
   enum ArgsChecked { ARGS_CHECKED };
 
   // Internal constructor that assumes that both arguments are in the
@@ -185,22 +191,21 @@ class S1Interval {
 DECLARE_POD(S1Interval);
 
 inline S1Interval::S1Interval(double lo, double hi) : bounds_(lo, hi) {
-  if (lo == -M_PI && hi != M_PI) set_lo(M_PI);
-  if (hi == -M_PI && lo != M_PI) set_hi(M_PI);
+  if (lo == -M_PI && hi != M_PI)
+    set_lo(M_PI);
+  if (hi == -M_PI && lo != M_PI)
+    set_hi(M_PI);
   DCHECK(is_valid());
 }
 
 inline S1Interval::S1Interval(double lo, double hi, ArgsChecked dummy)
-  : bounds_(lo, hi) {
+    : bounds_(lo, hi) {
   DCHECK(is_valid());
 }
 
-inline S1Interval::S1Interval() : bounds_(M_PI, -M_PI) {
-}
+inline S1Interval::S1Interval() : bounds_(M_PI, -M_PI) {}
 
-inline S1Interval S1Interval::Empty() {
-  return S1Interval();
-}
+inline S1Interval S1Interval::Empty() { return S1Interval(); }
 
 inline S1Interval S1Interval::Full() {
   return S1Interval(-M_PI, M_PI, ARGS_CHECKED);
@@ -208,16 +213,15 @@ inline S1Interval S1Interval::Full() {
 
 inline bool S1Interval::is_valid() const {
   return (fabs(lo()) <= M_PI && fabs(hi()) <= M_PI &&
-          !(lo() == -M_PI && hi() != M_PI) &&
-          !(hi() == -M_PI && lo() != M_PI));
+          !(lo() == -M_PI && hi() != M_PI) && !(hi() == -M_PI && lo() != M_PI));
 }
 
-inline bool S1Interval::operator==(S1Interval const& y) const {
+inline bool S1Interval::operator==(S1Interval const &y) const {
   return lo() == y.lo() && hi() == y.hi();
 }
 
-inline ostream& operator<<(ostream& os, S1Interval const& x) {
+inline ostream &operator<<(ostream &os, S1Interval const &x) {
   return os << "[" << x.lo() << ", " << x.hi() << "]";
 }
 
-#endif  // UTIL_GEOMETRY_S1INTERVAL_H_
+#endif // UTIL_GEOMETRY_S1INTERVAL_H_

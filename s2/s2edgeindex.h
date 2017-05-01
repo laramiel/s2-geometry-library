@@ -16,7 +16,6 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2/s2cellid.h"
@@ -80,10 +79,10 @@ class S2Cell;
 // TODO(user): Get a better API without the clumsy GetCandidates().
 //   Maybe edge_index.GetIterator()?
 class S2EdgeIndex {
- public:
+public:
   S2EdgeIndex() { Reset(); }
 
-  virtual ~S2EdgeIndex() {  }
+  virtual ~S2EdgeIndex() {}
 
   // An iterator on data edges that may cross a query edge (a,b).
   // Create the iterator, call GetCandidates(), then Done()/Next()
@@ -92,12 +91,12 @@ class S2EdgeIndex {
   // The current edge in the iteration has index Index(), goes between
   // From() and To().
   class Iterator {
-   public:
-    explicit Iterator(S2EdgeIndex* edge_index): edge_index_(edge_index) {}
+  public:
+    explicit Iterator(S2EdgeIndex *edge_index) : edge_index_(edge_index) {}
 
     // Initializes the iterator to iterate over a set of candidates that may
     // cross the edge (a,b).
-    void GetCandidates(S2Point const& a, S2Point const& b);
+    void GetCandidates(S2Point const &a, S2Point const &b);
 
     // Index of the current edge in the iteration.
     int Index() const;
@@ -108,9 +107,9 @@ class S2EdgeIndex {
     // Iterate to the next available candidate.
     void Next();
 
-   private:
+  private:
     // The structure containing the data edges.
-    S2EdgeIndex* edge_index_;
+    S2EdgeIndex *edge_index_;
 
     // Tells whether GetCandidates() obtained the candidates through brute
     // force iteration or using the quad tree structure.
@@ -158,24 +157,24 @@ class S2EdgeIndex {
   // index, while edge_from(index) and edge_to(index) return the
   // "from" and "to" endpoints of the edge at the given index.
   virtual int num_edges() const = 0;
-  virtual S2Point const* edge_from(int index) const = 0;
-  virtual S2Point const* edge_to(int index) const = 0;
+  virtual S2Point const *edge_from(int index) const = 0;
+  virtual S2Point const *edge_to(int index) const = 0;
 
- protected:
+protected:
   // Appends to result all edge references in the map that cross the
   // query edge, and possibly some more.
-  void FindCandidateCrossings(S2Point const& a, S2Point const& b,
-                              vector<int>* result) const;
+  void FindCandidateCrossings(S2Point const &a, S2Point const &b,
+                              vector<int> *result) const;
 
   // Tell the index that we just received a new request for candidates.
   // Useful to compute when to switch to quad tree.
   void IncrementQueryCount();
 
- private:
+private:
   typedef multimap<S2CellId, int> CellEdgeMultimap;
 
   // Inserts the given directed edge into the quad tree.
-  void Insert(S2Point const& a, S2Point const& b, int reference);
+  void Insert(S2Point const &a, S2Point const &b, int reference);
 
   // Computes a cell covering of an edge.  Returns the level of the s2 cells
   // used in the covering (only one level is ever used for each call).
@@ -185,33 +184,29 @@ class S2EdgeIndex {
   //
   // It is guaranteed that no child of a covering cell will fully contain
   // the covered edge.
-  int GetCovering(S2Point const& a, S2Point const& b,
-                  bool thicken_edge,
-                  vector<S2CellId>* result) const;
+  int GetCovering(S2Point const &a, S2Point const &b, bool thicken_edge,
+                  vector<S2CellId> *result) const;
 
   // Adds to candidate_crossings all the edges present in any ancestor of any
   // cell of cover, down to minimum_s2_level_used.  The cell->edge map
   // is in the variable mapping.
-  static void GetEdgesInParentCells(
-    const vector<S2CellId>& cover,
-    const CellEdgeMultimap& mapping,
-    int minimum_s2_level_used,
-    vector<int>* candidate_crossings);
+  static void GetEdgesInParentCells(const vector<S2CellId> &cover,
+                                    const CellEdgeMultimap &mapping,
+                                    int minimum_s2_level_used,
+                                    vector<int> *candidate_crossings);
 
   // Returns true if the edge and the cell (including boundary) intersect.
-  static bool EdgeIntersectsCellBoundary(
-    S2Point const& a, S2Point const& b,
-    const S2Cell& cell);
+  static bool EdgeIntersectsCellBoundary(S2Point const &a, S2Point const &b,
+                                         const S2Cell &cell);
 
   // Appends to candidate_crossings the edges that are fully contained in an
   // S2 covering of edge.  The covering of edge used is initially cover, but
   // is refined to eliminate quickly subcells that contain many edges but do
   // not intersect with edge.
-  static void GetEdgesInChildrenCells(
-    S2Point const& a, S2Point const& b,
-    vector<S2CellId>* cover,
-    const CellEdgeMultimap& mapping,
-    vector<int>* candidate_crossings);
+  static void GetEdgesInChildrenCells(S2Point const &a, S2Point const &b,
+                                      vector<S2CellId> *cover,
+                                      const CellEdgeMultimap &mapping,
+                                      vector<int> *candidate_crossings);
 
   // Maps cell ids to covered edges; has the property that the set of all cell
   // ids mapping to a particular edge forms a covering of that edge.
@@ -255,4 +250,4 @@ inline void S2EdgeIndex::Iterator::Next() {
   }
 }
 
-#endif  // UTIL_GEOMETRY_S2EDGEINDEX_H_
+#endif // UTIL_GEOMETRY_S2EDGEINDEX_H_

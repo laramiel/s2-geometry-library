@@ -16,7 +16,7 @@ using std::vector;
 
 #include "base/basictypes.h"
 #include "base/logging.h"
-#include "base/port.h"  // for HASH_NAMESPACE_DECLARATION_START
+#include "base/port.h" // for HASH_NAMESPACE_DECLARATION_START
 #include "s2/s2.h"
 #include "util/math/vector2.h"
 
@@ -54,13 +54,13 @@ class S2LatLng;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S2CellId {
- public:
+public:
   // Although only 60 bits are needed to represent the index of a leaf
   // cell, we need an extra bit in order to represent the position of
   // the center of the leaf cell along the Hilbert curve.
   static int const kFaceBits = 3;
   static int const kNumFaces = 6;
-  static int const kMaxLevel = S2::kMaxCellLevel;  // Valid levels: 0..kMaxLevel
+  static int const kMaxLevel = S2::kMaxCellLevel; // Valid levels: 0..kMaxLevel
   static int const kPosBits = 2 * kMaxLevel + 1;
   static int const kMaxSize = 1 << kMaxLevel;
 
@@ -83,10 +83,10 @@ class S2CellId {
 
   // Return the leaf cell containing the given point (a direction
   // vector, not necessarily unit length).
-  static S2CellId FromPoint(S2Point const& p);
+  static S2CellId FromPoint(S2Point const &p);
 
   // Return the leaf cell containing the given normalized S2LatLng.
-  static S2CellId FromLatLng(S2LatLng const& ll);
+  static S2CellId FromLatLng(S2LatLng const &ll);
 
   // Return the direction vector corresponding to the center of the given
   // cell.  The vector returned by ToPointRaw is not necessarily unit length.
@@ -161,10 +161,10 @@ class S2CellId {
   inline S2CellId range_max() const;
 
   // Return true if the given cell is contained within this one.
-  inline bool contains(S2CellId const& other) const;
+  inline bool contains(S2CellId const &other) const;
 
   // Return true if the given cell intersects this one.
-  inline bool intersects(S2CellId const& other) const;
+  inline bool intersects(S2CellId const &other) const;
 
   // Return the cell at the previous level or at the given level (which must
   // be less than or equal to the current level).
@@ -234,7 +234,7 @@ class S2CellId {
   // "x" is an invalid cell id.  All tokens are alphanumeric strings.
   // FromToken() returns S2CellId::None() for malformed inputs.
   string ToToken() const;
-  static S2CellId FromToken(string const& token);
+  static S2CellId FromToken(string const &token);
 
   // Creates a debug human readable string. Used for << and available for direct
   // usage as well.
@@ -252,7 +252,7 @@ class S2CellId {
   //
   // Requires: level < this->level(), so that we can determine which vertex is
   // closest (in particular, level == kMaxLevel is not allowed).
-  void AppendVertexNeighbors(int level, vector<S2CellId>* output) const;
+  void AppendVertexNeighbors(int level, vector<S2CellId> *output) const;
 
   // Append all neighbors of this cell at the given level to "output".  Two
   // cells X and Y are neighbors if their boundaries intersect but their
@@ -261,7 +261,7 @@ class S2CellId {
   //
   // Requires: nbr_level >= this->level().  Note that for cells adjacent to a
   // face vertex, the same neighbor may be appended more than once.
-  void AppendAllNeighbors(int nbr_level, vector<S2CellId>* output) const;
+  void AppendAllNeighbors(int nbr_level, vector<S2CellId> *output) const;
 
   /////////////////////////////////////////////////////////////////////
   // Low-level methods.
@@ -275,7 +275,7 @@ class S2CellId {
   // at the center of the cell, the returned (i,j) for non-leaf cells will be
   // a leaf cell adjacent to the cell center.  If "orientation" is non-NULL,
   // also return the Hilbert curve orientation for the current cell.
-  int ToFaceIJOrientation(int* pi, int* pj, int* orientation) const;
+  int ToFaceIJOrientation(int *pi, int *pj, int *orientation) const;
 
   // Return the lowest-numbered bit that is on for this cell id, which is
   // equal to (uint64(1) << (2 * (kMaxLevel - level))).  So for example,
@@ -288,7 +288,7 @@ class S2CellId {
     return uint64(1) << (2 * (kMaxLevel - level));
   }
 
- private:
+private:
   // This is the offset required to wrap around from the beginning of the
   // Hilbert curve to the end or vice versa; see next_wrap() and prev_wrap().
   static uint64 const kWrapOffset = uint64(kNumFaces) << kPosBits;
@@ -301,7 +301,7 @@ class S2CellId {
   // that although (si,ti) coordinates span the range [0,2**31] in general,
   // the cell center coordinates are always in the range [1,2**31-1] and
   // therefore can be represented using a signed 32-bit integer.
-  inline int GetCenterSiTi(int* psi, int* pti) const;
+  inline int GetCenterSiTi(int *psi, int *pti) const;
 
   // Given (i, j) coordinates that may be out of bounds, normalize them by
   // returning the corresponding neighbor cell on an adjacent face.
@@ -312,30 +312,30 @@ class S2CellId {
   inline static S2CellId FromFaceIJSame(int face, int i, int j, bool same_face);
 
   uint64 id_;
-} PACKED;  // Necessary so that structures containing S2CellId's can be PACKED.
+} PACKED; // Necessary so that structures containing S2CellId's can be PACKED.
 DECLARE_POD(S2CellId);
 
-inline bool operator==(S2CellId const& x, S2CellId const& y) {
+inline bool operator==(S2CellId const &x, S2CellId const &y) {
   return x.id() == y.id();
 }
 
-inline bool operator!=(S2CellId const& x, S2CellId const& y) {
+inline bool operator!=(S2CellId const &x, S2CellId const &y) {
   return x.id() != y.id();
 }
 
-inline bool operator<(S2CellId const& x, S2CellId const& y) {
+inline bool operator<(S2CellId const &x, S2CellId const &y) {
   return x.id() < y.id();
 }
 
-inline bool operator>(S2CellId const& x, S2CellId const& y) {
+inline bool operator>(S2CellId const &x, S2CellId const &y) {
   return x.id() > y.id();
 }
 
-inline bool operator<=(S2CellId const& x, S2CellId const& y) {
+inline bool operator<=(S2CellId const &x, S2CellId const &y) {
   return x.id() <= y.id();
 }
 
-inline bool operator>=(S2CellId const& x, S2CellId const& y) {
+inline bool operator>=(S2CellId const &x, S2CellId const &y) {
   return x.id() >= y.id();
 }
 
@@ -343,34 +343,22 @@ inline bool S2CellId::is_valid() const {
   return (face() < kNumFaces && (lsb() & GG_ULONGLONG(0x1555555555555555)));
 }
 
-inline int S2CellId::face() const {
-  return id_ >> kPosBits;
-}
+inline int S2CellId::face() const { return id_ >> kPosBits; }
 
-inline uint64 S2CellId::pos() const {
-  return id_ & (~uint64(0) >> kFaceBits);
-}
+inline uint64 S2CellId::pos() const { return id_ & (~uint64(0) >> kFaceBits); }
 
-inline int S2CellId::GetSizeIJ() const {
-  return GetSizeIJ(level());
-}
+inline int S2CellId::GetSizeIJ() const { return GetSizeIJ(level()); }
 
-inline double S2CellId::GetSizeST() const {
-  return GetSizeST(level());
-}
+inline double S2CellId::GetSizeST() const { return GetSizeST(level()); }
 
-inline int S2CellId::GetSizeIJ(int level) {
-  return 1 << (kMaxLevel - level);
-}
+inline int S2CellId::GetSizeIJ(int level) { return 1 << (kMaxLevel - level); }
 
 inline double S2CellId::GetSizeST(int level) {
   // Floating-point multiplication is much faster than division.
   return GetSizeIJ(level) * (1.0 / kMaxSize);
 }
 
-inline bool S2CellId::is_leaf() const {
-  return int(id_) & 1;
-}
+inline bool S2CellId::is_leaf() const { return int(id_) & 1; }
 
 inline bool S2CellId::is_face() const {
   return (id_ & (lsb_for_level(0) - 1)) == 0;
@@ -389,13 +377,13 @@ inline S2CellId S2CellId::range_max() const {
   return S2CellId(id_ + (lsb() - 1));
 }
 
-inline bool S2CellId::contains(S2CellId const& other) const {
+inline bool S2CellId::contains(S2CellId const &other) const {
   DCHECK(is_valid());
   DCHECK(other.is_valid());
   return other >= range_min() && other <= range_max();
 }
 
-inline bool S2CellId::intersects(S2CellId const& other) const {
+inline bool S2CellId::intersects(S2CellId const &other) const {
   DCHECK(is_valid());
   DCHECK(other.is_valid());
   return other.range_min() <= range_max() && other.range_max() >= range_min();
@@ -455,25 +443,23 @@ inline S2CellId S2CellId::child_end(int level) const {
   return S2CellId(id_ + lsb() + lsb_for_level(level));
 }
 
-inline S2CellId S2CellId::next() const {
-  return S2CellId(id_ + (lsb() << 1));
-}
+inline S2CellId S2CellId::next() const { return S2CellId(id_ + (lsb() << 1)); }
 
-inline S2CellId S2CellId::prev() const {
-  return S2CellId(id_ - (lsb() << 1));
-}
+inline S2CellId S2CellId::prev() const { return S2CellId(id_ - (lsb() << 1)); }
 
 inline S2CellId S2CellId::next_wrap() const {
   DCHECK(is_valid());
   S2CellId n = next();
-  if (n.id_ < kWrapOffset) return n;
+  if (n.id_ < kWrapOffset)
+    return n;
   return S2CellId(n.id_ - kWrapOffset);
 }
 
 inline S2CellId S2CellId::prev_wrap() const {
   DCHECK(is_valid());
   S2CellId p = prev();
-  if (p.id_ < kWrapOffset) return p;
+  if (p.id_ < kWrapOffset)
+    return p;
   return S2CellId(p.id_ + kWrapOffset);
 }
 
@@ -485,7 +471,7 @@ inline S2CellId S2CellId::End(int level) {
   return FromFacePosLevel(5, 0, 0).child_end(level);
 }
 
-ostream& operator<<(ostream& os, S2CellId const& id);
+ostream &operator<<(ostream &os, S2CellId const &id);
 
 #ifndef SWIG
 #if defined __GNUC__ || defined __APPLE__
@@ -496,16 +482,14 @@ ostream& operator<<(ostream& os, S2CellId const& id);
 
 namespace __gnu_cxx {
 
-
-template<> struct hash<S2CellId> {
-  size_t operator()(S2CellId const& id) const {
+template <> struct hash<S2CellId> {
+  size_t operator()(S2CellId const &id) const {
     return static_cast<size_t>(id.id() >> 32) + static_cast<size_t>(id.id());
   }
 };
 
+} // namespace __gnu_cxx
 
-}  // namespace __gnu_cxx
+#endif // SWIG
 
-#endif  // SWIG
-
-#endif  // UTIL_GEOMETRY_S2CELLID_H_
+#endif // UTIL_GEOMETRY_S2CELLID_H_

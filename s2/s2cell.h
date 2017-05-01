@@ -18,22 +18,22 @@
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2Cell : public S2Region {
- public:
+public:
   // The default constructor is required in order to use freelists.
   // Cells should otherwise always be constructed explicitly.
   S2Cell() {}
 
   // An S2Cell always corresponds to a particular S2CellId.  The other
   // constructors are just convenience methods.
-  explicit S2Cell(S2CellId const& id) { Init(id); }
+  explicit S2Cell(S2CellId const &id) { Init(id); }
 
   static S2Cell FromFacePosLevel(int face, uint64 pos, int level) {
     // This is a static method in order to provide named parameters.
     return S2Cell(S2CellId::FromFacePosLevel(face, pos, level));
   }
   // Convenience methods.  The S2LatLng must be normalized.
-  explicit S2Cell(S2Point const& p) { Init(S2CellId::FromPoint(p)); }
-  explicit S2Cell(S2LatLng const& ll) { Init(S2CellId::FromLatLng(ll)); }
+  explicit S2Cell(S2Point const &p) { Init(S2CellId::FromPoint(p)); }
+  explicit S2Cell(S2LatLng const &ll) { Init(S2CellId::FromLatLng(ll)); }
 
   inline S2CellId id() const { return id_; }
   inline int face() const { return face_; }
@@ -98,26 +98,26 @@ class S2Cell : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2Cell* Clone() const;
+  virtual S2Cell *Clone() const;
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
-    return Contains(p);  // The same as Contains() below, just virtual.
+  virtual bool Contains(S2Cell const &cell) const;
+  virtual bool MayIntersect(S2Cell const &cell) const;
+  virtual bool VirtualContainsPoint(S2Point const &p) const {
+    return Contains(p); // The same as Contains() below, just virtual.
   }
 
   // The point 'p' does not need to be normalized.
-  bool Contains(S2Point const& p) const;
+  bool Contains(S2Point const &p) const;
 
-  virtual void Encode(Encoder* const encoder) const {
+  virtual void Encode(Encoder *const encoder) const {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  virtual bool Decode(Decoder *const decoder) { return false; }
 
- private:
+private:
   // Internal method that does the actual work in the constructors.
-  void Init(S2CellId const& id);
+  void Init(S2CellId const &id);
 
   // Return the latitude or longitude of the cell vertex given by (i,j),
   // where "i" and "j" are either 0 or 1.
@@ -132,12 +132,8 @@ class S2Cell : public S2Region {
   double uv_[2][2];
 };
 
-inline int S2Cell::GetSizeIJ() const {
-  return S2CellId::GetSizeIJ(level());
-}
+inline int S2Cell::GetSizeIJ() const { return S2CellId::GetSizeIJ(level()); }
 
-inline double S2Cell::GetSizeST() const {
-  return S2CellId::GetSizeST(level());
-}
+inline double S2Cell::GetSizeST() const { return S2CellId::GetSizeST(level()); }
 
-#endif  // UTIL_GEOMETRY_S2CELL_H_
+#endif // UTIL_GEOMETRY_S2CELL_H_
