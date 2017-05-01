@@ -23,7 +23,6 @@ using std::make_pair;
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "base/scoped_ptr.h"
 #include "s2/s2cap.h"
 #include "s2/s2cell.h"
 #include "s2/s2edgeindex.h"

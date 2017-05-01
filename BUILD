@@ -10,13 +10,11 @@ filegroup(
 cc_library(
     name = "base",
     srcs = [
-"strings/ascii_ctype.cc",
 "strings/split.cc",
 "strings/stringprintf.cc",
 "strings/strutil.cc",
 "util/coding/coder.cc",
 "util/coding/varint.cc",
-"util/hash/hash.cc",
 "util/math/exactfloat/exactfloat.cc",
 "util/math/mathlimits.cc",
 "util/math/mathutil.cc",
@@ -30,7 +28,6 @@ cc_library(
 "util/endian/endian.h",
 "util/hash/hash_jenkins_lookup2.h",
 "strings/split.h",
-"strings/ascii_ctype.h",
 "strings/stringprintf.h",
 "strings/strutil.h",
 "util/coding/coder.h",
@@ -43,7 +40,6 @@ cc_library(
 "base/logging.h",
 "base/macros.h",
 "base/port.h",
-"base/scoped_ptr.h",
 "util/math/exactfloat/exactfloat.h",
 "util/math/mathlimits.h",
 "util/math/mathutil.h",
@@ -64,7 +60,6 @@ cc_library(
         "-Wwrite-strings",
         "-Woverloaded-virtual",
         "-Wno-sign-compare",
-        "-Wno-deprecated", # included hash_map
         "-DS2_USE_EXACTFLOAT",
         "-DHASH_NAMESPACE=std",
         "-Wno-narrowing",
@@ -130,7 +125,6 @@ cc_library(
         "-Wwrite-strings",
         "-Woverloaded-virtual",
         "-Wno-sign-compare",
-        "-Wno-deprecated", # included hash_map
         "-DS2_USE_EXACTFLOAT",
         "-DHASH_NAMESPACE=std",
         "-std=c++11",

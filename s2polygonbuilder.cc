@@ -29,7 +29,6 @@ using std::vector;
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/scoped_ptr.h"
 #include "s2/s2.h"
 #include "s2/s2cellid.h"
 #include "s2/s2polygon.h"
