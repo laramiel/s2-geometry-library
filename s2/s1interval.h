@@ -8,7 +8,7 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-#include <math.h>
+#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "util/math/vector2-inl.h"
@@ -211,7 +211,8 @@ inline S1Interval S1Interval::Full() {
 
 inline bool S1Interval::is_valid() const {
   return (fabs(lo()) <= M_PI && fabs(hi()) <= M_PI &&
-          !(lo() == -M_PI && hi() != M_PI) && !(hi() == -M_PI && lo() != M_PI));
+          !(lo() == -M_PI && hi() != M_PI) &&
+          !(hi() == -M_PI && lo() != M_PI));
 }
 
 inline bool S1Interval::operator==(S1Interval const& y) const {

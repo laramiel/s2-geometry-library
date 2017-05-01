@@ -26,14 +26,10 @@ S2Point S2Cell::GetVertexRaw(int k) const {
 
 S2Point S2Cell::GetEdgeRaw(int k) const {
   switch (k) {
-    case 0:
-      return S2::GetVNorm(face_, uv_[1][0]);  // South
-    case 1:
-      return S2::GetUNorm(face_, uv_[0][1]);  // East
-    case 2:
-      return -S2::GetVNorm(face_, uv_[1][1]);  // North
-    default:
-      return -S2::GetUNorm(face_, uv_[0][0]);  // West
+    case 0:  return S2::GetVNorm(face_, uv_[1][0]);   // South
+    case 1:  return S2::GetUNorm(face_, uv_[0][1]);   // East
+    case 2:  return -S2::GetVNorm(face_, uv_[1][1]);  // North
+    default: return -S2::GetUNorm(face_, uv_[0][0]);  // West
   }
 }
 
@@ -94,10 +90,8 @@ double S2Cell::ApproxArea() const {
   // First, compute the approximate area of the cell when projected
   // perpendicular to its normal.  The cross product of its diagonals gives
   // the normal, and the length of the normal is twice the projected area.
-  double flat_area = 0.5 *
-                     (GetVertex(2) - GetVertex(0))
-                         .CrossProd(GetVertex(3) - GetVertex(1))
-                         .Norm();
+  double flat_area = 0.5 * (GetVertex(2) - GetVertex(0)).
+                     CrossProd(GetVertex(3) - GetVertex(1)).Norm();
 
   // Now, compensate for the curvature of the cell surface by pretending
   // that the cell is shaped like a spherical cap.  The ratio of the
@@ -190,24 +184,18 @@ S2LatLngRect S2Cell::GetRectBound() const {
   // The face centers are the +X, +Y, +Z, -X, -Y, -Z axes in that order.
   DCHECK_EQ(((face_ < 3) ? 1 : -1), S2::GetNorm(face_)[face_ % 3]);
   switch (face_) {
-    case 0:
-      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                          S1Interval(-M_PI_4, M_PI_4));
-    case 1:
-      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                          S1Interval(M_PI_4, 3 * M_PI_4));
-    case 2:
-      return S2LatLngRect(R1Interval(kPoleMinLat, M_PI_2),
-                          S1Interval(-M_PI, M_PI));
-    case 3:
-      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                          S1Interval(3 * M_PI_4, -3 * M_PI_4));
-    case 4:
-      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                          S1Interval(-3 * M_PI_4, -M_PI_4));
-    default:
-      return S2LatLngRect(R1Interval(-M_PI_2, -kPoleMinLat),
-                          S1Interval(-M_PI, M_PI));
+    case 0:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                                 S1Interval(-M_PI_4, M_PI_4));
+    case 1:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                                 S1Interval(M_PI_4, 3*M_PI_4));
+    case 2:  return S2LatLngRect(R1Interval(kPoleMinLat, M_PI_2),
+                                 S1Interval(-M_PI, M_PI));
+    case 3:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                                 S1Interval(3*M_PI_4, -3*M_PI_4));
+    case 4:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                                 S1Interval(-3*M_PI_4, -M_PI_4));
+    default: return S2LatLngRect(R1Interval(-M_PI_2, -kPoleMinLat),
+                                 S1Interval(-M_PI, M_PI));
   }
 }
 

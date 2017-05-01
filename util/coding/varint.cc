@@ -45,40 +45,21 @@ const char* Varint::Parse64Fallback(const char* p, uint64* OUTPUT) {
   //    res2    bits 28..55
   //    res3    bits 56..63
 
-  uint32 byte, res1, res2 = 0, res3 = 0;
-  byte = *(ptr++);
-  res1 = byte & 127;
-  byte = *(ptr++);
-  res1 |= (byte & 127) << 7;
-  if (byte < 128) goto done1;
-  byte = *(ptr++);
-  res1 |= (byte & 127) << 14;
-  if (byte < 128) goto done1;
-  byte = *(ptr++);
-  res1 |= (byte & 127) << 21;
-  if (byte < 128) goto done1;
+  uint32 byte, res1, res2=0, res3=0;
+  byte = *(ptr++); res1 = byte & 127;
+  byte = *(ptr++); res1 |= (byte & 127) <<  7; if (byte < 128) goto done1;
+  byte = *(ptr++); res1 |= (byte & 127) << 14; if (byte < 128) goto done1;
+  byte = *(ptr++); res1 |= (byte & 127) << 21; if (byte < 128) goto done1;
 
-  byte = *(ptr++);
-  res2 = byte & 127;
-  if (byte < 128) goto done2;
-  byte = *(ptr++);
-  res2 |= (byte & 127) << 7;
-  if (byte < 128) goto done2;
-  byte = *(ptr++);
-  res2 |= (byte & 127) << 14;
-  if (byte < 128) goto done2;
-  byte = *(ptr++);
-  res2 |= (byte & 127) << 21;
-  if (byte < 128) goto done2;
+  byte = *(ptr++); res2 = byte & 127;          if (byte < 128) goto done2;
+  byte = *(ptr++); res2 |= (byte & 127) <<  7; if (byte < 128) goto done2;
+  byte = *(ptr++); res2 |= (byte & 127) << 14; if (byte < 128) goto done2;
+  byte = *(ptr++); res2 |= (byte & 127) << 21; if (byte < 128) goto done2;
 
-  byte = *(ptr++);
-  res3 = byte & 127;
-  if (byte < 128) goto done3;
-  byte = *(ptr++);
-  res3 |= (byte & 127) << 7;
-  if (byte < 128) goto done3;
+  byte = *(ptr++); res3 = byte & 127;          if (byte < 128) goto done3;
+  byte = *(ptr++); res3 |= (byte & 127) <<  7; if (byte < 128) goto done3;
 
-  return NULL;  // Value is too long to be a varint64
+  return NULL;       // Value is too long to be a varint64
 
 done1:
   assert(res2 == 0);
@@ -127,46 +108,26 @@ const char* Varint::Parse64WithLimit(const char* p, const char* l,
     const unsigned char* limit = reinterpret_cast<const unsigned char*>(l);
     uint64 b, result;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result = b & 127;
-    if (b < 128) goto done;
+    b = *(ptr++); result = b & 127;          if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 7;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) <<  7; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 14;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 14; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 21;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 21; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 28;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 28; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 35;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 35; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 42;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 42; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 49;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 49; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 56;
-    if (b < 128) goto done;
+    b = *(ptr++); result |= (b & 127) << 56; if (b < 128) goto done;
     if (ptr >= limit) return NULL;
-    b = *(ptr++);
-    result |= (b & 127) << 63;
-    if (b < 2) goto done;
-    return NULL;  // Value is too long to be a varint64
+    b = *(ptr++); result |= (b & 127) << 63; if (b < 2) goto done;
+    return NULL;       // Value is too long to be a varint64
   done:
     *OUTPUT = result;
     return reinterpret_cast<const char*>(ptr);
@@ -270,10 +231,15 @@ inline int FastLength32(uint32 v) {
   }
 }
 
-const char Varint::length32_bytes_required[33] = {
-    1,  // Entry for "-1", which happens when the value is 0
-    1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3,
-    3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5};
+const char Varint::length32_bytes_required[33] =
+{
+  1,            // Entry for "-1", which happens when the value is 0
+  1,1,1,1,1,1,1,
+  2,2,2,2,2,2,2,
+  3,3,3,3,3,3,3,
+  4,4,4,4,4,4,4,
+  5,5,5,5
+};
 
 int Varint::Length32NonInline(uint32 v) { return FastLength32(v); }
 

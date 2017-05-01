@@ -67,7 +67,7 @@ inline int64 strto64(const char *nptr, char **endptr, int base) {
 
 inline uint64 strtou64(const char *nptr, char **endptr, int base) {
   static_assert(sizeof(uint64) == sizeof(unsigned long long),
-                 "sizeof_uint64_is_not_sizeof_long_long");
+                "sizeof_uint64_is_not_sizeof_long_long");
   return strtoull(nptr, endptr, base);
 }
 

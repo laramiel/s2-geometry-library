@@ -24,7 +24,6 @@
 #define ABSTRACT = 0
 #endif
 
-
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
 //

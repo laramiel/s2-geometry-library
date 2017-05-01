@@ -9,18 +9,14 @@ using std::max;
 using std::swap;
 using std::reverse;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_map>
-#else
-#include <hash_map>
-#endif
-using __gnu_cxx::hash_map;
+#include <unordered_map>
+#include <unordered_set>
+using std::unordered_map;
 
 // To have template struct hash<T> defined
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/port.h"  // for HASH_NAMESPACE_DECLARATION_START
 #include "util/math/matrix3x3.h"
 #include "util/math/vector3-inl.h"
 
@@ -31,20 +27,15 @@ using __gnu_cxx::hash_map;
 // arithmetic expressions (e.g. (1-x)*p1 + x*p2).
 typedef Vector3_d S2Point;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
 
-namespace __gnu_cxx {
+namespace std {
 
-template <>
-struct hash<S2Point> {
+template<> struct hash<S2Point> {
   size_t operator()(S2Point const& p) const;
 };
 
-}  // namespace __gnu_cxx
+}  // namespace std
+
 
 // The S2 class is simply a namespace for constants and static utility
 // functions related to spherical geometry, such as area calculations and edge
@@ -667,8 +658,8 @@ inline int S2::RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c,
 //
 // This data was produced using s2cell_unittest and s2cellid_unittest.
 
-#define S2_LINEAR_PROJECTION 0
-#define S2_TAN_PROJECTION 1
+#define S2_LINEAR_PROJECTION    0
+#define S2_TAN_PROJECTION       1
 #define S2_QUADRATIC_PROJECTION 2
 
 #define S2_PROJECTION S2_QUADRATIC_PROJECTION
@@ -701,17 +692,13 @@ inline double S2::UVtoST(double u) {
 #elif S2_PROJECTION == S2_QUADRATIC_PROJECTION
 
 inline double S2::STtoUV(double s) {
-  if (s >= 0.5)
-    return (1 / 3.) * (4 * s * s - 1);
-  else
-    return (1 / 3.) * (1 - 4 * (1 - s) * (1 - s));
+  if (s >= 0.5) return (1/3.) * (4*s*s - 1);
+  else          return (1/3.) * (1 - 4*(1-s)*(1-s));
 }
 
 inline double S2::UVtoST(double u) {
-  if (u >= 0)
-    return 0.5 * sqrt(1 + 3 * u);
-  else
-    return 1 - 0.5 * sqrt(1 - 3 * u);
+  if (u >= 0) return 0.5 * sqrt(1 + 3*u);
+  else        return 1 - 0.5 * sqrt(1 - 3*u);
 }
 
 #else
@@ -722,18 +709,12 @@ inline double S2::UVtoST(double u) {
 
 inline S2Point S2::FaceUVtoXYZ(int face, double u, double v) {
   switch (face) {
-    case 0:
-      return S2Point(1, u, v);
-    case 1:
-      return S2Point(-u, 1, v);
-    case 2:
-      return S2Point(-u, -v, 1);
-    case 3:
-      return S2Point(-1, -v, -u);
-    case 4:
-      return S2Point(v, -1, -u);
-    default:
-      return S2Point(v, u, -1);
+    case 0:  return S2Point( 1,  u,  v);
+    case 1:  return S2Point(-u,  1,  v);
+    case 2:  return S2Point(-u, -v,  1);
+    case 3:  return S2Point(-1, -v, -u);
+    case 4:  return S2Point( v, -1, -u);
+    default: return S2Point( v,  u, -1);
   }
 }
 
@@ -741,30 +722,12 @@ inline void S2::ValidFaceXYZtoUV(int face, S2Point const& p, double* pu,
                                  double* pv) {
   DCHECK_GT(p.DotProd(FaceUVtoXYZ(face, 0, 0)), 0);
   switch (face) {
-    case 0:
-      *pu = p[1] / p[0];
-      *pv = p[2] / p[0];
-      break;
-    case 1:
-      *pu = -p[0] / p[1];
-      *pv = p[2] / p[1];
-      break;
-    case 2:
-      *pu = -p[0] / p[2];
-      *pv = -p[1] / p[2];
-      break;
-    case 3:
-      *pu = p[2] / p[0];
-      *pv = p[1] / p[0];
-      break;
-    case 4:
-      *pu = p[2] / p[1];
-      *pv = -p[0] / p[1];
-      break;
-    default:
-      *pu = -p[1] / p[2];
-      *pv = -p[0] / p[2];
-      break;
+    case 0:  *pu =  p[1] / p[0]; *pv =  p[2] / p[0]; break;
+    case 1:  *pu = -p[0] / p[1]; *pv =  p[2] / p[1]; break;
+    case 2:  *pu = -p[0] / p[2]; *pv = -p[1] / p[2]; break;
+    case 3:  *pu =  p[2] / p[0]; *pv =  p[1] / p[0]; break;
+    case 4:  *pu =  p[2] / p[1]; *pv = -p[0] / p[1]; break;
+    default: *pu = -p[1] / p[2]; *pv = -p[0] / p[2]; break;
   }
 }
 
@@ -788,35 +751,23 @@ inline bool S2::FaceXYZtoUV(int face, S2Point const& p, double* pu,
 
 inline S2Point S2::GetUNorm(int face, double u) {
   switch (face) {
-    case 0:
-      return S2Point(u, -1, 0);
-    case 1:
-      return S2Point(1, u, 0);
-    case 2:
-      return S2Point(1, 0, u);
-    case 3:
-      return S2Point(-u, 0, 1);
-    case 4:
-      return S2Point(0, -u, 1);
-    default:
-      return S2Point(0, -1, -u);
+    case 0:  return S2Point( u, -1,  0);
+    case 1:  return S2Point( 1,  u,  0);
+    case 2:  return S2Point( 1,  0,  u);
+    case 3:  return S2Point(-u,  0,  1);
+    case 4:  return S2Point( 0, -u,  1);
+    default: return S2Point( 0, -1, -u);
   }
 }
 
 inline S2Point S2::GetVNorm(int face, double v) {
   switch (face) {
-    case 0:
-      return S2Point(-v, 0, 1);
-    case 1:
-      return S2Point(0, -v, 1);
-    case 2:
-      return S2Point(0, -1, -v);
-    case 3:
-      return S2Point(v, -1, 0);
-    case 4:
-      return S2Point(1, v, 0);
-    default:
-      return S2Point(1, 0, v);
+    case 0:  return S2Point(-v,  0,  1);
+    case 1:  return S2Point( 0, -v,  1);
+    case 2:  return S2Point( 0, -1, -v);
+    case 3:  return S2Point( v, -1,  0);
+    case 4:  return S2Point( 1,  v,  0);
+    default: return S2Point( 1,  0,  v);
   }
 }
 
@@ -824,35 +775,23 @@ inline S2Point S2::GetNorm(int face) { return S2::FaceUVtoXYZ(face, 0, 0); }
 
 inline S2Point S2::GetUAxis(int face) {
   switch (face) {
-    case 0:
-      return S2Point(0, 1, 0);
-    case 1:
-      return S2Point(-1, 0, 0);
-    case 2:
-      return S2Point(-1, 0, 0);
-    case 3:
-      return S2Point(0, 0, -1);
-    case 4:
-      return S2Point(0, 0, -1);
-    default:
-      return S2Point(0, 1, 0);
+    case 0:  return S2Point( 0,  1,  0);
+    case 1:  return S2Point(-1,  0,  0);
+    case 2:  return S2Point(-1,  0,  0);
+    case 3:  return S2Point( 0,  0, -1);
+    case 4:  return S2Point( 0,  0, -1);
+    default: return S2Point( 0,  1,  0);
   }
 }
 
 inline S2Point S2::GetVAxis(int face) {
   switch (face) {
-    case 0:
-      return S2Point(0, 0, 1);
-    case 1:
-      return S2Point(0, 0, 1);
-    case 2:
-      return S2Point(0, -1, 0);
-    case 3:
-      return S2Point(0, -1, 0);
-    case 4:
-      return S2Point(1, 0, 0);
-    default:
-      return S2Point(1, 0, 0);
+    case 0:  return S2Point( 0,  0,  1);
+    case 1:  return S2Point( 0,  0,  1);
+    case 2:  return S2Point( 0, -1,  0);
+    case 3:  return S2Point( 0, -1,  0);
+    case 4:  return S2Point( 1,  0,  0);
+    default: return S2Point( 1,  0,  0);
   }
 }
 

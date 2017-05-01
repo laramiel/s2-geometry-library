@@ -18,7 +18,6 @@ using std::string;
 using std::vector;
 
 #include "base/port.h"
-#include "base/stl_decl.h"
 #include "base/stringprintf.h"
 
 // This file formerly contained

@@ -28,7 +28,6 @@ cc_library(
     hdrs = [
 "util/coding/varint.h",
 "util/endian/endian.h",
-"util/hash/hash.h",
 "util/hash/hash_jenkins_lookup2.h",
 "strings/split.h",
 "strings/ascii_ctype.h",
@@ -41,9 +40,6 @@ cc_library(
 "base/template_util.h",
 "base/type_traits.h",       
 "base/stringprintf.h",
-"base/stl_decl.h",
-"base/stl_decl_msvc.h",
-"base/stl_decl_osx.h",
 "base/logging.h",
 "base/macros.h",
 "base/port.h",

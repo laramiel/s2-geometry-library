@@ -51,8 +51,7 @@ inline uint64 ghtonll(uint64 x) { return gbswap_64(x); }
 #define ghtonll(x) (x)
 
 #else
-#error \
-    "Unsupported bytesex: Either IS_BIG_ENDIAN or IS_LITTLE_ENDIAN must be defined"
+#error "Unsupported bytesex: Either IS_BIG_ENDIAN or IS_LITTLE_ENDIAN must be defined"
 #endif  // bytesex
 
 // Convert to little-endian storage, opposite of network format.

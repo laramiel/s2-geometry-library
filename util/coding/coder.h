@@ -12,7 +12,7 @@ using std::min;
 using std::max;
 using std::swap;
 using std::reverse;
-// for min
+
 #include "base/logging.h"
 #include "base/port.h"
 #include "util/coding/varint.h"

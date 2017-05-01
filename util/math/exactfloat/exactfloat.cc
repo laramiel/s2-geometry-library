@@ -33,9 +33,10 @@ const int ExactFloat::kDoubleMantissaBits;
 // precision range so that (2 * bn_exp_) does not overflow an "int".  We take
 // advantage of this, for example, by only checking for overflow/underflow
 // *after* multiplying two numbers.
-static_assert(ExactFloat::kMaxExp <= INT_MAX / 2 &&
-                  ExactFloat::kMinExp - ExactFloat::kMaxPrec >= INT_MIN / 2,
-              "exactfloat_exponent_might_overflow");
+static_assert(
+    ExactFloat::kMaxExp <= INT_MAX / 2 &&
+    ExactFloat::kMinExp - ExactFloat::kMaxPrec >= INT_MIN / 2,
+    "exactfloat_exponent_might_overflow");
 
 // We define a few simple extensions to the BIGNUM interface.  In some cases
 // these depend on BIGNUM internal fields, so they might require tweaking if

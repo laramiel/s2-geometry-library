@@ -38,7 +38,7 @@ using std::vector;
 #ifndef COMPILER_MSVC
 #include <strings.h>
 #endif
-#include <ctype.h>  // not needed, but removing it will break the build
+#include <ctype.h>      // not needed, but removing it will break the build
 
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other

@@ -406,12 +406,14 @@ void S2CellId::GetEdgeNeighbors(S2CellId neighbors[4]) const {
   int face = ToFaceIJOrientation(&i, &j, NULL);
 
   // Edges 0, 1, 2, 3 are in the S, E, N, W directions.
-  neighbors[0] = FromFaceIJSame(face, i, j - size, j - size >= 0).parent(level);
-  neighbors[1] =
-      FromFaceIJSame(face, i + size, j, i + size < kMaxSize).parent(level);
-  neighbors[2] =
-      FromFaceIJSame(face, i, j + size, j + size < kMaxSize).parent(level);
-  neighbors[3] = FromFaceIJSame(face, i - size, j, i - size >= 0).parent(level);
+  neighbors[0] = FromFaceIJSame(face, i, j - size, j - size >= 0)
+                 .parent(level);
+  neighbors[1] = FromFaceIJSame(face, i + size, j, i + size < kMaxSize)
+                 .parent(level);
+  neighbors[2] = FromFaceIJSame(face, i, j + size, j + size < kMaxSize)
+                 .parent(level);
+  neighbors[3] = FromFaceIJSame(face, i - size, j, i - size >= 0)
+                 .parent(level);
 }
 
 void S2CellId::AppendVertexNeighbors(int level,
