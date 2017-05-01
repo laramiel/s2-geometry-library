@@ -74,6 +74,10 @@ cc_library(
         "-Wno-narrowing",
         "-std=c++11",
     ],
+    linkopts = [
+        "-lssl",
+        "-lcrypto",
+    ],
 )
 
 cc_library(
