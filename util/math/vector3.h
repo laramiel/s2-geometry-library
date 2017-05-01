@@ -50,73 +50,73 @@ class Vector3 {
   Vector3(const VType x, const VType y, const VType z);
   // Create a new 3D vector using the two first coordinates of a 2D vectors
   // and an additional z argument.
-  explicit Vector3(const Vector2<VType> &vb, VType z);
+  explicit Vector3(const Vector2<VType>& vb, VType z);
   // Create a new copy of the vector vb
-  Vector3(const Self &vb);
+  Vector3(const Self& vb);
   // Keep only the three first coordinates of the 4D vector vb
-  explicit Vector3(const Vector4<VType> &vb);
+  explicit Vector3(const Vector4<VType>& vb);
   // Convert from another vector type
   template <typename VType2>
-  static Self Cast(const Vector3<VType2> &vb);
+  static Self Cast(const Vector3<VType2>& vb);
   // Compare two vectors, return true if all their components are equal
-  bool operator==(const Self &vb) const;
-  bool operator!=(const Self &vb) const;
+  bool operator==(const Self& vb) const;
+  bool operator!=(const Self& vb) const;
   // Compare two vectors, return true if all their components are within
   // a difference of margin.
-  bool aequal(const Self &vb, FloatType margin) const;
+  bool aequal(const Self& vb, FloatType margin) const;
   // Compare two vectors, these comparisons are mostly for interaction
   // with STL.
-  bool operator<(const Self &vb) const;
-  bool operator>(const Self &vb) const;
-  bool operator<=(const Self &vb) const;
-  bool operator>=(const Self &vb) const;
+  bool operator<(const Self& vb) const;
+  bool operator>(const Self& vb) const;
+  bool operator<=(const Self& vb) const;
+  bool operator>=(const Self& vb) const;
 
   // Return the size of the vector
   static int Size() { return 3; }
   // Modify the coordinates of the current vector
   void Set(const VType x, const VType y, const VType z);
-  Self &operator=(const Self &vb);
+  Self& operator=(const Self& vb);
   // Add two vectors, component by component
-  Self &operator+=(const Self &vb);
+  Self& operator+=(const Self& vb);
   // Subtract two vectors, component by component
-  Self &operator-=(const Self &vb);
+  Self& operator-=(const Self& vb);
   // Multiply a vector by a scalar
-  Self &operator*=(const VType k);
+  Self& operator*=(const VType k);
   // Divide a vector by a scalar
-  Self &operator/=(const VType k);
+  Self& operator/=(const VType k);
   // Multiply two vectors component by component
-  Self MulComponents(const Self &vb) const;
+  Self MulComponents(const Self& vb) const;
   // Divide two vectors component by component
-  Self DivComponents(const Self &vb) const;
+  Self DivComponents(const Self& vb) const;
   // Add two vectors, component by component
-  Self operator+(const Self &vb) const;
+  Self operator+(const Self& vb) const;
   // Subtract two vectors, component by component
-  Self operator-(const Self &vb) const;
+  Self operator-(const Self& vb) const;
   // Dot product.  Be aware that if VType is an integer type, the high bits of
   // the result are silently discarded.
-  VType DotProd(const Self &vb) const;
+  VType DotProd(const Self& vb) const;
   // Multiplication by a scalar
   Self operator*(const VType k) const;
   // Divide by a scalar
   Self operator/(const VType k) const;
   // Cross product.  Be aware that if VType is an integer type, the high bits
   // of the result are silently discarded.
-  Self CrossProd(const Self &vb) const;
+  Self CrossProd(const Self& vb) const;
   // Access component #b for read/write operations
-  VType &operator[](const int b);
+  VType& operator[](const int b);
   // Access component #b for read only operations
   VType operator[](const int b) const;
   // Labeled Accessor methods.
-  void x(const VType &v);
+  void x(const VType& v);
   VType x() const;
-  void y(const VType &v);
+  void y(const VType& v);
   VType y() const;
-  void z(const VType &v);
+  void z(const VType& v);
   VType z() const;
   // return a pointer to the data array for interface with other libraries
   // like opencv
-  VType *Data();
-  const VType *Data() const;
+  VType* Data();
+  const VType* Data() const;
   // Return the squared Euclidean norm of the vector.  Be aware that if VType
   // is an integer type, the high bits of the result are silently discarded.
   VType Norm2(void) const;
@@ -134,7 +134,7 @@ class Vector3 {
   // return the index of the smallest, median ,largest component of the vector
   Vector3<int> ComponentOrder() const;
   // return the angle between two vectors in radians
-  FloatType Angle(const Self &va) const;
+  FloatType Angle(const Self& va) const;
   // take the sqrt of each component and return a vector containing those values
   Self Sqrt() const;
   // take the fabs of each component and return a vector containing those values
@@ -166,23 +166,23 @@ class Vector3 {
 
 // Change the sign of the components of a vector
 template <typename VType>
-Vector3<VType> operator-(const Vector3<VType> &vb);
+Vector3<VType> operator-(const Vector3<VType>& vb);
 // multiply by a scalar
 template <typename ScalarType, typename VType>
-Vector3<VType> operator*(const ScalarType k, const Vector3<VType> &v);
+Vector3<VType> operator*(const ScalarType k, const Vector3<VType>& v);
 // perform k /
 template <typename ScalarType, typename VType>
-Vector3<VType> operator/(const ScalarType k, const Vector3<VType> &v);
+Vector3<VType> operator/(const ScalarType k, const Vector3<VType>& v);
 // return a vector containing the max of v1 and v2 component by component
 template <typename VType>
-Vector3<VType> Max(const Vector3<VType> &v1, const Vector3<VType> &v2);
+Vector3<VType> Max(const Vector3<VType>& v1, const Vector3<VType>& v2);
 // return a vector containing the min of v1 and v2 component by component
 template <typename VType>
-Vector3<VType> Min(const Vector3<VType> &v1, const Vector3<VType> &v2);
+Vector3<VType> Min(const Vector3<VType>& v1, const Vector3<VType>& v2);
 // debug printing
 template <typename VType>
-std::ostream &operator<<(std::ostream &out,  // NOLINT
-                         const Vector3<VType> &va);
+std::ostream& operator<<(std::ostream& out,  // NOLINT
+                         const Vector3<VType>& va);
 
 // TODO(user): Declare extern templates for these types.
 typedef Vector3<uint8> Vector3_b;

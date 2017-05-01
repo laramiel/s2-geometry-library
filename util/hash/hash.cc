@@ -29,7 +29,7 @@ static const uint64 kPrimes64[] = {
     GG_ULONGLONG(4294967549), GG_ULONGLONG(4294967561),
     GG_ULONGLONG(4294967563), GG_ULONGLONG(4294967569)};
 
-uint32 Hash32StringWithSeedReferenceImplementation(const char *s, uint32 len,
+uint32 Hash32StringWithSeedReferenceImplementation(const char* s, uint32 len,
                                                    uint32 seed) {
   uint32 n = seed;
   size_t prime1 = 0, prime2 = 8;  // Indices into kPrimes32
@@ -47,11 +47,11 @@ uint32 Hash32StringWithSeedReferenceImplementation(const char *s, uint32 len,
   return n;
 }
 
-uint32 Hash32StringWithSeed(const char *s, uint32 len, uint32 c) {
+uint32 Hash32StringWithSeed(const char* s, uint32 len, uint32 c) {
   return Hash32StringWithSeedReferenceImplementation(s, len, c);
 }
 
-uint64 Hash64StringWithSeed(const char *s, uint32 len, uint64 seed) {
+uint64 Hash64StringWithSeed(const char* s, uint32 len, uint64 seed) {
   uint64 n = seed;
   size_t prime1 = 0, prime2 = 8;  // Indices into kPrimes64
   union {
@@ -70,10 +70,10 @@ uint64 Hash64StringWithSeed(const char *s, uint32 len, uint64 seed) {
   return n;
 }
 
-uint64 FingerprintReferenceImplementation(const char *s, uint32 len) {
+uint64 FingerprintReferenceImplementation(const char* s, uint32 len) {
   return Hash64StringWithSeed(s, len, 42);
 }
 
-uint64 Fingerprint(const char *s, uint32 len) {
+uint64 Fingerprint(const char* s, uint32 len) {
   return FingerprintReferenceImplementation(s, len);
 }

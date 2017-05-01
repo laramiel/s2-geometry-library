@@ -1,3 +1,5 @@
 BasedOnStyle: Google
-MaxEmptyLinesToKeep: 3
 
+MaxEmptyLinesToKeep: 3
+DerivePointerAlignment: false
+PointerAlignment: Left

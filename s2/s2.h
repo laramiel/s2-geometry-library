@@ -41,7 +41,7 @@ namespace __gnu_cxx {
 
 template <>
 struct hash<S2Point> {
-  size_t operator()(S2Point const &p) const;
+  size_t operator()(S2Point const& p) const;
 };
 
 }  // namespace __gnu_cxx
@@ -84,34 +84,34 @@ class S2 {
 
   // Return true if the given point is approximately unit length
   // (this is mainly useful for assertions).
-  static bool IsUnitLength(S2Point const &p);
+  static bool IsUnitLength(S2Point const& p);
 
   // Return a unit-length vector that is orthogonal to "a".  Satisfies
   // Ortho(-a) = -Ortho(a) for all a.
-  static S2Point Ortho(S2Point const &a);
+  static S2Point Ortho(S2Point const& a);
 
   // Given a point "z" on the unit sphere, extend this into a right-handed
   // coordinate frame of unit-length column vectors m = (x,y,z).  Note that
   // the vectors (x,y) are an orthonormal frame for the tangent space at "z",
   // while "z" itself is an orthonormal frame for the normal space at "z".
-  static void GetFrame(S2Point const &z, Matrix3x3_d *m);
+  static void GetFrame(S2Point const& z, Matrix3x3_d* m);
 
   // Given an orthonormal basis "m" of column vectors and a point "p", return
   // the coordinates of "p" with respect to the basis "m".  The resulting
   // point "q" satisfies the identity (m * q == p).
-  static S2Point ToFrame(Matrix3x3_d const &m, S2Point const &p);
+  static S2Point ToFrame(Matrix3x3_d const& m, S2Point const& p);
 
   // Given an orthonormal basis "m" of column vectors and a point "q" with
   // respect to that basis, return the equivalent point "p" with respect to
   // the standard axis-aligned basis.  The result satisfies (p == m * q).
-  static S2Point FromFrame(Matrix3x3_d const &m, S2Point const &q);
+  static S2Point FromFrame(Matrix3x3_d const& m, S2Point const& q);
 
   // the coordinates of "p" with respect to the basis "m".  The resulting
   // point "r" satisfies the identity (m * r == p).
 
   // Return true if two points are within the given distance of each other
   // (this is mainly useful for testing).
-  static bool ApproxEquals(S2Point const &a, S2Point const &b,
+  static bool ApproxEquals(S2Point const& a, S2Point const& b,
                            double max_error = 1e-15);
 
   // Return a vector "c" that is orthogonal to the given unit-length vectors
@@ -125,7 +125,7 @@ class S2 {
   //   (2) RCP(b,a) == -RCP(a,b) unless a == b or a == -b
   //   (3) RCP(-a,b) == -RCP(a,b) unless a == b or a == -b
   //   (4) RCP(a,-b) == -RCP(a,b) unless a == b or a == -b
-  static S2Point RobustCrossProd(S2Point const &a, S2Point const &b);
+  static S2Point RobustCrossProd(S2Point const& a, S2Point const& b);
 
   // Return true if the points A, B, C are strictly counterclockwise.  Return
   // false if the points are clockwise or collinear (i.e. if they are all
@@ -136,7 +136,7 @@ class S2 {
   // However, the implementation guarantees the following:
   //
   //   If SimpleCCW(a,b,c), then !SimpleCCW(c,b,a) for all a,b,c.
-  static bool SimpleCCW(S2Point const &a, S2Point const &b, S2Point const &c);
+  static bool SimpleCCW(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // Returns +1 if the points A, B, C are counterclockwise, -1 if the points
   // are clockwise, and 0 if any two points are the same.  This function is
@@ -160,13 +160,13 @@ class S2 {
   // On the other hand, note that it is not true in general that
   // RobustCCW(-a,b,c) == -RobustCCW(a,b,c), or any similar identities
   // involving antipodal points.
-  static int RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c);
+  static int RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // A more efficient version of RobustCCW that allows the precomputed
   // cross-product of A and B to be specified.  (Unlike the 3 argument
   // version this method is also inlined.)
-  inline static int RobustCCW(S2Point const &a, S2Point const &b,
-                              S2Point const &c, S2Point const &a_cross_b);
+  inline static int RobustCCW(S2Point const& a, S2Point const& b,
+                              S2Point const& c, S2Point const& a_cross_b);
 
   // This version of RobustCCW returns +1 if the points are definitely CCW,
   // -1 if they are definitely CW, and 0 if two points are identical or the
@@ -175,8 +175,8 @@ class S2 {
   //
   // The purpose of this method is to allow additional cheap tests to be done,
   // where possible, in order to avoid calling ExpensiveCCW unnecessarily.
-  inline static int TriageCCW(S2Point const &a, S2Point const &b,
-                              S2Point const &c, S2Point const &a_cross_b);
+  inline static int TriageCCW(S2Point const& a, S2Point const& b,
+                              S2Point const& c, S2Point const& a_cross_b);
 
   // This function is invoked by RobustCCW() if the sign of the determinant is
   // uncertain.  It always returns a non-zero result unless two of the input
@@ -191,7 +191,7 @@ class S2 {
   //
   // Unlike RobustCCW(), this method does not require the input points to be
   // normalized.
-  static int ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c);
+  static int ExpensiveCCW(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // Given 4 points on the unit sphere, return true if the edges OA, OB, and
   // OC are encountered in that order while sweeping CCW around the point O.
@@ -205,8 +205,8 @@ class S2 {
   //  (3) If OrderedCCW(a,b,c,o) && OrderedCCW(c,b,a,o), then a == b == c
   //  (4) If a == b or b == c, then OrderedCCW(a,b,c,o) is true
   //  (5) Otherwise if a == c, then OrderedCCW(a,b,c,o) is false
-  static bool OrderedCCW(S2Point const &a, S2Point const &b, S2Point const &c,
-                         S2Point const &o);
+  static bool OrderedCCW(S2Point const& a, S2Point const& b, S2Point const& c,
+                         S2Point const& o);
 
   // Return the interior angle at the vertex B in the triangle ABC.  The
   // return value is always in the range [0, Pi].  The points do not need to
@@ -215,14 +215,14 @@ class S2 {
   // The angle is undefined if A or C is diametrically opposite from B, and
   // becomes numerically unstable as the length of edge AB or BC approaches
   // 180 degrees.
-  static double Angle(S2Point const &a, S2Point const &b, S2Point const &c);
+  static double Angle(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // Return the exterior angle at the vertex B in the triangle ABC.  The
   // return value is positive if ABC is counterclockwise and negative
   // otherwise.  If you imagine an ant walking from A to B to C, this is the
   // angle that the ant turns at vertex B (positive = left, negative = right).
   // Ensures that TurnAngle(a,b,c) == -TurnAngle(c,b,a) for all a,b,c.
-  static double TurnAngle(S2Point const &a, S2Point const &b, S2Point const &c);
+  static double TurnAngle(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // Return the area of triangle ABC.  The method used is about twice as
   // expensive as Girard's formula, but it is numerically stable for both
@@ -232,18 +232,18 @@ class S2 {
   // The triangle area is undefined if it contains two antipodal points, and
   // becomes numerically unstable as the length of any edge approaches 180
   // degrees.
-  static double Area(S2Point const &a, S2Point const &b, S2Point const &c);
+  static double Area(S2Point const& a, S2Point const& b, S2Point const& c);
 
   // Return the area of the triangle computed using Girard's formula.  All
   // points should be unit length.  This is slightly faster than the Area()
   // method above but is not accurate for very small triangles.
-  static double GirardArea(S2Point const &a, S2Point const &b,
-                           S2Point const &c);
+  static double GirardArea(S2Point const& a, S2Point const& b,
+                           S2Point const& c);
 
   // Like Area(), but returns a positive value for counterclockwise triangles
   // and a negative value otherwise.
-  static double SignedArea(S2Point const &a, S2Point const &b,
-                           S2Point const &c);
+  static double SignedArea(S2Point const& a, S2Point const& b,
+                           S2Point const& c);
 
   // About centroids:
   // ----------------
@@ -282,16 +282,16 @@ class S2 {
   // spherical triangle, i.e. the intersection of the three medians.  However,
   // note that for large spherical triangles the surface centroid may be
   // nowhere near the intuitive "center" (see example above).
-  static S2Point PlanarCentroid(S2Point const &a, S2Point const &b,
-                                S2Point const &c);
+  static S2Point PlanarCentroid(S2Point const& a, S2Point const& b,
+                                S2Point const& c);
 
   // Returns the true centroid of the spherical triangle ABC multiplied by the
   // signed area of spherical triangle ABC.  The reasons for multiplying by
   // the signed area are (1) this is the quantity that needs to be summed to
   // compute the centroid of a union or difference of triangles, and (2) it's
   // actually easier to calculate this way.
-  static S2Point TrueCentroid(S2Point const &a, S2Point const &b,
-                              S2Point const &c);
+  static S2Point TrueCentroid(S2Point const& a, S2Point const& b,
+                              S2Point const& c);
 
   ////////////////////////// S2Cell Decomposition /////////////////////////
   //
@@ -370,12 +370,12 @@ class S2 {
   // If the dot product of p with the given face normal is positive,
   // set the corresponding u and v values (which may lie outside the range
   // [-1,1]) and return true.  Otherwise return false.
-  inline static bool FaceXYZtoUV(int face, S2Point const &p, double *pu,
-                                 double *pv);
+  inline static bool FaceXYZtoUV(int face, S2Point const& p, double* pu,
+                                 double* pv);
 
   // Convert a direction vector (not necessarily unit length) to
   // (face, u, v) coordinates.
-  inline static int XYZtoFaceUV(S2Point const &p, double *pu, double *pv);
+  inline static int XYZtoFaceUV(S2Point const& p, double* pu, double* pv);
 
   // Return the right-handed normal (not necessarily unit length) for an
   // edge in the direction of the positive v-axis at the given u-value on
@@ -565,8 +565,8 @@ class S2 {
   // Given a *valid* face for the given point p (meaning that dot product
   // of p with the face normal is positive), return the corresponding
   // u and v values (which may lie outside the range [-1,1]).
-  inline static void ValidFaceXYZtoUV(int face, S2Point const &p, double *pu,
-                                      double *pv);
+  inline static void ValidFaceXYZtoUV(int face, S2Point const& p, double* pu,
+                                      double* pv);
 
   // The value below is the maximum error in computing the determinant
   // a.CrossProd(b).DotProd(c).  To derive this, observe that computing the
@@ -598,8 +598,8 @@ inline S2Point S2::Origin() {
 #endif
 }
 
-inline int S2::TriageCCW(S2Point const &a, S2Point const &b, S2Point const &c,
-                         S2Point const &a_cross_b) {
+inline int S2::TriageCCW(S2Point const& a, S2Point const& b, S2Point const& c,
+                         S2Point const& a_cross_b) {
   DCHECK(IsUnitLength(a));
   DCHECK(IsUnitLength(b));
   DCHECK(IsUnitLength(c));
@@ -614,8 +614,8 @@ inline int S2::TriageCCW(S2Point const &a, S2Point const &b, S2Point const &c,
   return 0;
 }
 
-inline int S2::RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c,
-                         S2Point const &a_cross_b) {
+inline int S2::RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c,
+                         S2Point const& a_cross_b) {
   int ccw = TriageCCW(a, b, c, a_cross_b);
   if (ccw == 0) ccw = ExpensiveCCW(a, b, c);
   return ccw;
@@ -737,8 +737,8 @@ inline S2Point S2::FaceUVtoXYZ(int face, double u, double v) {
   }
 }
 
-inline void S2::ValidFaceXYZtoUV(int face, S2Point const &p, double *pu,
-                                 double *pv) {
+inline void S2::ValidFaceXYZtoUV(int face, S2Point const& p, double* pu,
+                                 double* pv) {
   DCHECK_GT(p.DotProd(FaceUVtoXYZ(face, 0, 0)), 0);
   switch (face) {
     case 0:
@@ -768,15 +768,15 @@ inline void S2::ValidFaceXYZtoUV(int face, S2Point const &p, double *pu,
   }
 }
 
-inline int S2::XYZtoFaceUV(S2Point const &p, double *pu, double *pv) {
+inline int S2::XYZtoFaceUV(S2Point const& p, double* pu, double* pv) {
   int face = p.LargestAbsComponent();
   if (p[face] < 0) face += 3;
   ValidFaceXYZtoUV(face, p, pu, pv);
   return face;
 }
 
-inline bool S2::FaceXYZtoUV(int face, S2Point const &p, double *pu,
-                            double *pv) {
+inline bool S2::FaceXYZtoUV(int face, S2Point const& p, double* pu,
+                            double* pv) {
   if (face < 3) {
     if (p[face] <= 0) return false;
   } else {

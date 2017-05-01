@@ -9,8 +9,8 @@ using std::reverse;
 
 #include "base/logging.h"
 
-bool S2EdgeUtil::SimpleCrossing(S2Point const &a, S2Point const &b,
-                                S2Point const &c, S2Point const &d) {
+bool S2EdgeUtil::SimpleCrossing(S2Point const& a, S2Point const& b,
+                                S2Point const& c, S2Point const& d) {
   // We compute SimpleCCW() for triangles ACB, CBD, BDA, and DAC.  All
   // of these triangles need to have the same orientation (CW or CCW)
   // for an intersection to exist.  Note that this is slightly more
@@ -29,14 +29,14 @@ bool S2EdgeUtil::SimpleCrossing(S2Point const &a, S2Point const &b,
   return (acb * cbd > 0) && (acb * dac > 0);
 }
 
-int S2EdgeUtil::RobustCrossing(S2Point const &a, S2Point const &b,
-                               S2Point const &c, S2Point const &d) {
+int S2EdgeUtil::RobustCrossing(S2Point const& a, S2Point const& b,
+                               S2Point const& c, S2Point const& d) {
   S2EdgeUtil::EdgeCrosser crosser(&a, &b, &c);
   return crosser.RobustCrossing(&d);
 }
 
-bool S2EdgeUtil::VertexCrossing(S2Point const &a, S2Point const &b,
-                                S2Point const &c, S2Point const &d) {
+bool S2EdgeUtil::VertexCrossing(S2Point const& a, S2Point const& b,
+                                S2Point const& c, S2Point const& d) {
   // If A == B or C == D there is no intersection.  We need to check this
   // case first in case 3 or more input points are identical.
   if (a == b || c == d) return false;
@@ -54,16 +54,16 @@ bool S2EdgeUtil::VertexCrossing(S2Point const &a, S2Point const &b,
   return false;
 }
 
-bool S2EdgeUtil::EdgeOrVertexCrossing(S2Point const &a, S2Point const &b,
-                                      S2Point const &c, S2Point const &d) {
+bool S2EdgeUtil::EdgeOrVertexCrossing(S2Point const& a, S2Point const& b,
+                                      S2Point const& c, S2Point const& d) {
   int crossing = RobustCrossing(a, b, c, d);
   if (crossing < 0) return false;
   if (crossing > 0) return true;
   return VertexCrossing(a, b, c, d);
 }
 
-static void ReplaceIfCloser(S2Point const &x, S2Point const &y, double *dmin2,
-                            S2Point *vmin) {
+static void ReplaceIfCloser(S2Point const& x, S2Point const& y, double* dmin2,
+                            S2Point* vmin) {
   // If the squared distance from x to y is less than dmin2, then replace
   // vmin by y and update dmin2 accordingly.
 
@@ -74,8 +74,8 @@ static void ReplaceIfCloser(S2Point const &x, S2Point const &y, double *dmin2,
   }
 }
 
-S2Point S2EdgeUtil::GetIntersection(S2Point const &a0, S2Point const &a1,
-                                    S2Point const &b0, S2Point const &b1) {
+S2Point S2EdgeUtil::GetIntersection(S2Point const& a0, S2Point const& a1,
+                                    S2Point const& b0, S2Point const& b1) {
   DCHECK_GT(RobustCrossing(a0, a1, b0, b1), 0);
 
   // We use RobustCrossProd() to get accurate results even when two endpoints
@@ -130,16 +130,16 @@ S2Point S2EdgeUtil::GetIntersection(S2Point const &a0, S2Point const &a1,
 // measured by the unittest in 1,000,000 trials is less than 3e-16.
 S1Angle const S2EdgeUtil::kIntersectionTolerance = S1Angle::Radians(1.5e-15);
 
-double S2EdgeUtil::GetDistanceFraction(S2Point const &x, S2Point const &a0,
-                                       S2Point const &a1) {
+double S2EdgeUtil::GetDistanceFraction(S2Point const& x, S2Point const& a0,
+                                       S2Point const& a1) {
   DCHECK_NE(a0, a1);
   double d0 = x.Angle(a0);
   double d1 = x.Angle(a1);
   return d0 / (d0 + d1);
 }
 
-S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
-                                          S2Point const &b, S1Angle const &ab) {
+S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                          S2Point const& b, S1Angle const& ab) {
   DCHECK(S2::IsUnitLength(a));
   DCHECK(S2::IsUnitLength(b));
 
@@ -176,20 +176,20 @@ S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
   return (e * a + f * b).Normalize();
 }
 
-S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
-                                          S2Point const &b) {
+S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                          S2Point const& b) {
   return InterpolateAtDistance(ax, a, b, S1Angle(a, b));
 }
 
-S2Point S2EdgeUtil::Interpolate(double t, S2Point const &a, S2Point const &b) {
+S2Point S2EdgeUtil::Interpolate(double t, S2Point const& a, S2Point const& b) {
   if (t == 0) return a;
   if (t == 1) return b;
   S1Angle ab(a, b);
   return InterpolateAtDistance(t * ab, a, b, ab);
 }
 
-S1Angle S2EdgeUtil::GetDistance(S2Point const &x, S2Point const &a,
-                                S2Point const &b, S2Point const &a_cross_b) {
+S1Angle S2EdgeUtil::GetDistance(S2Point const& x, S2Point const& a,
+                                S2Point const& b, S2Point const& a_cross_b) {
   DCHECK(S2::IsUnitLength(a));
   DCHECK(S2::IsUnitLength(b));
   DCHECK(S2::IsUnitLength(x));
@@ -218,14 +218,14 @@ S1Angle S2EdgeUtil::GetDistance(S2Point const &x, S2Point const &a,
   return S1Angle::Radians(2 * asin(min(1.0, 0.5 * sqrt(linear_dist2))));
 }
 
-S1Angle S2EdgeUtil::GetDistance(S2Point const &x, S2Point const &a,
-                                S2Point const &b) {
+S1Angle S2EdgeUtil::GetDistance(S2Point const& x, S2Point const& a,
+                                S2Point const& b) {
   return GetDistance(x, a, b, S2::RobustCrossProd(a, b));
 }
 
-S2Point S2EdgeUtil::GetClosestPoint(S2Point const &x, S2Point const &a,
-                                    S2Point const &b,
-                                    S2Point const &a_cross_b) {
+S2Point S2EdgeUtil::GetClosestPoint(S2Point const& x, S2Point const& a,
+                                    S2Point const& b,
+                                    S2Point const& a_cross_b) {
   DCHECK(S2::IsUnitLength(a));
   DCHECK(S2::IsUnitLength(b));
   DCHECK(S2::IsUnitLength(x));
@@ -241,14 +241,14 @@ S2Point S2EdgeUtil::GetClosestPoint(S2Point const &x, S2Point const &a,
   return ((x - a).Norm2() <= (x - b).Norm2()) ? a : b;
 }
 
-S2Point S2EdgeUtil::GetClosestPoint(S2Point const &x, S2Point const &a,
-                                    S2Point const &b) {
+S2Point S2EdgeUtil::GetClosestPoint(S2Point const& x, S2Point const& a,
+                                    S2Point const& b) {
   return GetClosestPoint(x, a, b, S2::RobustCrossProd(a, b));
 }
 
-bool S2EdgeUtil::IsEdgeBNearEdgeA(S2Point const &a0, S2Point const &a1,
-                                  S2Point const &b0, S2Point const &b1,
-                                  S1Angle const &tolerance) {
+bool S2EdgeUtil::IsEdgeBNearEdgeA(S2Point const& a0, S2Point const& a1,
+                                  S2Point const& b0, S2Point const& b1,
+                                  S1Angle const& tolerance) {
   DCHECK_LT(tolerance.radians(), M_PI / 2);
   DCHECK_GT(tolerance.radians(), 0);
   // The point on edge B=b0b1 furthest from edge A=a0a1 is either b0, b1, or
@@ -327,18 +327,18 @@ bool S2EdgeUtil::IsEdgeBNearEdgeA(S2Point const &a0, S2Point const &a1,
             S2::RobustCCW(furthest_inv, b1, b_ortho) > 0));
 }
 
-bool S2EdgeUtil::WedgeContains(S2Point const &a0, S2Point const &ab1,
-                               S2Point const &a2, S2Point const &b0,
-                               S2Point const &b2) {
+bool S2EdgeUtil::WedgeContains(S2Point const& a0, S2Point const& ab1,
+                               S2Point const& a2, S2Point const& b0,
+                               S2Point const& b2) {
   // For A to contain B (where each loop interior is defined to be its left
   // side), the CCW edge order around ab1 must be a2 b2 b0 a0.  We split
   // this test into two parts that test three vertices each.
   return S2::OrderedCCW(a2, b2, b0, ab1) && S2::OrderedCCW(b0, a0, a2, ab1);
 }
 
-bool S2EdgeUtil::WedgeIntersects(S2Point const &a0, S2Point const &ab1,
-                                 S2Point const &a2, S2Point const &b0,
-                                 S2Point const &b2) {
+bool S2EdgeUtil::WedgeIntersects(S2Point const& a0, S2Point const& ab1,
+                                 S2Point const& a2, S2Point const& b0,
+                                 S2Point const& b2) {
   // For A not to intersect B (where each loop interior is defined to be
   // its left side), the CCW edge order around ab1 must be a0 b2 b0 a2.
   // Note that it's important to write these conditions as negatives
@@ -347,11 +347,11 @@ bool S2EdgeUtil::WedgeIntersects(S2Point const &a0, S2Point const &ab1,
   return !(S2::OrderedCCW(a0, b2, b0, ab1) && S2::OrderedCCW(b0, a2, a0, ab1));
 }
 
-S2EdgeUtil::WedgeRelation S2EdgeUtil::GetWedgeRelation(S2Point const &a0,
-                                                       S2Point const &ab1,
-                                                       S2Point const &a2,
-                                                       S2Point const &b0,
-                                                       S2Point const &b2) {
+S2EdgeUtil::WedgeRelation S2EdgeUtil::GetWedgeRelation(S2Point const& a0,
+                                                       S2Point const& ab1,
+                                                       S2Point const& a2,
+                                                       S2Point const& b0,
+                                                       S2Point const& b2) {
   // There are 6 possible edge orderings at a shared vertex (all
   // of these orderings are circular, i.e. abcd == bcda):
   //
@@ -383,7 +383,7 @@ S2EdgeUtil::WedgeRelation S2EdgeUtil::GetWedgeRelation(S2Point const &a0,
                                          : WEDGE_PROPERLY_OVERLAPS;
 }
 
-int S2EdgeUtil::EdgeCrosser::RobustCrossingInternal(S2Point const *d) {
+int S2EdgeUtil::EdgeCrosser::RobustCrossingInternal(S2Point const* d) {
   // ACB and BDA have the appropriate orientations, so now we check the
   // triangles CBD and DAC.
   S2Point c_cross_d = c_->CrossProd(*d);
@@ -394,7 +394,7 @@ int S2EdgeUtil::EdgeCrosser::RobustCrossingInternal(S2Point const *d) {
   return (dac == acb_) ? 1 : -1;
 }
 
-void S2EdgeUtil::RectBounder::AddPoint(S2Point const *b) {
+void S2EdgeUtil::RectBounder::AddPoint(S2Point const* b) {
   DCHECK(S2::IsUnitLength(*b));
   S2LatLng b_latlng(*b);
   if (bound_.is_empty()) {
@@ -436,6 +436,6 @@ void S2EdgeUtil::RectBounder::AddPoint(S2Point const *b) {
   a_latlng_ = b_latlng;
 }
 
-S2EdgeUtil::LongitudePruner::LongitudePruner(S1Interval const &interval,
-                                             S2Point const &v0)
+S2EdgeUtil::LongitudePruner::LongitudePruner(S1Interval const& interval,
+                                             S2Point const& v0)
     : interval_(interval), lng0_(S2LatLng::Longitude(v0).radians()) {}

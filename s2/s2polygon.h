@@ -48,33 +48,33 @@ class S2Polygon : public S2Region {
 
   // Convenience constructor that calls Init() with the given loops.  Takes
   // ownership of the loops and clears the given vector.
-  explicit S2Polygon(vector<S2Loop *> *loops);
+  explicit S2Polygon(vector<S2Loop*>* loops);
 
   // Convenience constructor that creates a polygon with a single loop
   // corresponding to the given cell.
-  explicit S2Polygon(S2Cell const &cell);
+  explicit S2Polygon(S2Cell const& cell);
 
   // Initialize a polygon by taking ownership of the given loops and clearing
   // the given vector.  This method figures out the loop nesting hierarchy and
   // then reorders the loops by following a preorder traversal.  This implies
   // that each loop is immediately followed by its descendants in the nesting
   // hierarchy.  (See also GetParent and GetLastDescendant.)
-  void Init(vector<S2Loop *> *loops);
+  void Init(vector<S2Loop*>* loops);
 
   // Release ownership of the loops of this polygon, and appends them to
   // "loops" if non-NULL.  Resets the polygon to be empty.
-  void Release(vector<S2Loop *> *loops);
+  void Release(vector<S2Loop*>* loops);
 
   // Makes a deep copy of the given source polygon.  Requires that the
   // destination polygon is empty.
-  void Copy(S2Polygon const *src);
+  void Copy(S2Polygon const* src);
 
   // Destroys the polygon and frees its loops.
   ~S2Polygon();
 
   // Return true if the given loops form a valid polygon.  Assumes that
   // all of the given loops have already been validated.
-  static bool IsValid(const vector<S2Loop *> &loops);
+  static bool IsValid(const vector<S2Loop*>& loops);
 
   // Return true if this is a valid polygon.  Note that in debug mode,
   // validity is checked at polygon creation time, so IsValid() should always
@@ -89,7 +89,7 @@ class S2Polygon : public S2Region {
   // Total number of vertices in all loops.
   int num_vertices() const { return num_vertices_; }
 
-  S2Loop *loop(int k) const { return loops_[k]; }
+  S2Loop* loop(int k) const { return loops_[k]; }
 
   // Return the index of the parent of loop k, or -1 if it has no parent.
   int GetParent(int k) const;
@@ -119,7 +119,7 @@ class S2Polygon : public S2Region {
 
   // Return true if this polygon contains the given other polygon, i.e.
   // if polygon A contains all points contained by polygon B.
-  bool Contains(S2Polygon const *b) const;
+  bool Contains(S2Polygon const* b) const;
 
   // Returns true if this polgyon (A) approximately contains the given other
   // polygon (B). This is true if it is possible to move the vertices of B
@@ -127,11 +127,11 @@ class S2Polygon : public S2Region {
   //
   // For example, the empty polygon will contain any polygon whose maximum
   // width is no more than vertex_merge_radius.
-  bool ApproxContains(S2Polygon const *b, S1Angle vertex_merge_radius) const;
+  bool ApproxContains(S2Polygon const* b, S1Angle vertex_merge_radius) const;
 
   // Return true if this polygon intersects the given other polygon, i.e.
   // if there is a point that is contained by both polygons.
-  bool Intersects(S2Polygon const *b) const;
+  bool Intersects(S2Polygon const* b) const;
 
   // Initialize this polygon to the intersection, union, or difference
   // (A - B) of the given two polygons.  The "vertex_merge_radius" determines
@@ -146,14 +146,14 @@ class S2Polygon : public S2Region {
   // valid result after rounding (i.e. no duplicate vertices, etc).  For
   // example, if you are going to convert them to geostore::PolygonProto
   // format, then S1Angle::E7(1) is a good value for "vertex_merge_radius".
-  void InitToIntersection(S2Polygon const *a, S2Polygon const *b);
-  void InitToIntersectionSloppy(S2Polygon const *a, S2Polygon const *b,
+  void InitToIntersection(S2Polygon const* a, S2Polygon const* b);
+  void InitToIntersectionSloppy(S2Polygon const* a, S2Polygon const* b,
                                 S1Angle vertex_merge_radius);
-  void InitToUnion(S2Polygon const *a, S2Polygon const *b);
-  void InitToUnionSloppy(S2Polygon const *a, S2Polygon const *b,
+  void InitToUnion(S2Polygon const* a, S2Polygon const* b);
+  void InitToUnionSloppy(S2Polygon const* a, S2Polygon const* b,
                          S1Angle vertex_merge_radius);
-  void InitToDifference(S2Polygon const *a, S2Polygon const *b);
-  void InitToDifferenceSloppy(S2Polygon const *a, S2Polygon const *b,
+  void InitToDifference(S2Polygon const* a, S2Polygon const* b);
+  void InitToDifferenceSloppy(S2Polygon const* a, S2Polygon const* b,
                               S1Angle vertex_merge_radius);
 
   // Initializes this polygon to a polygon that contains fewer vertices and is
@@ -170,7 +170,7 @@ class S2Polygon : public S2Region {
   //   first step of the simplification creates too many self-intersections.
   //   One can construct irrealistic cases where that happens to an extreme
   //   degree.
-  void InitToSimplified(S2Polygon const *a, S1Angle tolerance);
+  void InitToSimplified(S2Polygon const* a, S1Angle tolerance);
 
   // Intersect this polygon with the polyline "in" and append the resulting
   // zero or more polylines to "out" (which must be empty).  The polylines
@@ -180,33 +180,33 @@ class S2Polygon : public S2Region {
   //
   // This is equivalent to calling IntersectWithPolylineSloppy() with the
   // "vertex_merge_radius" set to S2EdgeUtil::kIntersectionTolerance.
-  void IntersectWithPolyline(S2Polyline const *in,
-                             vector<S2Polyline *> *out) const;
+  void IntersectWithPolyline(S2Polyline const* in,
+                             vector<S2Polyline*>* out) const;
 
   // Similar to IntersectWithPolyline(), except that vertices will be
   // dropped as necessary to ensure that all adjacent vertices in the
   // sequence obtained by concatenating the output polylines will be
   // farther than "vertex_merge_radius" apart.  Note that this can change
   // the number of output polylines and/or yield single-vertex polylines.
-  void IntersectWithPolylineSloppy(S2Polyline const *in,
-                                   vector<S2Polyline *> *out,
+  void IntersectWithPolylineSloppy(S2Polyline const* in,
+                                   vector<S2Polyline*>* out,
                                    S1Angle vertex_merge_radius) const;
 
   // Same as IntersectWithPolyline, but subtracts this polygon from
   // the given polyline.
-  void SubtractFromPolyline(S2Polyline const *in,
-                            vector<S2Polyline *> *out) const;
+  void SubtractFromPolyline(S2Polyline const* in,
+                            vector<S2Polyline*>* out) const;
 
   // Same as IntersectWithPolylineSloppy, but subtracts this polygon
   // from the given polyline.
-  void SubtractFromPolylineSloppy(S2Polyline const *in,
-                                  vector<S2Polyline *> *out,
+  void SubtractFromPolylineSloppy(S2Polyline const* in,
+                                  vector<S2Polyline*>* out,
                                   S1Angle vertex_merge_radius) const;
 
   // Return a polygon which is the union of the given polygons.
   // Clears the vector and deletes the polygons!
-  static S2Polygon *DestructiveUnion(vector<S2Polygon *> *polygons);
-  static S2Polygon *DestructiveUnionSloppy(vector<S2Polygon *> *polygons,
+  static S2Polygon* DestructiveUnion(vector<S2Polygon*>* polygons);
+  static S2Polygon* DestructiveUnionSloppy(vector<S2Polygon*>* polygons,
                                            S1Angle vertex_merge_radius);
 
   // Initialize this polygon to the outline of the given cell union.
@@ -214,7 +214,7 @@ class S2Polygon : public S2Region {
   // this polygon's inverse should not intersect the cell union, but rounding
   // issues may cause this not to be the case.
   // Does not work correctly if the union covers more than half the sphere.
-  void InitToCellUnionBorder(S2CellUnion const &cells);
+  void InitToCellUnionBorder(S2CellUnion const& cells);
 
   // Return true if every loop of this polygon shares at most one vertex with
   // its parent loop.  Every polygon has a unique normalized form.  Normalized
@@ -225,76 +225,76 @@ class S2Polygon : public S2Region {
   // Return true if two polygons have the same boundary.  More precisely, this
   // method requires that both polygons have loops with the same cyclic vertex
   // order and the same nesting hierarchy.
-  bool BoundaryEquals(S2Polygon const *b) const;
+  bool BoundaryEquals(S2Polygon const* b) const;
 
   // Return true if two polygons have the same boundary except for vertex
   // perturbations.  Both polygons must have loops with the same cyclic vertex
   // order and the same nesting hierarchy, but the vertex locations are
   // allowed to differ by up to "max_error".
-  bool BoundaryApproxEquals(S2Polygon const *b, double max_error = 1e-15) const;
+  bool BoundaryApproxEquals(S2Polygon const* b, double max_error = 1e-15) const;
 
   // Return true if two polygons have boundaries that are within "max_error"
   // of each other along their entire lengths.  More precisely, there must be
   // a bijection between the two sets of loops such that for each pair of
   // loops, "a_loop->BoundaryNear(b_loop)" is true.
-  bool BoundaryNear(S2Polygon const *b, double max_error = 1e-15) const;
+  bool BoundaryNear(S2Polygon const* b, double max_error = 1e-15) const;
 
   // If the point is not contained by the polygon returns a point on the
   // polygon closest to the given point. Otherwise returns the point itself.
   // The polygon must not be empty.
-  S2Point Project(S2Point const &point) const;
+  S2Point Project(S2Point const& point) const;
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
   // GetRectBound() guarantees that it will return exact bounds. GetCapBound()
   // does not.
-  virtual S2Polygon *Clone() const;
+  virtual S2Polygon* Clone() const;
   virtual S2Cap GetCapBound() const;  // Cap surrounding rect bound.
   virtual S2LatLngRect GetRectBound() const { return bound_; }
 
-  virtual bool Contains(S2Cell const &cell) const;
-  virtual bool MayIntersect(S2Cell const &cell) const;
-  virtual bool VirtualContainsPoint(S2Point const &p) const;
+  virtual bool Contains(S2Cell const& cell) const;
+  virtual bool MayIntersect(S2Cell const& cell) const;
+  virtual bool VirtualContainsPoint(S2Point const& p) const;
 
   // The point 'p' does not need to be normalized.
-  bool Contains(S2Point const &p) const;
+  bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder *const encoder) const;
-  virtual bool Decode(Decoder *const decoder);
-  virtual bool DecodeWithinScope(Decoder *const decoder);
+  virtual void Encode(Encoder* const encoder) const;
+  virtual bool Decode(Decoder* const decoder);
+  virtual bool DecodeWithinScope(Decoder* const decoder);
 
  private:
   // Internal constructor that does *not* take ownership of its argument.
-  explicit S2Polygon(S2Loop *loop);
+  explicit S2Polygon(S2Loop* loop);
 
   // A map from each loop to its immediate children with respect to nesting.
   // This map is built during initialization of multi-loop polygons to
   // determine which are shells and which are holes, and then discarded.
-  typedef map<S2Loop *, vector<S2Loop *>> LoopMap;
+  typedef map<S2Loop*, vector<S2Loop*>> LoopMap;
 
   // Internal implementation of the Decode and DecodeWithinScope methods above.
   // The within_scope parameter specifies whether to call DecodeWithinScope
   // on the loops.
-  bool DecodeInternal(Decoder *const decoder, bool within_scope);
+  bool DecodeInternal(Decoder* const decoder, bool within_scope);
 
   // Internal implementation of intersect/subtract polyline functions above.
-  void InternalClipPolyline(bool invert, S2Polyline const *a,
-                            vector<S2Polyline *> *out,
+  void InternalClipPolyline(bool invert, S2Polyline const* a,
+                            vector<S2Polyline*>* out,
                             S1Angle vertex_merge_radius) const;
 
-  static void InsertLoop(S2Loop *new_loop, S2Loop *parent, LoopMap *loop_map);
-  static bool ContainsChild(S2Loop *a, S2Loop *b, LoopMap const &loop_map);
-  void InitLoop(S2Loop *loop, int depth, LoopMap *loop_map);
+  static void InsertLoop(S2Loop* new_loop, S2Loop* parent, LoopMap* loop_map);
+  static bool ContainsChild(S2Loop* a, S2Loop* b, LoopMap const& loop_map);
+  void InitLoop(S2Loop* loop, int depth, LoopMap* loop_map);
 
-  int ContainsOrCrosses(S2Loop const *b) const;
-  bool AnyLoopContains(S2Loop const *b) const;
-  bool ContainsAllShells(S2Polygon const *b) const;
-  bool ExcludesAllHoles(S2Polygon const *b) const;
-  bool IntersectsAnyShell(S2Polygon const *b) const;
-  bool IntersectsShell(S2Loop const *b) const;
+  int ContainsOrCrosses(S2Loop const* b) const;
+  bool AnyLoopContains(S2Loop const* b) const;
+  bool ContainsAllShells(S2Polygon const* b) const;
+  bool ExcludesAllHoles(S2Polygon const* b) const;
+  bool IntersectsAnyShell(S2Polygon const* b) const;
+  bool IntersectsShell(S2Loop const* b) const;
 
-  vector<S2Loop *> loops_;
+  vector<S2Loop*> loops_;
   S2LatLngRect bound_;
   char owns_loops_;
   char has_holes_;

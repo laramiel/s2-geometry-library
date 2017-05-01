@@ -38,17 +38,17 @@ class S2Cap : public S2Region {
   // Create a cap given its axis and the cap height, i.e. the maximum
   // projected distance along the cap axis from the cap center.
   // 'axis' should be a unit-length vector.
-  inline static S2Cap FromAxisHeight(S2Point const &axis, double height);
+  inline static S2Cap FromAxisHeight(S2Point const& axis, double height);
 
   // Create a cap given its axis and the cap opening angle, i.e. maximum
   // angle between the axis and a point on the cap.  'axis' should be a
   // unit-length vector, and 'angle' should be non-negative.  If 'angle' is
   // 180 degrees or larger, the cap will contain the entire unit sphere.
-  static S2Cap FromAxisAngle(S2Point const &axis, S1Angle const &angle);
+  static S2Cap FromAxisAngle(S2Point const& axis, S1Angle const& angle);
 
   // Create a cap given its axis and its area in steradians.  'axis' should be
   // a unit-length vector, and 'area' should be between 0 and 4 * M_PI.
-  inline static S2Cap FromAxisArea(S2Point const &axis, double area);
+  inline static S2Cap FromAxisArea(S2Point const& axis, double area);
 
   // Return an empty cap, i.e. a cap that contains no points.
   static S2Cap Empty() { return S2Cap(); }
@@ -59,7 +59,7 @@ class S2Cap : public S2Region {
   ~S2Cap() {}
 
   // Accessor methods.
-  S2Point const &axis() const { return axis_; }
+  S2Point const& axis() const { return axis_; }
   double height() const { return height_; }
   double area() const { return 2 * M_PI * max(0.0, height_); }
 
@@ -86,89 +86,89 @@ class S2Cap : public S2Region {
 
   // Return true if and only if this cap contains the given other cap
   // (in a set containment sense, e.g. every cap contains the empty cap).
-  bool Contains(S2Cap const &other) const;
+  bool Contains(S2Cap const& other) const;
 
   // Return true if and only if this cap intersects the given other cap,
   // i.e. whether they have any points in common.
-  bool Intersects(S2Cap const &other) const;
+  bool Intersects(S2Cap const& other) const;
 
   // Return true if and only if the interior of this cap intersects the
   // given other cap.  (This relationship is not symmetric, since only
   // the interior of this cap is used.)
-  bool InteriorIntersects(S2Cap const &other) const;
+  bool InteriorIntersects(S2Cap const& other) const;
 
   // Return true if and only if the given point is contained in the interior
   // of the region (i.e. the region excluding its boundary).  'p' should be
   // be a unit-length vector.
-  bool InteriorContains(S2Point const &p) const;
+  bool InteriorContains(S2Point const& p) const;
 
   // Increase the cap height if necessary to include the given point.
   // If the cap is empty the axis is set to the given point, but otherwise
   // it is left unchanged.  'p' should be a unit-length vector.
-  void AddPoint(S2Point const &p);
+  void AddPoint(S2Point const& p);
 
   // Increase the cap height if necessary to include "other".  If the current
   // cap is empty it is set to the given other cap.
-  void AddCap(S2Cap const &other);
+  void AddCap(S2Cap const& other);
 
   // Return a cap that contains all points within a given distance of this
   // cap.  Note that any expansion of the empty cap is still empty.
-  S2Cap Expanded(S1Angle const &distance) const;
+  S2Cap Expanded(S1Angle const& distance) const;
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2Cap *Clone() const;
+  virtual S2Cap* Clone() const;
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const &cell) const;
-  virtual bool MayIntersect(S2Cell const &cell) const;
-  virtual bool VirtualContainsPoint(S2Point const &p) const {
+  virtual bool Contains(S2Cell const& cell) const;
+  virtual bool MayIntersect(S2Cell const& cell) const;
+  virtual bool VirtualContainsPoint(S2Point const& p) const {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' should be a unit-length vector.
-  bool Contains(S2Point const &p) const;
+  bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder *const encoder) const {
+  virtual void Encode(Encoder* const encoder) const {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder *const decoder) { return false; }
+  virtual bool Decode(Decoder* const decoder) { return false; }
 
   ///////////////////////////////////////////////////////////////////////
   // The following static methods are convenience functions for assertions
   // and testing purposes only.
 
   // Return true if two caps are identical.
-  bool operator==(S2Cap const &other) const;
+  bool operator==(S2Cap const& other) const;
 
   // Return true if the cap axis and height differ by at most "max_error"
   // from the given cap "other".
-  bool ApproxEquals(S2Cap const &other, double max_error = 1e-14);
+  bool ApproxEquals(S2Cap const& other, double max_error = 1e-14);
 
  private:
-  S2Cap(S2Point const &axis, double height) : axis_(axis), height_(height) {
+  S2Cap(S2Point const& axis, double height) : axis_(axis), height_(height) {
     DCHECK(is_valid());
   }
 
   // Return true if the cap intersects 'cell', given that the cap
   // vertices have alrady been checked.
-  bool Intersects(S2Cell const &cell, S2Point const *vertices) const;
+  bool Intersects(S2Cell const& cell, S2Point const* vertices) const;
 
   S2Point axis_;
   double height_;
 };
 
-inline S2Cap S2Cap::FromAxisHeight(S2Point const &axis, double height) {
+inline S2Cap S2Cap::FromAxisHeight(S2Point const& axis, double height) {
   DCHECK(S2::IsUnitLength(axis));
   return S2Cap(axis, height);
 }
 
-inline S2Cap S2Cap::FromAxisArea(S2Point const &axis, double area) {
+inline S2Cap S2Cap::FromAxisArea(S2Point const& axis, double area) {
   DCHECK(S2::IsUnitLength(axis));
   return S2Cap(axis, area / (2 * M_PI));
 }
 
-ostream &operator<<(ostream &os, S2Cap const &cap);
+ostream& operator<<(ostream& os, S2Cap const& cap);
 
 #endif  // UTIL_GEOMETRY_S2CAP_H_

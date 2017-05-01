@@ -31,7 +31,7 @@ double GetHeightForAngle(double radians) {
 
 }  // namespace
 
-S2Cap S2Cap::FromAxisAngle(S2Point const &axis, S1Angle const &angle) {
+S2Cap S2Cap::FromAxisAngle(S2Point const& axis, S1Angle const& angle) {
   DCHECK(S2::IsUnitLength(axis));
   DCHECK_GE(angle.radians(), 0);
   return S2Cap(axis, GetHeightForAngle(angle.radians()));
@@ -52,20 +52,20 @@ S2Cap S2Cap::Complement() const {
   return S2Cap::FromAxisHeight(-axis_, height);
 }
 
-bool S2Cap::Contains(S2Cap const &other) const {
+bool S2Cap::Contains(S2Cap const& other) const {
   if (is_full() || other.is_empty()) return true;
   return angle().radians() >=
          axis_.Angle(other.axis_) + other.angle().radians();
 }
 
-bool S2Cap::Intersects(S2Cap const &other) const {
+bool S2Cap::Intersects(S2Cap const& other) const {
   if (is_empty() || other.is_empty()) return false;
 
   return (angle().radians() + other.angle().radians() >=
           axis_.Angle(other.axis_));
 }
 
-bool S2Cap::InteriorIntersects(S2Cap const &other) const {
+bool S2Cap::InteriorIntersects(S2Cap const& other) const {
   // Make sure this cap has an interior and the other cap is non-empty.
   if (height_ <= 0 || other.is_empty()) return false;
 
@@ -73,7 +73,7 @@ bool S2Cap::InteriorIntersects(S2Cap const &other) const {
           axis_.Angle(other.axis_));
 }
 
-void S2Cap::AddPoint(S2Point const &p) {
+void S2Cap::AddPoint(S2Point const& p) {
   // Compute the squared chord length, then convert it into a height.
   DCHECK(S2::IsUnitLength(p));
   if (is_empty()) {
@@ -88,7 +88,7 @@ void S2Cap::AddPoint(S2Point const &p) {
   }
 }
 
-void S2Cap::AddCap(S2Cap const &other) {
+void S2Cap::AddCap(S2Cap const& other) {
   if (is_empty()) {
     *this = other;
   } else {
@@ -99,13 +99,13 @@ void S2Cap::AddCap(S2Cap const &other) {
   }
 }
 
-S2Cap S2Cap::Expanded(S1Angle const &distance) const {
+S2Cap S2Cap::Expanded(S1Angle const& distance) const {
   DCHECK_GE(distance.radians(), 0);
   if (is_empty()) return Empty();
   return FromAxisAngle(axis_, angle() + distance);
 }
 
-S2Cap *S2Cap::Clone() const { return new S2Cap(*this); }
+S2Cap* S2Cap::Clone() const { return new S2Cap(*this); }
 
 S2Cap S2Cap::GetCapBound() const { return *this; }
 
@@ -156,7 +156,7 @@ S2LatLngRect S2Cap::GetRectBound() const {
   return S2LatLngRect(R1Interval(lat[0], lat[1]), S1Interval(lng[0], lng[1]));
 }
 
-bool S2Cap::Intersects(S2Cell const &cell, S2Point const *vertices) const {
+bool S2Cap::Intersects(S2Cell const& cell, S2Point const* vertices) const {
   // Return true if this cap intersects any point of 'cell' excluding its
   // vertices (which are assumed to already have been checked).
 
@@ -201,7 +201,7 @@ bool S2Cap::Intersects(S2Cell const &cell, S2Point const *vertices) const {
   return false;
 }
 
-bool S2Cap::Contains(S2Cell const &cell) const {
+bool S2Cap::Contains(S2Cell const& cell) const {
   // If the cap does not contain all cell vertices, return false.
   // We check the vertices before taking the Complement() because we can't
   // accurately represent the complement of a very small cap (a height
@@ -217,7 +217,7 @@ bool S2Cap::Contains(S2Cell const &cell) const {
   return !Complement().Intersects(cell, vertices);
 }
 
-bool S2Cap::MayIntersect(S2Cell const &cell) const {
+bool S2Cap::MayIntersect(S2Cell const& cell) const {
   // If the cap contains any cell vertex, return true.
   S2Point vertices[4];
   for (int k = 0; k < 4; ++k) {
@@ -227,22 +227,22 @@ bool S2Cap::MayIntersect(S2Cell const &cell) const {
   return Intersects(cell, vertices);
 }
 
-bool S2Cap::Contains(S2Point const &p) const {
+bool S2Cap::Contains(S2Point const& p) const {
   DCHECK(S2::IsUnitLength(p));
   return (axis_ - p).Norm2() <= 2 * height_;
 }
 
-bool S2Cap::InteriorContains(S2Point const &p) const {
+bool S2Cap::InteriorContains(S2Point const& p) const {
   DCHECK(S2::IsUnitLength(p));
   return is_full() || (axis_ - p).Norm2() < 2 * height_;
 }
 
-bool S2Cap::operator==(S2Cap const &other) const {
+bool S2Cap::operator==(S2Cap const& other) const {
   return (axis_ == other.axis_ && height_ == other.height_) ||
          (is_empty() && other.is_empty()) || (is_full() && other.is_full());
 }
 
-bool S2Cap::ApproxEquals(S2Cap const &other, double max_error) {
+bool S2Cap::ApproxEquals(S2Cap const& other, double max_error) {
   return (S2::ApproxEquals(axis_, other.axis_, max_error) &&
           fabs(height_ - other.height_) <= max_error) ||
          (is_empty() && other.height_ <= max_error) ||
@@ -251,6 +251,6 @@ bool S2Cap::ApproxEquals(S2Cap const &other, double max_error) {
          (other.is_full() && height_ >= 2 - max_error);
 }
 
-ostream &operator<<(ostream &os, S2Cap const &cap) {
+ostream& operator<<(ostream& os, S2Cap const& cap) {
   return os << "[Axis=" << cap.axis() << ", Angle=" << cap.angle() << "]";
 }

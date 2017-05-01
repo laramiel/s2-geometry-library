@@ -43,22 +43,22 @@ S2Polygon::S2Polygon()
       has_holes_(false),
       num_vertices_(0) {}
 
-S2Polygon::S2Polygon(vector<S2Loop *> *loops)
+S2Polygon::S2Polygon(vector<S2Loop*>* loops)
     : bound_(S2LatLngRect::Empty()), owns_loops_(true) {
   Init(loops);
 }
 
-S2Polygon::S2Polygon(S2Cell const &cell)
+S2Polygon::S2Polygon(S2Cell const& cell)
     : bound_(S2LatLngRect::Empty()),
       owns_loops_(true),
       has_holes_(false),
       num_vertices_(4) {
-  S2Loop *loop = new S2Loop(cell);
+  S2Loop* loop = new S2Loop(cell);
   bound_ = loop->GetRectBound();
   loops_.push_back(loop);
 }
 
-S2Polygon::S2Polygon(S2Loop *loop)
+S2Polygon::S2Polygon(S2Loop* loop)
     : bound_(loop->GetRectBound()),
       owns_loops_(false),
       has_holes_(false),
@@ -66,7 +66,7 @@ S2Polygon::S2Polygon(S2Loop *loop)
   loops_.push_back(loop);
 }
 
-void S2Polygon::Copy(S2Polygon const *src) {
+void S2Polygon::Copy(S2Polygon const* src) {
   DCHECK_EQ(0, num_loops());
   for (int i = 0; i < src->num_loops(); ++i) {
     loops_.push_back(src->loop(i)->Clone());
@@ -77,13 +77,13 @@ void S2Polygon::Copy(S2Polygon const *src) {
   num_vertices_ = src->num_vertices();
 }
 
-S2Polygon *S2Polygon::Clone() const {
-  S2Polygon *result = new S2Polygon;
+S2Polygon* S2Polygon::Clone() const {
+  S2Polygon* result = new S2Polygon;
   result->Copy(this);
   return result;
 }
 
-void S2Polygon::Release(vector<S2Loop *> *loops) {
+void S2Polygon::Release(vector<S2Loop*>* loops) {
   if (loops != NULL) {
     loops->insert(loops->end(), loops_.begin(), loops_.end());
   }
@@ -92,7 +92,7 @@ void S2Polygon::Release(vector<S2Loop *> *loops) {
   has_holes_ = false;
 }
 
-static void DeleteLoopsInVector(vector<S2Loop *> *loops) {
+static void DeleteLoopsInVector(vector<S2Loop*>* loops) {
   for (int i = 0; i < loops->size(); ++i) {
     delete loops->at(i);
   }
@@ -114,7 +114,7 @@ namespace __gnu_cxx {
 
 template <>
 struct hash<S2PointPair> {
-  size_t operator()(S2PointPair const &p) const {
+  size_t operator()(S2PointPair const& p) const {
     hash<S2Point> h;
     return h(p.first) + (h(p.second) << 1);
   }
@@ -122,12 +122,12 @@ struct hash<S2PointPair> {
 
 }  // namespace __gnu_cxx
 
-bool S2Polygon::IsValid(const vector<S2Loop *> &loops) {
+bool S2Polygon::IsValid(const vector<S2Loop*>& loops) {
   // If a loop contains an edge AB, then no other loop may contain AB or BA.
   if (loops.size() > 1) {
     hash_map<S2PointPair, pair<int, int>> edges;
     for (int i = 0; i < loops.size(); ++i) {
-      S2Loop *lp = loops[i];
+      S2Loop* lp = loops[i];
       for (int j = 0; j < lp->num_vertices(); ++j) {
         S2PointPair key = make_pair(lp->vertex(j), lp->vertex(j + 1));
         if (edges.insert(make_pair(key, make_pair(i, j))).second) {
@@ -175,11 +175,11 @@ bool S2Polygon::IsValid(bool check_loops, int max_adjacent) const {
   return IsValid();
 }
 
-void S2Polygon::InsertLoop(S2Loop *new_loop, S2Loop *parent,
-                           LoopMap *loop_map) {
-  vector<S2Loop *> *children = &(*loop_map)[parent];
+void S2Polygon::InsertLoop(S2Loop* new_loop, S2Loop* parent,
+                           LoopMap* loop_map) {
+  vector<S2Loop*>* children = &(*loop_map)[parent];
   for (int i = 0; i < children->size(); ++i) {
-    S2Loop *child = (*children)[i];
+    S2Loop* child = (*children)[i];
     if (child->ContainsNested(new_loop)) {
       InsertLoop(new_loop, child, loop_map);
       return;
@@ -191,9 +191,9 @@ void S2Polygon::InsertLoop(S2Loop *new_loop, S2Loop *parent,
 
   // Some of the children of the parent loop may now be children of
   // the new loop.
-  vector<S2Loop *> *new_children = &(*loop_map)[new_loop];
+  vector<S2Loop*>* new_children = &(*loop_map)[new_loop];
   for (int i = 0; i < children->size();) {
-    S2Loop *child = (*children)[i];
+    S2Loop* child = (*children)[i];
     if (new_loop->ContainsNested(child)) {
       new_children->push_back(child);
       children->erase(children->begin() + i);
@@ -204,30 +204,30 @@ void S2Polygon::InsertLoop(S2Loop *new_loop, S2Loop *parent,
   children->push_back(new_loop);
 }
 
-void S2Polygon::InitLoop(S2Loop *loop, int depth, LoopMap *loop_map) {
+void S2Polygon::InitLoop(S2Loop* loop, int depth, LoopMap* loop_map) {
   if (loop) {
     loop->set_depth(depth);
     loops_.push_back(loop);
   }
-  vector<S2Loop *> const &children = (*loop_map)[loop];
+  vector<S2Loop*> const& children = (*loop_map)[loop];
   for (int i = 0; i < children.size(); ++i) {
     InitLoop(children[i], depth + 1, loop_map);
   }
 }
 
-bool S2Polygon::ContainsChild(S2Loop *a, S2Loop *b, LoopMap const &loop_map) {
+bool S2Polygon::ContainsChild(S2Loop* a, S2Loop* b, LoopMap const& loop_map) {
   // This function is just used to verify that the loop map was
   // constructed correctly.
 
   if (a == b) return true;
-  vector<S2Loop *> const &children = loop_map.find(a)->second;
+  vector<S2Loop*> const& children = loop_map.find(a)->second;
   for (int i = 0; i < children.size(); ++i) {
     if (ContainsChild(children[i], b, loop_map)) return true;
   }
   return false;
 }
 
-void S2Polygon::Init(vector<S2Loop *> *loops) {
+void S2Polygon::Init(vector<S2Loop*>* loops) {
   if (FLAGS_s2debug) {
     CHECK(IsValid(*loops));
   }
@@ -300,7 +300,7 @@ S2Point S2Polygon::GetCentroid() const {
   return centroid;
 }
 
-int S2Polygon::ContainsOrCrosses(S2Loop const *b) const {
+int S2Polygon::ContainsOrCrosses(S2Loop const* b) const {
   bool inside = false;
   for (int i = 0; i < num_loops(); ++i) {
     int result = loop(i)->ContainsOrCrosses(b);
@@ -311,7 +311,7 @@ int S2Polygon::ContainsOrCrosses(S2Loop const *b) const {
                                     // polygon.
 }
 
-bool S2Polygon::AnyLoopContains(S2Loop const *b) const {
+bool S2Polygon::AnyLoopContains(S2Loop const* b) const {
   // Return true if any loop contains the given loop.
   for (int i = 0; i < num_loops(); ++i) {
     if (loop(i)->Contains(b)) return true;
@@ -319,7 +319,7 @@ bool S2Polygon::AnyLoopContains(S2Loop const *b) const {
   return false;
 }
 
-bool S2Polygon::ContainsAllShells(S2Polygon const *b) const {
+bool S2Polygon::ContainsAllShells(S2Polygon const* b) const {
   // Return true if this polygon (A) contains all the shells of B.
   for (int j = 0; j < b->num_loops(); ++j) {
     if (b->loop(j)->sign() < 0) continue;
@@ -331,7 +331,7 @@ bool S2Polygon::ContainsAllShells(S2Polygon const *b) const {
   return true;
 }
 
-bool S2Polygon::ExcludesAllHoles(S2Polygon const *b) const {
+bool S2Polygon::ExcludesAllHoles(S2Polygon const* b) const {
   // Return true if this polygon (A) excludes (i.e. does not intersect)
   // all holes of B.
   for (int j = 0; j < b->num_loops(); ++j) {
@@ -344,7 +344,7 @@ bool S2Polygon::ExcludesAllHoles(S2Polygon const *b) const {
   return true;
 }
 
-bool S2Polygon::IntersectsAnyShell(S2Polygon const *b) const {
+bool S2Polygon::IntersectsAnyShell(S2Polygon const* b) const {
   // Return true if this polygon (A) intersects any shell of B.
   for (int j = 0; j < b->num_loops(); ++j) {
     if (b->loop(j)->sign() < 0) continue;
@@ -353,7 +353,7 @@ bool S2Polygon::IntersectsAnyShell(S2Polygon const *b) const {
   return false;
 }
 
-bool S2Polygon::IntersectsShell(S2Loop const *b) const {
+bool S2Polygon::IntersectsShell(S2Loop const* b) const {
   bool inside = false;
   for (int i = 0; i < num_loops(); ++i) {
     if (loop(i)->Contains(b)) {
@@ -369,7 +369,7 @@ bool S2Polygon::IntersectsShell(S2Loop const *b) const {
   return inside;
 }
 
-bool S2Polygon::Contains(S2Polygon const *b) const {
+bool S2Polygon::Contains(S2Polygon const* b) const {
   // If both polygons have one loop, use the more efficient S2Loop method.
   // Note that S2Loop::Contains does its own bounding rectangle check.
   if (num_loops() == 1 && b->num_loops() == 1) {
@@ -404,7 +404,7 @@ bool S2Polygon::Contains(S2Polygon const *b) const {
   return ContainsAllShells(b) && b->ExcludesAllHoles(this);
 }
 
-bool S2Polygon::Intersects(S2Polygon const *b) const {
+bool S2Polygon::Intersects(S2Polygon const* b) const {
   // A.Intersects(B) if and only if !Complement(A).Contains(B).  However,
   // implementing a Complement() operation is trickier than it sounds,
   // and in any case it's more efficient to test for intersection directly.
@@ -436,7 +436,7 @@ bool S2Polygon::Intersects(S2Polygon const *b) const {
 
 S2Cap S2Polygon::GetCapBound() const { return bound_.GetCapBound(); }
 
-bool S2Polygon::Contains(S2Cell const &cell) const {
+bool S2Polygon::Contains(S2Cell const& cell) const {
   if (num_loops() == 1) {
     return loop(0)->Contains(cell);
   }
@@ -454,14 +454,14 @@ bool S2Polygon::Contains(S2Cell const &cell) const {
   return contains;
 }
 
-bool S2Polygon::ApproxContains(S2Polygon const *b,
+bool S2Polygon::ApproxContains(S2Polygon const* b,
                                S1Angle vertex_merge_radius) const {
   S2Polygon difference;
   difference.InitToDifferenceSloppy(b, this, vertex_merge_radius);
   return difference.num_loops() == 0;
 }
 
-bool S2Polygon::MayIntersect(S2Cell const &cell) const {
+bool S2Polygon::MayIntersect(S2Cell const& cell) const {
   if (num_loops() == 1) {
     return loop(0)->MayIntersect(cell);
   }
@@ -476,11 +476,11 @@ bool S2Polygon::MayIntersect(S2Cell const &cell) const {
   return intersects;
 }
 
-bool S2Polygon::VirtualContainsPoint(S2Point const &p) const {
+bool S2Polygon::VirtualContainsPoint(S2Point const& p) const {
   return Contains(p);  // The same as Contains() below, just virtual.
 }
 
-bool S2Polygon::Contains(S2Point const &p) const {
+bool S2Polygon::Contains(S2Point const& p) const {
   if (num_loops() == 1) {
     return loop(0)->Contains(p);  // Optimization.
   }
@@ -493,7 +493,7 @@ bool S2Polygon::Contains(S2Point const &p) const {
   return inside;
 }
 
-void S2Polygon::Encode(Encoder *const encoder) const {
+void S2Polygon::Encode(Encoder* const encoder) const {
   encoder->Ensure(10);  // Sufficient
   encoder->put8(kCurrentEncodingVersionNumber);
   encoder->put8(owns_loops_);
@@ -507,15 +507,15 @@ void S2Polygon::Encode(Encoder *const encoder) const {
   bound_.Encode(encoder);
 }
 
-bool S2Polygon::Decode(Decoder *const decoder) {
+bool S2Polygon::Decode(Decoder* const decoder) {
   return DecodeInternal(decoder, false);
 }
 
-bool S2Polygon::DecodeWithinScope(Decoder *const decoder) {
+bool S2Polygon::DecodeWithinScope(Decoder* const decoder) {
   return DecodeInternal(decoder, true);
 }
 
-bool S2Polygon::DecodeInternal(Decoder *const decoder, bool within_scope) {
+bool S2Polygon::DecodeInternal(Decoder* const decoder, bool within_scope) {
   unsigned char version = decoder->get8();
   if (version > kCurrentEncodingVersionNumber) return false;
 
@@ -570,29 +570,29 @@ class S2LoopSequenceIndex : public S2EdgeIndex {
     num_loops_++;
   }
 
-  inline void DecodeIndex(int index, int *loop_index,
-                          int *vertex_in_loop) const {
+  inline void DecodeIndex(int index, int* loop_index,
+                          int* vertex_in_loop) const {
     *loop_index = index_to_loop_[index];
     *vertex_in_loop = index - loop_to_first_index_[*loop_index];
   }
 
   // It is faster to return both vertices at once.  It makes a difference
   // for small polygons.
-  virtual void EdgeFromTo(int index, S2Point const **from,
-                          S2Point const **to) const = 0;
+  virtual void EdgeFromTo(int index, S2Point const** from,
+                          S2Point const** to) const = 0;
 
   int num_edges() const { return num_edges_; }
 
-  virtual S2Point const *edge_from(int index) const {
-    S2Point const *from;
-    S2Point const *to;
+  virtual S2Point const* edge_from(int index) const {
+    S2Point const* from;
+    S2Point const* to;
     EdgeFromTo(index, &from, &to);
     return from;
   }
 
-  virtual S2Point const *edge_to(int index) const {
-    S2Point const *from;
-    S2Point const *to;
+  virtual S2Point const* edge_to(int index) const {
+    S2Point const* from;
+    S2Point const* to;
     EdgeFromTo(index, &from, &to);
     return to;
   }
@@ -616,7 +616,7 @@ class S2LoopSequenceIndex : public S2EdgeIndex {
 // Indexing structure for an S2Polygon.
 class S2PolygonIndex : public S2LoopSequenceIndex {
  public:
-  S2PolygonIndex(S2Polygon const *poly, bool reverse)
+  S2PolygonIndex(S2Polygon const* poly, bool reverse)
       : poly_(poly), reverse_(reverse) {
     for (int iloop = 0; iloop < poly_->num_loops(); ++iloop) {
       AddLoop(poly_->loop(iloop)->num_vertices());
@@ -625,12 +625,12 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
 
   virtual ~S2PolygonIndex() {}
 
-  virtual void EdgeFromTo(int index, S2Point const **from,
-                          S2Point const **to) const {
+  virtual void EdgeFromTo(int index, S2Point const** from,
+                          S2Point const** to) const {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);
-    S2Loop const *loop(poly_->loop(loop_index));
+    S2Loop const* loop(poly_->loop(loop_index));
     int from_index, to_index;
     if (loop->is_hole() ^ reverse_) {
       from_index = loop->num_vertices() - 1 - vertex_in_loop;
@@ -644,7 +644,7 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
   }
 
  private:
-  S2Polygon const *poly_;
+  S2Polygon const* poly_;
   bool reverse_;
 };
 
@@ -658,32 +658,32 @@ class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
   S2LoopsAsVectorsIndex() {}
   ~S2LoopsAsVectorsIndex() {}
 
-  void AddVector(vector<S2Point> const *v) {
+  void AddVector(vector<S2Point> const* v) {
     loops_.push_back(v);
     AddLoop(v->size());
   }
 
-  virtual void EdgeFromTo(int index, S2Point const **from,
-                          S2Point const **to) const {
+  virtual void EdgeFromTo(int index, S2Point const** from,
+                          S2Point const** to) const {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);
-    vector<S2Point> const *loop = loops_[loop_index];
+    vector<S2Point> const* loop = loops_[loop_index];
     *from = &loop->at(vertex_in_loop);
     *to =
         &loop->at(vertex_in_loop == loop->size() - 1 ? 0 : vertex_in_loop + 1);
   }
 
  private:
-  vector<vector<S2Point> const *> loops_;
+  vector<vector<S2Point> const*> loops_;
 };
 
 typedef vector<pair<double, S2Point>> IntersectionSet;
 
-static void AddIntersection(S2Point const &a0, S2Point const &a1,
-                            S2Point const &b0, S2Point const &b1,
+static void AddIntersection(S2Point const& a0, S2Point const& a1,
+                            S2Point const& b0, S2Point const& b1,
                             bool add_shared_edges, int crossing,
-                            IntersectionSet *intersections) {
+                            IntersectionSet* intersections) {
   if (crossing > 0) {
     // There is a proper edge crossing.
     S2Point x = S2EdgeUtil::GetIntersection(a0, a1, b0, b1);
@@ -708,19 +708,19 @@ static void AddIntersection(S2Point const &a0, S2Point const &a1,
   }
 }
 
-static void ClipEdge(S2Point const &a0, S2Point const &a1,
-                     S2LoopSequenceIndex *b_index, bool add_shared_edges,
-                     IntersectionSet *intersections) {
+static void ClipEdge(S2Point const& a0, S2Point const& a1,
+                     S2LoopSequenceIndex* b_index, bool add_shared_edges,
+                     IntersectionSet* intersections) {
   // Find all points where the polygon B intersects the edge (a0,a1),
   // and add the corresponding parameter values (in the range [0,1]) to
   // "intersections".
   S2LoopSequenceIndex::Iterator it(b_index);
   it.GetCandidates(a0, a1);
   S2EdgeUtil::EdgeCrosser crosser(&a0, &a1, &a0);
-  S2Point const *from;
-  S2Point const *to = NULL;
+  S2Point const* from;
+  S2Point const* to = NULL;
   for (; !it.Done(); it.Next()) {
-    S2Point const *const previous_to = to;
+    S2Point const* const previous_to = to;
     b_index->EdgeFromTo(it.Index(), &from, &to);
     if (previous_to != from) crosser.RestartAt(from);
     int crossing = crosser.RobustCrossing(to);
@@ -730,9 +730,9 @@ static void ClipEdge(S2Point const &a0, S2Point const &a1,
   }
 }
 
-static void ClipBoundary(S2Polygon const *a, bool reverse_a, S2Polygon const *b,
+static void ClipBoundary(S2Polygon const* a, bool reverse_a, S2Polygon const* b,
                          bool reverse_b, bool invert_b, bool add_shared_edges,
-                         S2PolygonBuilder *builder) {
+                         S2PolygonBuilder* builder) {
   // Clip the boundary of A to the interior of B, and add the resulting edges
   // to "builder".  Shells are directed CCW and holes are directed clockwise,
   // unless "reverse_a" or "reverse_b" is true in which case these directions
@@ -747,13 +747,13 @@ static void ClipBoundary(S2Polygon const *a, bool reverse_a, S2Polygon const *b,
 
   IntersectionSet intersections;
   for (int i = 0; i < a->num_loops(); ++i) {
-    S2Loop *a_loop = a->loop(i);
+    S2Loop* a_loop = a->loop(i);
     int n = a_loop->num_vertices();
     int dir = (a_loop->is_hole() ^ reverse_a) ? -1 : 1;
     bool inside = b->Contains(a_loop->vertex(0)) ^ invert_b;
     for (int j = (dir > 0) ? 0 : n; n > 0; --n, j += dir) {
-      S2Point const &a0 = a_loop->vertex(j);
-      S2Point const &a1 = a_loop->vertex(j + dir);
+      S2Point const& a0 = a_loop->vertex(j);
+      S2Point const& a1 = a_loop->vertex(j + dir);
       intersections.clear();
       ClipEdge(a0, a1, &b_index, add_shared_edges, &intersections);
 
@@ -770,11 +770,11 @@ static void ClipBoundary(S2Polygon const *a, bool reverse_a, S2Polygon const *b,
   }
 }
 
-void S2Polygon::InitToIntersection(S2Polygon const *a, S2Polygon const *b) {
+void S2Polygon::InitToIntersection(S2Polygon const* a, S2Polygon const* b) {
   InitToIntersectionSloppy(a, b, S2EdgeUtil::kIntersectionTolerance);
 }
 
-void S2Polygon::InitToIntersectionSloppy(S2Polygon const *a, S2Polygon const *b,
+void S2Polygon::InitToIntersectionSloppy(S2Polygon const* a, S2Polygon const* b,
                                          S1Angle vertex_merge_radius) {
   DCHECK_EQ(0, num_loops());
   if (!a->bound_.Intersects(b->bound_)) return;
@@ -793,11 +793,11 @@ void S2Polygon::InitToIntersectionSloppy(S2Polygon const *a, S2Polygon const *b,
   }
 }
 
-void S2Polygon::InitToUnion(S2Polygon const *a, S2Polygon const *b) {
+void S2Polygon::InitToUnion(S2Polygon const* a, S2Polygon const* b) {
   InitToUnionSloppy(a, b, S2EdgeUtil::kIntersectionTolerance);
 }
 
-void S2Polygon::InitToUnionSloppy(S2Polygon const *a, S2Polygon const *b,
+void S2Polygon::InitToUnionSloppy(S2Polygon const* a, S2Polygon const* b,
                                   S1Angle vertex_merge_radius) {
   DCHECK_EQ(0, num_loops());
 
@@ -815,11 +815,11 @@ void S2Polygon::InitToUnionSloppy(S2Polygon const *a, S2Polygon const *b,
   }
 }
 
-void S2Polygon::InitToDifference(S2Polygon const *a, S2Polygon const *b) {
+void S2Polygon::InitToDifference(S2Polygon const* a, S2Polygon const* b) {
   InitToDifferenceSloppy(a, b, S2EdgeUtil::kIntersectionTolerance);
 }
 
-void S2Polygon::InitToDifferenceSloppy(S2Polygon const *a, S2Polygon const *b,
+void S2Polygon::InitToDifferenceSloppy(S2Polygon const* a, S2Polygon const* b,
                                        S1Angle vertex_merge_radius) {
   DCHECK_EQ(0, num_loops());
 
@@ -839,7 +839,7 @@ void S2Polygon::InitToDifferenceSloppy(S2Polygon const *a, S2Polygon const *b,
 
 // Takes a loop and simplifies it.  This may return a self-intersecting
 // polyline.  Always keeps the first vertex from the loop.
-vector<S2Point> *SimplifyLoopAsPolyline(S2Loop const *loop, S1Angle tolerance) {
+vector<S2Point>* SimplifyLoopAsPolyline(S2Loop const* loop, S1Angle tolerance) {
   vector<S2Point> points(loop->num_vertices() + 1);
   // Add the first vertex at the beginning and at the end.
   for (int i = 0; i <= loop->num_vertices(); ++i) {
@@ -850,7 +850,7 @@ vector<S2Point> *SimplifyLoopAsPolyline(S2Loop const *loop, S1Angle tolerance) {
   line.SubsampleVertices(tolerance, &indices);
   if (indices.size() <= 2) return NULL;
   // Add them all except the last: it is the same as the first.
-  vector<S2Point> *simplified_line = new vector<S2Point>(indices.size() - 1);
+  vector<S2Point>* simplified_line = new vector<S2Point>(indices.size() - 1);
   VLOG(4) << "Now simplified to: ";
   for (int i = 0; i + 1 < indices.size(); ++i) {
     (*simplified_line)[i] = line.vertex(indices[i]);
@@ -862,12 +862,12 @@ vector<S2Point> *SimplifyLoopAsPolyline(S2Loop const *loop, S1Angle tolerance) {
 // Takes a set of possibly intersecting edges, stored in an
 // S2EdgeIndex.  Breaks the edges into small pieces so that there is
 // no intersection anymore, and adds all these edges to the builder.
-void BreakEdgesAndAddToBuilder(S2LoopsAsVectorsIndex *edge_index,
-                               S2PolygonBuilder *builder) {
+void BreakEdgesAndAddToBuilder(S2LoopsAsVectorsIndex* edge_index,
+                               S2PolygonBuilder* builder) {
   // If there are self intersections, we add the pieces separately.
   for (int i = 0; i < edge_index->num_edges(); ++i) {
-    S2Point const *from;
-    S2Point const *to;
+    S2Point const* from;
+    S2Point const* to;
     edge_index->EdgeFromTo(i, &from, &to);
 
     IntersectionSet intersections;
@@ -892,7 +892,7 @@ void BreakEdgesAndAddToBuilder(S2LoopsAsVectorsIndex *edge_index,
 //   2. Break any edge in pieces such that no piece intersects any
 //      other.
 //   3. Use the polygon builder to regenerate the full polygon.
-void S2Polygon::InitToSimplified(S2Polygon const *a, S1Angle tolerance) {
+void S2Polygon::InitToSimplified(S2Polygon const* a, S1Angle tolerance) {
   S2PolygonBuilderOptions builder_options =
       S2PolygonBuilderOptions::UNDIRECTED_XOR();
   builder_options.set_validate(false);
@@ -907,9 +907,9 @@ void S2Polygon::InitToSimplified(S2Polygon const *a, S1Angle tolerance) {
 
   // Simplify each loop separately and add to the edge index
   S2LoopsAsVectorsIndex index;
-  vector<vector<S2Point> *> simplified_loops;
+  vector<vector<S2Point>*> simplified_loops;
   for (int i = 0; i < a->num_loops(); ++i) {
-    vector<S2Point> *simpler = SimplifyLoopAsPolyline(a->loop(i), tolerance);
+    vector<S2Point>* simpler = SimplifyLoopAsPolyline(a->loop(i), tolerance);
     if (NULL == simpler) continue;
     simplified_loops.push_back(simpler);
     index.AddVector(simpler);
@@ -928,8 +928,8 @@ void S2Polygon::InitToSimplified(S2Polygon const *a, S1Angle tolerance) {
   simplified_loops.clear();
 }
 
-void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
-                                     vector<S2Polyline *> *out,
+void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const* a,
+                                     vector<S2Polyline*>* out,
                                      S1Angle merge_radius) const {
   // Clip the polyline A to the interior of this polygon.
   // The resulting polyline(s) will be appended to 'out'.
@@ -953,8 +953,8 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
   int n = a->num_vertices();
   bool inside = Contains(a->vertex(0)) ^ invert;
   for (int j = 0; j < n - 1; j++) {
-    S2Point const &a0 = a->vertex(j);
-    S2Point const &a1 = a->vertex(j + 1);
+    S2Point const& a0 = a->vertex(j);
+    S2Point const& a1 = a->vertex(j + 1);
     ClipEdge(a0, a1, &poly_index, true, &intersections);
     if (inside) intersections.push_back(make_pair(0, a0));
     inside = (intersections.size() & 1);
@@ -965,8 +965,8 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
     // the edge(s) obtained after clipping (a0,a1) against the polygon.
     for (int k = 0; k < intersections.size(); k += 2) {
       if (intersections[k] == intersections[k + 1]) continue;
-      S2Point const &v0 = intersections[k].second;
-      S2Point const &v1 = intersections[k + 1].second;
+      S2Point const& v0 = intersections[k].second;
+      S2Point const& v1 = intersections[k + 1].second;
 
       // If the gap from the previous vertex to this one is large
       // enough, start a new polyline.
@@ -989,38 +989,38 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
   }
 }
 
-void S2Polygon::IntersectWithPolyline(S2Polyline const *a,
-                                      vector<S2Polyline *> *out) const {
+void S2Polygon::IntersectWithPolyline(S2Polyline const* a,
+                                      vector<S2Polyline*>* out) const {
   IntersectWithPolylineSloppy(a, out, S2EdgeUtil::kIntersectionTolerance);
 }
 
-void S2Polygon::IntersectWithPolylineSloppy(S2Polyline const *a,
-                                            vector<S2Polyline *> *out,
+void S2Polygon::IntersectWithPolylineSloppy(S2Polyline const* a,
+                                            vector<S2Polyline*>* out,
                                             S1Angle vertex_merge_radius) const {
   InternalClipPolyline(false, a, out, vertex_merge_radius);
 }
 
-void S2Polygon::SubtractFromPolyline(S2Polyline const *a,
-                                     vector<S2Polyline *> *out) const {
+void S2Polygon::SubtractFromPolyline(S2Polyline const* a,
+                                     vector<S2Polyline*>* out) const {
   SubtractFromPolylineSloppy(a, out, S2EdgeUtil::kIntersectionTolerance);
 }
 
-void S2Polygon::SubtractFromPolylineSloppy(S2Polyline const *a,
-                                           vector<S2Polyline *> *out,
+void S2Polygon::SubtractFromPolylineSloppy(S2Polyline const* a,
+                                           vector<S2Polyline*>* out,
                                            S1Angle vertex_merge_radius) const {
   InternalClipPolyline(true, a, out, vertex_merge_radius);
 }
 
-S2Polygon *S2Polygon::DestructiveUnion(vector<S2Polygon *> *polygons) {
+S2Polygon* S2Polygon::DestructiveUnion(vector<S2Polygon*>* polygons) {
   return DestructiveUnionSloppy(polygons, S2EdgeUtil::kIntersectionTolerance);
 }
 
-S2Polygon *S2Polygon::DestructiveUnionSloppy(vector<S2Polygon *> *polygons,
+S2Polygon* S2Polygon::DestructiveUnionSloppy(vector<S2Polygon*>* polygons,
                                              S1Angle vertex_merge_radius) {
   // Effectively create a priority queue of polygons in order of number of
   // vertices.  Repeatedly union the two smallest polygons and add the result
   // to the queue until we have a single polygon to return.
-  typedef multimap<int, S2Polygon *> QueueType;
+  typedef multimap<int, S2Polygon*> QueueType;
   QueueType queue;  // Map from # of vertices to polygon.
   for (int i = 0; i < polygons->size(); ++i)
     queue.insert(make_pair((*polygons)[i]->num_vertices(), (*polygons)[i]));
@@ -1030,15 +1030,15 @@ S2Polygon *S2Polygon::DestructiveUnionSloppy(vector<S2Polygon *> *polygons,
     // Pop two simplest polygons from queue.
     QueueType::iterator smallest_it = queue.begin();
     int a_size = smallest_it->first;
-    S2Polygon *a_polygon = smallest_it->second;
+    S2Polygon* a_polygon = smallest_it->second;
     queue.erase(smallest_it);
     smallest_it = queue.begin();
     int b_size = smallest_it->first;
-    S2Polygon *b_polygon = smallest_it->second;
+    S2Polygon* b_polygon = smallest_it->second;
     queue.erase(smallest_it);
 
     // Union and add result back to queue.
-    S2Polygon *union_polygon = new S2Polygon();
+    S2Polygon* union_polygon = new S2Polygon();
     union_polygon->InitToUnionSloppy(a_polygon, b_polygon, vertex_merge_radius);
     delete a_polygon;
     delete b_polygon;
@@ -1055,7 +1055,7 @@ S2Polygon *S2Polygon::DestructiveUnionSloppy(vector<S2Polygon *> *polygons,
     return queue.begin()->second;
 }
 
-void S2Polygon::InitToCellUnionBorder(S2CellUnion const &cells) {
+void S2Polygon::InitToCellUnionBorder(S2CellUnion const& cells) {
   // Use a polygon builder to union the cells in the union.  Due to rounding
   // errors, we can't do an exact union - when a small cell is adjacent to a
   // larger cell, the shared edges can fail to line up exactly.  Two cell edges
@@ -1077,11 +1077,11 @@ void S2Polygon::InitToCellUnionBorder(S2CellUnion const &cells) {
 
 bool S2Polygon::IsNormalized() const {
   set<S2Point> vertices;
-  S2Loop *last_parent = NULL;
+  S2Loop* last_parent = NULL;
   for (int i = 0; i < num_loops(); ++i) {
-    S2Loop *child = loop(i);
+    S2Loop* child = loop(i);
     if (child->depth() == 0) continue;
-    S2Loop *parent = loop(GetParent(i));
+    S2Loop* parent = loop(GetParent(i));
     if (parent != last_parent) {
       vertices.clear();
       for (int j = 0; j < parent->num_vertices(); ++j) {
@@ -1098,14 +1098,14 @@ bool S2Polygon::IsNormalized() const {
   return true;
 }
 
-bool S2Polygon::BoundaryEquals(S2Polygon const *b) const {
+bool S2Polygon::BoundaryEquals(S2Polygon const* b) const {
   if (num_loops() != b->num_loops()) return false;
 
   for (int i = 0; i < num_loops(); ++i) {
-    S2Loop *a_loop = loop(i);
+    S2Loop* a_loop = loop(i);
     bool success = false;
     for (int j = 0; j < num_loops(); ++j) {
-      S2Loop *b_loop = b->loop(j);
+      S2Loop* b_loop = b->loop(j);
       if ((b_loop->depth() == a_loop->depth()) &&
           b_loop->BoundaryEquals(a_loop)) {
         success = true;
@@ -1117,7 +1117,7 @@ bool S2Polygon::BoundaryEquals(S2Polygon const *b) const {
   return true;
 }
 
-bool S2Polygon::BoundaryApproxEquals(S2Polygon const *b,
+bool S2Polygon::BoundaryApproxEquals(S2Polygon const* b,
                                      double max_error) const {
   if (num_loops() != b->num_loops()) return false;
 
@@ -1125,10 +1125,10 @@ bool S2Polygon::BoundaryApproxEquals(S2Polygon const *b,
   // loop.  (So far this method is just used for testing.)
 
   for (int i = 0; i < num_loops(); ++i) {
-    S2Loop *a_loop = loop(i);
+    S2Loop* a_loop = loop(i);
     bool success = false;
     for (int j = 0; j < num_loops(); ++j) {
-      S2Loop *b_loop = b->loop(j);
+      S2Loop* b_loop = b->loop(j);
       if (b_loop->depth() == a_loop->depth() &&
           b_loop->BoundaryApproxEquals(a_loop, max_error)) {
         success = true;
@@ -1140,17 +1140,17 @@ bool S2Polygon::BoundaryApproxEquals(S2Polygon const *b,
   return true;
 }
 
-bool S2Polygon::BoundaryNear(S2Polygon const *b, double max_error) const {
+bool S2Polygon::BoundaryNear(S2Polygon const* b, double max_error) const {
   if (num_loops() != b->num_loops()) return false;
 
   // For now, we assume that there is at most one candidate match for each
   // loop.  (So far this method is just used for testing.)
 
   for (int i = 0; i < num_loops(); ++i) {
-    S2Loop *a_loop = loop(i);
+    S2Loop* a_loop = loop(i);
     bool success = false;
     for (int j = 0; j < num_loops(); ++j) {
-      S2Loop *b_loop = b->loop(j);
+      S2Loop* b_loop = b->loop(j);
       if (b_loop->depth() == a_loop->depth() &&
           b_loop->BoundaryNear(a_loop, max_error)) {
         success = true;
@@ -1162,7 +1162,7 @@ bool S2Polygon::BoundaryNear(S2Polygon const *b, double max_error) const {
   return true;
 }
 
-S2Point S2Polygon::Project(S2Point const &point) const {
+S2Point S2Polygon::Project(S2Point const& point) const {
   DCHECK(!loops_.empty());
 
   if (Contains(point)) {
@@ -1174,7 +1174,7 @@ S2Point S2Polygon::Project(S2Point const &point) const {
   int min_vertex_index = 0;
 
   for (int l = 0; l < num_loops(); ++l) {
-    S2Loop *a_loop = loop(l);
+    S2Loop* a_loop = loop(l);
     for (int v = 0; v < a_loop->num_vertices(); ++v) {
       S1Angle distance_to_segment = S2EdgeUtil::GetDistance(
           point, a_loop->vertex(v), a_loop->vertex(v + 1));

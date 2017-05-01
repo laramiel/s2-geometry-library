@@ -37,9 +37,9 @@ static const uint64 MIX64 = GG_ULONGLONG(0x2b992ddfa23249d6);  // more of pi
 // ----------------------------------------------------------------------
 
 // These slow down a lot if inlined, so do not inline them  --Sanjay
-extern uint32 Hash32StringWithSeed(const char *s, uint32 len, uint32 c);
-extern uint64 Hash64StringWithSeed(const char *s, uint32 len, uint64 c);
-extern uint32 Hash32StringWithSeedReferenceImplementation(const char *s,
+extern uint32 Hash32StringWithSeed(const char* s, uint32 len, uint32 c);
+extern uint64 Hash64StringWithSeed(const char* s, uint32 len, uint64 c);
+extern uint32 Hash32StringWithSeedReferenceImplementation(const char* s,
                                                           uint32 len, uint32 c);
 // ----------------------------------------------------------------------
 // HashTo32()
@@ -97,9 +97,9 @@ inline uint64 Hash64NumWithSeed(uint64 num, uint64 c) {
 // HashToXX(char c);
 // etc
 
-HASH_TO((const char *s, uint32 slen), Hash32StringWithSeed(s, slen, MIX32))
-HASH_TO((const wchar_t *s, uint32 slen),
-        Hash32StringWithSeed(reinterpret_cast<const char *>(s),
+HASH_TO((const char* s, uint32 slen), Hash32StringWithSeed(s, slen, MIX32))
+HASH_TO((const wchar_t* s, uint32 slen),
+        Hash32StringWithSeed(reinterpret_cast<const char*>(s),
                              sizeof(wchar_t) * slen, MIX32))
 HASH_TO((char c), Hash32NumWithSeed(static_cast<uint32>(c), MIX32))
 HASH_TO((schar c), Hash32NumWithSeed(static_cast<uint32>(c), MIX32))
@@ -130,7 +130,7 @@ namespace std {
 // they don't define a hash for const string at all
 template <>
 struct hash<const string> {
-  size_t operator()(const string &k) const {
+  size_t operator()(const string& k) const {
     return HashTo32(k.data(), static_cast<uint32>(k.length()));
   }
 };
@@ -139,23 +139,23 @@ struct hash<const string> {
 // MSVC's STL requires an ever-so slightly different decl
 #if defined STL_MSVC
 template <>
-struct hash<char const *> : PortableHashBase {
-  size_t operator()(char const *const k) const {
+struct hash<char const*> : PortableHashBase {
+  size_t operator()(char const* const k) const {
     return HashTo32(k, strlen(k));
   }
   // Less than operator:
-  bool operator()(char const *const a, char const *const b) const {
+  bool operator()(char const* const a, char const* const b) const {
     return strcmp(a, b) < 0;
   }
 };
 
 template <>
 struct hash<string> : PortableHashBase {
-  size_t operator()(const string &k) const {
+  size_t operator()(const string& k) const {
     return HashTo32(k.data(), k.length());
   }
   // Less than operator:
-  bool operator()(const string &a, const string &b) const { return a < b; }
+  bool operator()(const string& a, const string& b) const { return a < b; }
 };
 
 #endif
@@ -171,17 +171,17 @@ namespace {
 // sufficient for SplitStringToIteratorUsing().
 template <typename T>
 struct simple_insert_iterator {
-  T *t_;
-  simple_insert_iterator(T *t) : t_(t) {}
+  T* t_;
+  simple_insert_iterator(T* t) : t_(t) {}
 
-  simple_insert_iterator<T> &operator=(const typename T::value_type &value) {
+  simple_insert_iterator<T>& operator=(const typename T::value_type& value) {
     t_->insert(value);
     return *this;
   }
 
-  simple_insert_iterator<T> &operator*() { return *this; }
-  simple_insert_iterator<T> &operator++() { return *this; }
-  simple_insert_iterator<T> &operator++(int) { return *this; }
+  simple_insert_iterator<T>& operator*() { return *this; }
+  simple_insert_iterator<T>& operator++() { return *this; }
+  simple_insert_iterator<T>& operator++(int) { return *this; }
 };
 
 // Used to populate a unordered_map out of pairs of consecutive strings in
@@ -189,15 +189,15 @@ struct simple_insert_iterator {
 template <typename T>
 struct simple_hash_map_iterator {
   typedef unordered_map<T, T> hashmap;
-  hashmap *t;
+  hashmap* t;
   bool even;
   typename hashmap::iterator curr;
 
-  simple_hash_map_iterator(hashmap *t_init) : t(t_init), even(true) {
+  simple_hash_map_iterator(hashmap* t_init) : t(t_init), even(true) {
     curr = t->begin();
   }
 
-  simple_hash_map_iterator<T> &operator=(const T &value) {
+  simple_hash_map_iterator<T>& operator=(const T& value) {
     if (even) {
       curr = t->insert(make_pair(value, T())).first;
     } else {
@@ -207,9 +207,9 @@ struct simple_hash_map_iterator {
     return *this;
   }
 
-  simple_hash_map_iterator<T> &operator*() { return *this; }
-  simple_hash_map_iterator<T> &operator++() { return *this; }
-  simple_hash_map_iterator<T> &operator++(int i) { return *this; }
+  simple_hash_map_iterator<T>& operator*() { return *this; }
+  simple_hash_map_iterator<T>& operator++() { return *this; }
+  simple_hash_map_iterator<T>& operator++(int i) { return *this; }
 };
 
 }  // anonymous namespace
@@ -229,9 +229,9 @@ struct simple_hash_map_iterator {
 //    If "pieces" is negative for some reason, it returns the whole string
 // ----------------------------------------------------------------------
 template <typename StringType, typename ITR>
-static inline void SplitStringToIteratorAllowEmpty(const StringType &full,
-                                                   const char *delim,
-                                                   int pieces, ITR &result) {
+static inline void SplitStringToIteratorAllowEmpty(const StringType& full,
+                                                   const char* delim,
+                                                   int pieces, ITR& result) {
   string::size_type begin_index, end_index;
   begin_index = 0;
 
@@ -247,8 +247,8 @@ static inline void SplitStringToIteratorAllowEmpty(const StringType &full,
   *result++ = full.substr(begin_index);
 }
 
-void SplitStringIntoNPiecesAllowEmpty(const string &full, const char *delim,
-                                      int pieces, vector<string> *result) {
+void SplitStringIntoNPiecesAllowEmpty(const string& full, const char* delim,
+                                      int pieces, vector<string>* result) {
   back_insert_iterator<vector<string>> it(*result);
   SplitStringToIteratorAllowEmpty(full, delim, pieces, it);
 }
@@ -262,26 +262,26 @@ void SplitStringIntoNPiecesAllowEmpty(const string &full, const char *delim,
 //    to 'result'.  If there are consecutive delimiters, this function
 //    will return corresponding empty strings.
 // ----------------------------------------------------------------------
-void SplitStringAllowEmpty(const string &full, const char *delim,
-                           vector<string> *result) {
+void SplitStringAllowEmpty(const string& full, const char* delim,
+                           vector<string>* result) {
   back_insert_iterator<vector<string>> it(*result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
 
-void SplitStringToHashsetAllowEmpty(const string &full, const char *delim,
-                                    unordered_set<string> *result) {
+void SplitStringToHashsetAllowEmpty(const string& full, const char* delim,
+                                    unordered_set<string>* result) {
   simple_insert_iterator<unordered_set<string>> it(result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
 
-void SplitStringToSetAllowEmpty(const string &full, const char *delim,
-                                set<string> *result) {
+void SplitStringToSetAllowEmpty(const string& full, const char* delim,
+                                set<string>* result) {
   simple_insert_iterator<set<string>> it(result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
 
-void SplitStringToHashmapAllowEmpty(const string &full, const char *delim,
-                                    unordered_map<string, string> *result) {
+void SplitStringToHashmapAllowEmpty(const string& full, const char* delim,
+                                    unordered_map<string, string>* result) {
   simple_hash_map_iterator<string> it(result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
@@ -297,13 +297,13 @@ void SplitStringToHashmapAllowEmpty(const string &full, const char *delim,
 // SplitStringToIteratorUsing. I could have written my own counting iterator,
 // and use the existing template function, but probably this is more clear
 // and more sure to get optimized to reasonable code.
-static int CalculateReserveForVector(const string &full, const char *delim) {
+static int CalculateReserveForVector(const string& full, const char* delim) {
   int count = 0;
   if (delim[0] != '\0' && delim[1] == '\0') {
     // Optimize the common case where delim is a single character.
     char c = delim[0];
-    const char *p = full.data();
-    const char *end = p + full.size();
+    const char* p = full.data();
+    const char* end = p + full.size();
     while (p != end) {
       if (*p == c) {  // This could be optimized with hasless(v,1) trick.
         ++p;
@@ -330,18 +330,18 @@ static int CalculateReserveForVector(const string &full, const char *delim) {
 // the characters in the string, not the entire string as a single delimiter.
 // ----------------------------------------------------------------------
 template <typename StringType, typename ITR>
-static inline void SplitStringToIteratorUsing(const StringType &full,
-                                              const char *delim, ITR &result) {
+static inline void SplitStringToIteratorUsing(const StringType& full,
+                                              const char* delim, ITR& result) {
   // Optimize the common case where delim is a single character.
   if (delim[0] != '\0' && delim[1] == '\0') {
     char c = delim[0];
-    const char *p = full.data();
-    const char *end = p + full.size();
+    const char* p = full.data();
+    const char* end = p + full.size();
     while (p != end) {
       if (*p == c) {
         ++p;
       } else {
-        const char *start = p;
+        const char* start = p;
         while (++p != end && *p != c) {
           // Skip to the next occurence of the delimiter.
         }
@@ -364,27 +364,27 @@ static inline void SplitStringToIteratorUsing(const StringType &full,
   }
 }
 
-void SplitStringUsing(const string &full, const char *delim,
-                      vector<string> *result) {
+void SplitStringUsing(const string& full, const char* delim,
+                      vector<string>* result) {
   result->reserve(result->size() + CalculateReserveForVector(full, delim));
   back_insert_iterator<vector<string>> it(*result);
   SplitStringToIteratorUsing(full, delim, it);
 }
 
-void SplitStringToHashsetUsing(const string &full, const char *delim,
-                               unordered_set<string> *result) {
+void SplitStringToHashsetUsing(const string& full, const char* delim,
+                               unordered_set<string>* result) {
   simple_insert_iterator<unordered_set<string>> it(result);
   SplitStringToIteratorUsing(full, delim, it);
 }
 
-void SplitStringToSetUsing(const string &full, const char *delim,
-                           set<string> *result) {
+void SplitStringToSetUsing(const string& full, const char* delim,
+                           set<string>* result) {
   simple_insert_iterator<set<string>> it(result);
   SplitStringToIteratorUsing(full, delim, it);
 }
 
-void SplitStringToHashmapUsing(const string &full, const char *delim,
-                               unordered_map<string, string> *result) {
+void SplitStringToHashmapUsing(const string& full, const char* delim,
+                               unordered_map<string, string>* result) {
   simple_hash_map_iterator<string> it(result);
   SplitStringToIteratorUsing(full, delim, it);
 }
@@ -407,46 +407,46 @@ void SplitStringToHashmapUsing(const string &full, const char *delim,
 //   Mainly a stringified wrapper around strtol/strtoul/strtod
 // ----------------------------------------------------------------------
 // Curried functions for the macro below
-static inline long strto32_0(const char *source, char **end) {
+static inline long strto32_0(const char* source, char** end) {
   return strto32(source, end, 0);
 }
-static inline unsigned long strtou32_0(const char *source, char **end) {
+static inline unsigned long strtou32_0(const char* source, char** end) {
   return strtou32(source, end, 0);
 }
-static inline int64 strto64_0(const char *source, char **end) {
+static inline int64 strto64_0(const char* source, char** end) {
   return strto64(source, end, 0);
 }
-static inline uint64 strtou64_0(const char *source, char **end) {
+static inline uint64 strtou64_0(const char* source, char** end) {
   return strtou64(source, end, 0);
 }
-static inline long strto32_10(const char *source, char **end) {
+static inline long strto32_10(const char* source, char** end) {
   return strto32(source, end, 10);
 }
-static inline unsigned long strtou32_10(const char *source, char **end) {
+static inline unsigned long strtou32_10(const char* source, char** end) {
   return strtou32(source, end, 10);
 }
-static inline int64 strto64_10(const char *source, char **end) {
+static inline int64 strto64_10(const char* source, char** end) {
   return strto64(source, end, 10);
 }
-static inline uint64 strtou64_10(const char *source, char **end) {
+static inline uint64 strtou64_10(const char* source, char** end) {
   return strtou64(source, end, 10);
 }
-static inline uint32 strtou32_16(const char *source, char **end) {
+static inline uint32 strtou32_16(const char* source, char** end) {
   return strtou32(source, end, 16);
 }
-static inline uint64 strtou64_16(const char *source, char **end) {
+static inline uint64 strtou64_16(const char* source, char** end) {
   return strtou64(source, end, 16);
 }
 
 #define DEFINE_SPLIT_ONE_NUMBER_TOKEN(name, type, function)          \
-  bool SplitOne##name##Token(const char **source, const char *delim, \
-                             type *value) {                          \
+  bool SplitOne##name##Token(const char** source, const char* delim, \
+                             type* value) {                          \
     assert(source);                                                  \
     assert(delim);                                                   \
     assert(value);                                                   \
     if (!*source) return false;                                      \
     /* Parse int */                                                  \
-    char *end;                                                       \
+    char* end;                                                       \
     *value = function(*source, &end);                                \
     if (end == *source)                                              \
       return false; /* number not present at start of string */      \
@@ -454,7 +454,7 @@ static inline uint64 strtou64_16(const char *source, char **end) {
       return false; /* Garbage characters after int */               \
     /* Advance past token */                                         \
     if (*end != '\0')                                                \
-      *source = const_cast<const char *>(end + 1);                   \
+      *source = const_cast<const char*>(end + 1);                    \
     else                                                             \
       *source = NULL;                                                \
     return true;                                                     \

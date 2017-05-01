@@ -140,7 +140,7 @@ class S2PolygonBuilderOptions {
   // This method is useful for assembling polygons out of input data where
   // vertices and/or edges may not be perfectly aligned.
   S1Angle vertex_merge_radius() const { return vertex_merge_radius_; }
-  void set_vertex_merge_radius(S1Angle const &vertex_merge_radius);
+  void set_vertex_merge_radius(S1Angle const& vertex_merge_radius);
 
   // Default value: 0.866 (approximately sqrt(3)/2).
   //
@@ -179,10 +179,10 @@ class S2PolygonBuilderOptions {
 
 class S2PolygonBuilder {
  public:
-  explicit S2PolygonBuilder(S2PolygonBuilderOptions const &options);
+  explicit S2PolygonBuilder(S2PolygonBuilderOptions const& options);
   ~S2PolygonBuilder();
 
-  S2PolygonBuilderOptions const &options() const { return options_; }
+  S2PolygonBuilderOptions const& options() const { return options_; }
 
   // Add the given edge to the polygon builder.  This method should be used
   // for input data that may not follow S2 polygon conventions.  Note that
@@ -191,7 +191,7 @@ class S2PolygonBuilder {
   //
   // Returns true if an edge was added, and false if an edge was erased
   // (due to XORing) or not added (if both endpoints were the same).
-  bool AddEdge(S2Point const &v0, S2Point const &v1);
+  bool AddEdge(S2Point const& v0, S2Point const& v1);
 
   // Add all edges in the given loop.  If the sign() of the loop is negative
   // (i.e. this loop represents a hole), the reverse edges are added instead.
@@ -199,13 +199,13 @@ class S2PolygonBuilder {
   // the directed edges convention described above.
   //
   // This method does not take ownership of the loop.
-  void AddLoop(S2Loop const *loop);
+  void AddLoop(S2Loop const* loop);
 
   // Add all loops in the given polygon.  Shells and holes are added with
   // opposite orientations as described for AddLoop().
   //
   // This method does not take ownership of the polygon.
-  void AddPolygon(S2Polygon const *polygon);
+  void AddPolygon(S2Polygon const* polygon);
 
   // This type is used to return any edges that could not be assembled.
   typedef vector<pair<S2Point, S2Point>> EdgeList;
@@ -222,7 +222,7 @@ class S2PolygonBuilder {
   // not be able to assemble all loops due to its preference for CCW loops.
   //
   // This method resets the S2PolygonBuilder state so that it can be reused.
-  bool AssembleLoops(vector<S2Loop *> *loops, EdgeList *unused_edges);
+  bool AssembleLoops(vector<S2Loop*>* loops, EdgeList* unused_edges);
 
   // Like AssembleLoops, but normalizes all the loops so that they enclose
   // less than half the sphere, and then assembles the loops into a polygon.
@@ -238,50 +238,50 @@ class S2PolygonBuilder {
   // *complement* of the expected region.  So for example if all the world's
   // coastlines were assembled, the output S2Polygon would represent the land
   // area (irrespective of the input edge or loop orientations).
-  bool AssemblePolygon(S2Polygon *polygon, EdgeList *unused_edges);
+  bool AssemblePolygon(S2Polygon* polygon, EdgeList* unused_edges);
 
   // This function is only for debugging.  If it is called, then points will
   // be transformed by the inverse of the given matrix before being printed as
   // lat-lng coordinates in degrees.  "m" should be orthonormal.
-  void set_debug_matrix(Matrix3x3_d const &m);
+  void set_debug_matrix(Matrix3x3_d const& m);
 
  protected:
   // These functions print either a single vertex, all edges from a single
   // vertex, or all edges in the builder.
-  void DumpVertex(S2Point const &v) const;
-  void DumpEdges(S2Point const &v0) const;
+  void DumpVertex(S2Point const& v) const;
+  void DumpEdges(S2Point const& v0) const;
   void Dump() const;
 
  private:
   // Return true if the given edge exists.
-  bool HasEdge(S2Point const &v0, S2Point const &v1);
+  bool HasEdge(S2Point const& v0, S2Point const& v1);
 
   // Erase an edge or an entire loop.  The edge/loop must exist.
-  void EraseEdge(S2Point const &v0, S2Point const &v1);
-  void EraseLoop(S2Point const *v, int n);
+  void EraseEdge(S2Point const& v0, S2Point const& v1);
+  void EraseLoop(S2Point const* v, int n);
 
   // Assembles and returns a single loop starting with the given edge.
   // If a loop cannot be assembled starting from this edge, returns NULL
   // and updates "unused_edges".
-  S2Loop *AssembleLoop(S2Point const &v0, S2Point const &v1,
-                       EdgeList *unused_edges);
+  S2Loop* AssembleLoop(S2Point const& v0, S2Point const& v1,
+                       EdgeList* unused_edges);
 
   // Adds all the given edges to "unused_edges".
-  void RejectLoop(S2Point const *v, int n, EdgeList *unused_edges);
+  void RejectLoop(S2Point const* v, int n, EdgeList* unused_edges);
 
   // Builds a map indicating which vertices need to be moved from their
   // current position to a new position, and also returns a spatial index
   // containing all of the vertices that do not need to be moved.
   class PointIndex;
   typedef hash_map<S2Point, S2Point> MergeMap;
-  void BuildMergeMap(PointIndex *index, MergeMap *merge_map);
+  void BuildMergeMap(PointIndex* index, MergeMap* merge_map);
 
   // Moves a set of vertices from old to new positions.
-  void MoveVertices(MergeMap const &merge_map);
+  void MoveVertices(MergeMap const& merge_map);
 
   // Modifies each edge by splicing in any vertices whose distance to the edge
   // is at most (edge_splice_fraction() * vertex_merge_radius()).
-  void SpliceEdges(PointIndex *index);
+  void SpliceEdges(PointIndex* index);
 
   S2PolygonBuilderOptions options_;
 

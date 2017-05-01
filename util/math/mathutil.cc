@@ -9,7 +9,7 @@ using std::vector;
 #include "base/logging.h"
 
 MathUtil::QuadraticRootType MathUtil::DegenerateQuadraticRoots(
-    long double b, long double c, long double *r1, long double *r2) {
+    long double b, long double c, long double* r1, long double* r2) {
   // This degenerate quadratic is really a linear equation b * x = -c.
   if (b == 0.0) {
     // The equation is constant, c == 0.
@@ -30,8 +30,8 @@ MathUtil::QuadraticRootType MathUtil::DegenerateQuadraticRoots(
 }
 
 bool MathUtil::RealRootsForCubic(long double const a, long double const b,
-                                 long double const c, long double *const r1,
-                                 long double *const r2, long double *const r3) {
+                                 long double const c, long double* const r1,
+                                 long double* const r2, long double* const r3) {
   // According to Numerical Recipes (pp. 184-5), what
   // follows is an arrangement of computations to
   // compute the roots of a cubic that minimizes
@@ -72,8 +72,8 @@ bool MathUtil::RealRootsForCubic(long double const a, long double const b,
 
 // Returns the greatest common divisor of two unsigned integers x and y,
 // and assigns a, and b such that a*x + b*y = gcd(x, y).
-unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y, int *a,
-                                   int *b) {
+unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y, int* a,
+                                   int* b) {
   *a = 1;
   *b = 0;
   int c = 0;
@@ -99,8 +99,8 @@ unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y, int *a,
 }
 
 
-void MathUtil::ShardsToRead(const vector<bool> &shards_to_write,
-                            vector<bool> *shards_to_read) {
+void MathUtil::ShardsToRead(const vector<bool>& shards_to_write,
+                            vector<bool>* shards_to_read) {
   const int N = shards_to_read->size();
   const int M = shards_to_write.size();
   CHECK(N > 0 || M == 0) << ": have shards to write but not to read";
@@ -127,7 +127,7 @@ void MathUtil::ShardsToRead(const vector<bool> &shards_to_write,
   }
 }
 
-double MathUtil::Harmonic(int64 const n, double *const e) {
+double MathUtil::Harmonic(int64 const n, double* const e) {
   CHECK_GT(n, 0);
 
   //   Hn ~ ln(n) + 0.5772156649 +

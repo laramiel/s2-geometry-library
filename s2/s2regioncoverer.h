@@ -115,8 +115,8 @@ class S2RegionCoverer {
   // Return a vector of cell ids that covers (GetCovering) or is contained
   // within (GetInteriorCovering) the given region and satisfies the various
   // restrictions specified above.
-  void GetCovering(S2Region const &region, vector<S2CellId> *covering);
-  void GetInteriorCovering(S2Region const &region, vector<S2CellId> *interior);
+  void GetCovering(S2Region const& region, vector<S2CellId>* covering);
+  void GetInteriorCovering(S2Region const& region, vector<S2CellId>* interior);
 
   // Return a normalized cell union that covers (GetCellUnion) or is contained
   // within (GetInteriorCellUnion) the given region and satisfies the
@@ -125,54 +125,54 @@ class S2RegionCoverer {
   // automatically normalized by replacing four child cells with their parent
   // whenever possible.  (Note that the list of cell ids passed to the cell
   // union constructor does in fact satisfy all the given restrictions.)
-  void GetCellUnion(S2Region const &region, S2CellUnion *covering);
-  void GetInteriorCellUnion(S2Region const &region, S2CellUnion *interior);
+  void GetCellUnion(S2Region const& region, S2CellUnion* covering);
+  void GetInteriorCellUnion(S2Region const& region, S2CellUnion* interior);
 
   // Given a connected region and a starting point, return a set of cells at
   // the given level that cover the region.
-  static void GetSimpleCovering(S2Region const &region, S2Point const &start,
-                                int level, vector<S2CellId> *output);
+  static void GetSimpleCovering(S2Region const& region, S2Point const& start,
+                                int level, vector<S2CellId>* output);
 
  private:
   struct Candidate {
     S2Cell cell;
     bool is_terminal;        // Cell should not be expanded further.
     int num_children;        // Number of children that intersect the region.
-    Candidate *children[0];  // Actual size may be 0, 4, 16, or 64 elements.
+    Candidate* children[0];  // Actual size may be 0, 4, 16, or 64 elements.
   };
 
   // If the cell intersects the given region, return a new candidate with no
   // children, otherwise return NULL.  Also marks the candidate as "terminal"
   // if it should not be expanded further.
-  Candidate *NewCandidate(S2Cell const &cell);
+  Candidate* NewCandidate(S2Cell const& cell);
 
   // Return the log base 2 of the maximum number of children of a candidate.
   inline int max_children_shift() const { return 2 * level_mod_; }
 
   // Free the memory associated with a candidate.
-  static void DeleteCandidate(Candidate *candidate, bool delete_children);
+  static void DeleteCandidate(Candidate* candidate, bool delete_children);
 
   // Process a candidate by either adding it to the result_ vector or
   // expanding its children and inserting it into the priority queue.
   // Passing an argument of NULL does nothing.
-  void AddCandidate(Candidate *candidate);
+  void AddCandidate(Candidate* candidate);
 
   // Populate the children of "candidate" by expanding the given number of
   // levels from the given cell.  Returns the number of children that were
   // marked "terminal".
-  int ExpandChildren(Candidate *candidate, S2Cell const &cell, int num_levels);
+  int ExpandChildren(Candidate* candidate, S2Cell const& cell, int num_levels);
 
   // Computes a set of initial candidates that cover the given region.
   void GetInitialCandidates();
 
   // Generates a covering and stores it in result_.
-  void GetCoveringInternal(S2Region const &region);
+  void GetCoveringInternal(S2Region const& region);
 
   // Given a region and a starting cell, return the set of all the
   // edge-connected cells at the same level that intersect "region".
   // The output cells are returned in arbitrary order.
-  static void FloodFill(S2Region const &region, S2CellId const &start,
-                        vector<S2CellId> *output);
+  static void FloodFill(S2Region const& region, S2CellId const& start,
+                        vector<S2CellId>* output);
 
   int min_level_;
   int max_level_;
@@ -182,7 +182,7 @@ class S2RegionCoverer {
   // We save a temporary copy of the pointer passed to GetCovering() in order
   // to avoid passing this parameter around internally.  It is only used (and
   // only valid) for the duration of a single GetCovering() call.
-  S2Region const *region_;
+  S2Region const* region_;
 
   // A temporary variable used by GetCovering() that holds the cell ids that
   // have been added to the covering so far.
@@ -192,7 +192,7 @@ class S2RegionCoverer {
   // the queue entries since for some reason priority_queue<> uses a deque by
   // default.
   struct CompareQueueEntries;
-  typedef pair<int, Candidate *> QueueEntry;
+  typedef pair<int, Candidate*> QueueEntry;
   typedef priority_queue<QueueEntry, vector<QueueEntry>, CompareQueueEntries>
       CandidateQueue;
   scoped_ptr<CandidateQueue> pq_;

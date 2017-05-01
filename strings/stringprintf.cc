@@ -20,7 +20,7 @@ const int kStringPrintfVectorMaxArgs = 32;
 // and we can fix the problem or protect against an attack.
 static const char string_printf_empty_block[256] = {'\0'};
 
-string StringPrintfVector(const char *format, const vector<string> &v) {
+string StringPrintfVector(const char* format, const vector<string>& v) {
   CHECK_LE(v.size(), kStringPrintfVectorMaxArgs)
       << "StringPrintfVector currently only supports up to "
       << kStringPrintfVectorMaxArgs << " arguments. "
@@ -30,7 +30,7 @@ string StringPrintfVector(const char *format, const vector<string> &v) {
   // crashing the program, corrupting the program (%n),
   // or displaying random chunks of memory to users.
 
-  const char *cstr[kStringPrintfVectorMaxArgs];
+  const char* cstr[kStringPrintfVectorMaxArgs];
   for (int i = 0; i < v.size(); ++i) {
     cstr[i] = v[i].c_str();
   }

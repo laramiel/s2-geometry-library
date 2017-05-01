@@ -16,8 +16,7 @@
 //
 // The expression below rounds up (43 + sizeof(void*)) to the nearest
 // multiple of sizeof(void*).
-static_assert(sizeof(S2Cell) <=
-                  ((43 + 2 * sizeof(void *) - 1) & -sizeof(void *)),
+static_assert(sizeof(S2Cell) <= ((43 + 2 * sizeof(void*) - 1) & -sizeof(void*)),
               "S2Cell_is_getting_bloated");
 
 S2Point S2Cell::GetVertexRaw(int k) const {
@@ -38,7 +37,7 @@ S2Point S2Cell::GetEdgeRaw(int k) const {
   }
 }
 
-void S2Cell::Init(S2CellId const &id) {
+void S2Cell::Init(S2CellId const& id) {
   id_ = id;
   int ij[2], orientation;
   face_ = id.ToFaceIJOrientation(&ij[0], &ij[1], &orientation);
@@ -65,7 +64,7 @@ bool S2Cell::Subdivide(S2Cell children[4]) const {
   // Create four children with the appropriate bounds.
   S2CellId id = id_.child_begin();
   for (int pos = 0; pos < 4; ++pos, id = id.next()) {
-    S2Cell *child = &children[pos];
+    S2Cell* child = &children[pos];
     child->face_ = face_;
     child->level_ = level_ + 1;
     child->orientation_ = orientation_ ^ S2::kPosToOrientation[pos];
@@ -117,7 +116,7 @@ double S2Cell::ExactArea() const {
   return S2::Area(v0, v1, v2) + S2::Area(v0, v2, v3);
 }
 
-S2Cell *S2Cell::Clone() const { return new S2Cell(*this); }
+S2Cell* S2Cell::Clone() const { return new S2Cell(*this); }
 
 S2Cap S2Cell::GetCapBound() const {
   // Use the cell center in (u,v)-space as the cap axis.  This vector is
@@ -212,15 +211,15 @@ S2LatLngRect S2Cell::GetRectBound() const {
   }
 }
 
-bool S2Cell::MayIntersect(S2Cell const &cell) const {
+bool S2Cell::MayIntersect(S2Cell const& cell) const {
   return id_.intersects(cell.id_);
 }
 
-bool S2Cell::Contains(S2Cell const &cell) const {
+bool S2Cell::Contains(S2Cell const& cell) const {
   return id_.contains(cell.id_);
 }
 
-bool S2Cell::Contains(S2Point const &p) const {
+bool S2Cell::Contains(S2Point const& p) const {
   // We can't just call XYZtoFaceUV, because for points that lie on the
   // boundary between two faces (i.e. u or v is +1/-1) we need to return
   // true for both adjacent cells.

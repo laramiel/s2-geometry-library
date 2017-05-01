@@ -69,7 +69,7 @@ static void InitLookupCell(int level, int i, int j, int orig_orientation,
     i <<= 1;
     j <<= 1;
     pos <<= 2;
-    int const *r = S2::kPosToIJ[orientation];
+    int const* r = S2::kPosToIJ[orientation];
     InitLookupCell(level, i + (r[0] >> 1), j + (r[0] & 1), orig_orientation,
                    pos, orientation ^ S2::kPosToOrientation[0]);
     InitLookupCell(level, i + (r[1] >> 1), j + (r[1] & 1), orig_orientation,
@@ -182,7 +182,7 @@ string S2CellId::ToToken() const {
   return "X";  // Invalid hex string.
 }
 
-S2CellId S2CellId::FromToken(string const &token) {
+S2CellId S2CellId::FromToken(string const& token) {
   if (token.size() > 16) return S2CellId::None();
   char digits[17] = "0000000000000000";
   memcpy(digits, token.data(), token.size());
@@ -246,7 +246,7 @@ S2CellId S2CellId::FromFaceIJ(int face, int i, int j) {
   return S2CellId(((static_cast<uint64>(n[1]) << 32) + n[0]) * 2 + 1);
 }
 
-S2CellId S2CellId::FromPoint(S2Point const &p) {
+S2CellId S2CellId::FromPoint(S2Point const& p) {
   double u, v;
   int face = S2::XYZtoFaceUV(p, &u, &v);
   int i = STtoIJ(S2::UVtoST(u));
@@ -254,11 +254,11 @@ S2CellId S2CellId::FromPoint(S2Point const &p) {
   return FromFaceIJ(face, i, j);
 }
 
-S2CellId S2CellId::FromLatLng(S2LatLng const &ll) {
+S2CellId S2CellId::FromLatLng(S2LatLng const& ll) {
   return FromPoint(ll.ToPoint());
 }
 
-int S2CellId::ToFaceIJOrientation(int *pi, int *pj, int *orientation) const {
+int S2CellId::ToFaceIJOrientation(int* pi, int* pj, int* orientation) const {
   // Initialization if not done yet
   MaybeInit();
 
@@ -317,7 +317,7 @@ int S2CellId::ToFaceIJOrientation(int *pi, int *pj, int *orientation) const {
   return face;
 }
 
-inline int S2CellId::GetCenterSiTi(int *psi, int *pti) const {
+inline int S2CellId::GetCenterSiTi(int* psi, int* pti) const {
   // First we compute the discrete (i,j) coordinates of a leaf cell contained
   // within the given cell.  Given that cells are represented by the Hilbert
   // curve position corresponding at their center, it turns out that the cell
@@ -415,7 +415,7 @@ void S2CellId::GetEdgeNeighbors(S2CellId neighbors[4]) const {
 }
 
 void S2CellId::AppendVertexNeighbors(int level,
-                                     vector<S2CellId> *output) const {
+                                     vector<S2CellId>* output) const {
   // "level" must be strictly less than this cell's level so that we can
   // determine which vertex this cell is closest to.
   DCHECK_LT(level, this->level());
@@ -457,7 +457,7 @@ void S2CellId::AppendVertexNeighbors(int level,
 }
 
 void S2CellId::AppendAllNeighbors(int nbr_level,
-                                  vector<S2CellId> *output) const {
+                                  vector<S2CellId>* output) const {
   int i, j;
   int face = ToFaceIJOrientation(&i, &j, NULL);
 
@@ -510,6 +510,6 @@ string S2CellId::ToString() const {
   return out;
 }
 
-ostream &operator<<(ostream &os, S2CellId const &id) {
+ostream& operator<<(ostream& os, S2CellId const& id) {
   return os << id.ToString();
 }

@@ -47,9 +47,9 @@ class Matrix3x3 {
 
   // Constructor explicitly setting the values of all the coefficient of
   // the matrix
-  Matrix3x3(const VType &m00, const VType &m01, const VType &m02,
-            const VType &m10, const VType &m11, const VType &m12,
-            const VType &m20, const VType &m21, const VType &m22) {
+  Matrix3x3(const VType& m00, const VType& m01, const VType& m02,
+            const VType& m10, const VType& m11, const VType& m12,
+            const VType& m20, const VType& m21, const VType& m22) {
     m_[0][0] = m00;
     m_[0][1] = m01;
     m_[0][2] = m02;
@@ -64,7 +64,7 @@ class Matrix3x3 {
   }
 
   // Copy constructor
-  Matrix3x3(const Self &mb) {
+  Matrix3x3(const Self& mb) {
     m_[0][0] = mb.m_[0][0];
     m_[0][1] = mb.m_[0][1];
     m_[0][2] = mb.m_[0][2];
@@ -80,7 +80,7 @@ class Matrix3x3 {
 
   // Casting constructor
   template <class VType2>
-  static Self Cast(const Matrix3x3<VType2> &mb) {
+  static Self Cast(const Matrix3x3<VType2>& mb) {
     return Self(static_cast<VType>(mb(0, 0)), static_cast<VType>(mb(0, 1)),
                 static_cast<VType>(mb(0, 2)), static_cast<VType>(mb(1, 0)),
                 static_cast<VType>(mb(1, 1)), static_cast<VType>(mb(1, 2)),
@@ -89,9 +89,9 @@ class Matrix3x3 {
   }
 
   // Change the value of all the coefficients of the matrix
-  inline Self &Set(const VType &m00, const VType &m01, const VType &m02,
-                   const VType &m10, const VType &m11, const VType &m12,
-                   const VType &m20, const VType &m21, const VType &m22) {
+  inline Self& Set(const VType& m00, const VType& m01, const VType& m02,
+                   const VType& m10, const VType& m11, const VType& m12,
+                   const VType& m20, const VType& m21, const VType& m22) {
     m_[0][0] = m00;
     m_[0][1] = m01;
     m_[0][2] = m02;
@@ -107,7 +107,7 @@ class Matrix3x3 {
   }
 
   // Copy
-  inline Self &operator=(const Self &mb) {
+  inline Self& operator=(const Self& mb) {
     m_[0][0] = mb.m_[0][0];
     m_[0][1] = mb.m_[0][1];
     m_[0][2] = mb.m_[0][2];
@@ -123,7 +123,7 @@ class Matrix3x3 {
   }
 
   // Compare
-  inline bool operator==(const Self &mb) const {
+  inline bool operator==(const Self& mb) const {
     return (m_[0][0] == mb.m_[0][0]) && (m_[0][1] == mb.m_[0][1]) &&
            (m_[0][2] == mb.m_[0][2]) && (m_[1][0] == mb.m_[1][0]) &&
            (m_[1][1] == mb.m_[1][1]) && (m_[1][2] == mb.m_[1][2]) &&
@@ -132,7 +132,7 @@ class Matrix3x3 {
   }
 
   // Matrix addition
-  inline Self &operator+=(const Self &mb) {
+  inline Self& operator+=(const Self& mb) {
     m_[0][0] += mb.m_[0][0];
     m_[0][1] += mb.m_[0][1];
     m_[0][2] += mb.m_[0][2];
@@ -148,7 +148,7 @@ class Matrix3x3 {
   }
 
   // Matrix subtration
-  inline Self &operator-=(const Self &mb) {
+  inline Self& operator-=(const Self& mb) {
     m_[0][0] -= mb.m_[0][0];
     m_[0][1] -= mb.m_[0][1];
     m_[0][2] -= mb.m_[0][2];
@@ -164,7 +164,7 @@ class Matrix3x3 {
   }
 
   // Matrix multiplication by a scalar
-  inline Self &operator*=(const VType &k) {
+  inline Self& operator*=(const VType& k) {
     m_[0][0] *= k;
     m_[0][1] *= k;
     m_[0][2] *= k;
@@ -180,27 +180,27 @@ class Matrix3x3 {
   }
 
   // Matrix addition
-  inline Self operator+(const Self &mb) const { return Self(*this) += mb; }
+  inline Self operator+(const Self& mb) const { return Self(*this) += mb; }
 
   // Matrix subtraction
-  inline Self operator-(const Self &mb) const { return Self(*this) -= mb; }
+  inline Self operator-(const Self& mb) const { return Self(*this) -= mb; }
 
   // Change the sign of all the coefficients in the matrix
-  friend inline Self operator-(const Self &vb) {
+  friend inline Self operator-(const Self& vb) {
     return Self(-vb.m_[0][0], -vb.m_[0][1], -vb.m_[0][2], -vb.m_[1][0],
                 -vb.m_[1][1], -vb.m_[1][2], -vb.m_[2][0], -vb.m_[2][1],
                 -vb.m_[2][2]);
   }
 
   // Matrix multiplication by a scalar
-  inline Self operator*(const VType &k) const { return Self(*this) *= k; }
+  inline Self operator*(const VType& k) const { return Self(*this) *= k; }
 
-  friend inline Self operator*(const VType &k, const Self &mb) {
+  friend inline Self operator*(const VType& k, const Self& mb) {
     return Self(mb) * k;
   }
 
   // Matrix multiplication
-  inline Self operator*(const Self &mb) const {
+  inline Self operator*(const Self& mb) const {
     return Self(m_[0][0] * mb.m_[0][0] + m_[0][1] * mb.m_[1][0] +
                     m_[0][2] * mb.m_[2][0],
                 m_[0][0] * mb.m_[0][1] + m_[0][1] * mb.m_[1][1] +
@@ -224,7 +224,7 @@ class Matrix3x3 {
   }
 
   // Multiplication of a matrix by a vector
-  inline MVector operator*(const MVector &v) const {
+  inline MVector operator*(const MVector& v) const {
     return MVector(m_[0][0] * v[0] + m_[0][1] * v[1] + m_[0][2] * v[2],
                    m_[1][0] * v[0] + m_[1][1] * v[1] + m_[1][2] * v[2],
                    m_[2][0] * v[0] + m_[2][1] * v[1] + m_[2][2] * v[2]);
@@ -242,11 +242,11 @@ class Matrix3x3 {
 
   // Return a pointer to the data array for interface with other libraries
   // like opencv
-  VType *Data() { return reinterpret_cast<VType *>(m_); }
-  const VType *Data() const { return reinterpret_cast<const VType *>(m_); }
+  VType* Data() { return reinterpret_cast<VType*>(m_); }
+  const VType* Data() const { return reinterpret_cast<const VType*>(m_); }
 
   // Return matrix element (i,j) with 0<=i<=2 0<=j<=2
-  inline VType &operator()(const int i, const int j) {
+  inline VType& operator()(const int i, const int j) {
     DCHECK(i >= 0);
     DCHECK(i < 3);
     DCHECK(j >= 0);
@@ -262,15 +262,15 @@ class Matrix3x3 {
   }
 
   // Return matrix element (i/3,i%3) with 0<=i<=8 (access concatenated rows).
-  inline VType &operator[](const int i) {
+  inline VType& operator[](const int i) {
     DCHECK(i >= 0);
     DCHECK(i < 9);
-    return reinterpret_cast<VType *>(m_)[i];
+    return reinterpret_cast<VType*>(m_)[i];
   }
   inline VType operator[](const int i) const {
     DCHECK(i >= 0);
     DCHECK(i < 9);
-    return reinterpret_cast<const VType *>(m_)[i];
+    return reinterpret_cast<const VType*>(m_)[i];
   }
 
   // Return the transposed matrix
@@ -316,23 +316,23 @@ class Matrix3x3 {
   }
 
   // Create a matrix from 3 row vectors
-  static inline Self FromRows(const MVector &v1, const MVector &v2,
-                              const MVector &v3) {
+  static inline Self FromRows(const MVector& v1, const MVector& v2,
+                              const MVector& v3) {
     Self temp;
     temp.Set(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], v3[0], v3[1], v3[2]);
     return temp;
   }
 
   // Create a matrix from 3 column vectors
-  static inline Self FromCols(const MVector &v1, const MVector &v2,
-                              const MVector &v3) {
+  static inline Self FromCols(const MVector& v1, const MVector& v2,
+                              const MVector& v3) {
     Self temp;
     temp.Set(v1[0], v2[0], v3[0], v1[1], v2[1], v3[1], v1[2], v2[2], v3[2]);
     return temp;
   }
 
   // Set the vector in row i to be v1
-  void SetRow(int i, const MVector &v1) {
+  void SetRow(int i, const MVector& v1) {
     DCHECK(i >= 0);
     DCHECK(i < 3);
     m_[i][0] = v1[0];
@@ -341,7 +341,7 @@ class Matrix3x3 {
   }
 
   // Set the vector in column i to be v1
-  void SetCol(int i, const MVector &v1) {
+  void SetCol(int i, const MVector& v1) {
     DCHECK(i >= 0);
     DCHECK(i < 3);
     m_[0][i] = v1[0];
@@ -370,24 +370,24 @@ class Matrix3x3 {
   static inline Self Zero(void) { return Self(); }
 
   // Return a diagonal matrix with the coefficients in v
-  static inline Self Diagonal(const MVector &v) {
+  static inline Self Diagonal(const MVector& v) {
     return Self(v[0], VType(), VType(), VType(), v[1], VType(), VType(),
                 VType(), v[2]);
   }
 
   // Return the matrix vvT
-  static Self Sym3(const MVector &v) {
+  static Self Sym3(const MVector& v) {
     return Self(v[0] * v[0], v[0] * v[1], v[0] * v[2], v[1] * v[0], v[1] * v[1],
                 v[1] * v[2], v[2] * v[0], v[2] * v[1], v[2] * v[2]);
   }
   // Return a matrix M such that:
   // for each u,  M * u = v.CrossProd(u)
-  static Self AntiSym3(const MVector &v) {
+  static Self AntiSym3(const MVector& v) {
     return Self(VType(), -v[2], v[1], v[2], VType(), -v[0], -v[1], v[0],
                 VType());
   }
 
-  static Self Rodrigues(const MVector &rot) {
+  static Self Rodrigues(const MVector& rot) {
     Self R;
     VType theta = rot.Norm();
     MVector w = rot.Normalize();
@@ -399,12 +399,12 @@ class Matrix3x3 {
   }
 
   // Returns v.Transpose() * (*this) * u
-  VType MulBothSides(const MVector &v, const MVector &u) const {
+  VType MulBothSides(const MVector& v, const MVector& u) const {
     return ((*this) * u).DotProd(v);
   }
 
   // Use the 3x3 matrix as a projective transform for 2d points
-  Vector2<VType> Project(const Vector2<VType> &v) const {
+  Vector2<VType> Project(const Vector2<VType>& v) const {
     MVector temp = (*this) * MVector(v[0], v[1], 1);
     return Vector2<VType>(temp[0] / temp[2], temp[1] / temp[2]);
   }
@@ -422,7 +422,7 @@ class Matrix3x3 {
 
   // Finds the eigen values of the matrix. Return the number of real eigenvalues
   // found
-  int EigenValues(MVector *eig_val) {
+  int EigenValues(MVector* eig_val) {
     long double r1, r2, r3;  // NOLINT
     // characteristic polynomial is
     // x^3 + (a11*a22+a22*a33+a33*a11)*x^2 - trace(A)*x - det(A)
@@ -449,7 +449,7 @@ class Matrix3x3 {
   // |  a00,          |
   // |  a10, a11,     |
   // |  a20, a21, a22 |
-  void SymmetricEigenSolver(MVector *eig_val, Self *eig_vec) {
+  void SymmetricEigenSolver(MVector* eig_val, Self* eig_vec) {
     // Compute characteristic polynomial coefficients
     double c2 = -(m_[0][0] + m_[1][1] + m_[2][2]);
     double c1 =
@@ -513,7 +513,7 @@ class Matrix3x3 {
     return false;
   }
 
-  friend std::ostream &operator<<(std::ostream &out, const Self &mb) {
+  friend std::ostream& operator<<(std::ostream& out, const Self& mb) {
     int i, j;
     for (i = 0; i < 3; i++) {
       if (i == 0) {

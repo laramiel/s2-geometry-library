@@ -44,76 +44,76 @@ class Vector4 {
   // Create a new vector (x,y,z,w)
   Vector4(const VType x, const VType y, const VType z, const VType w);
   // Create a new copy of the vector vb
-  Vector4(const Self &vb);
+  Vector4(const Self& vb);
   // Create a new 4D vector from 2D vector and two scalars
   // (vb.x,vb.y,z,w)
-  Vector4(const Vector2<VType> &vb, const VType z, const VType w);
+  Vector4(const Vector2<VType>& vb, const VType z, const VType w);
   // Create a 4D vector from two 2D vectors (vb1.x,vb1.y,vb2.x,vb2.y)
-  Vector4(const Vector2<VType> &vb1, const Vector2<VType> &vb2);
+  Vector4(const Vector2<VType>& vb1, const Vector2<VType>& vb2);
   // Create a new 4D vector from 3D vector and scalar
   // (vb.x,vb.y,vb.z,w)
-  Vector4(const Vector3<VType> &vb, const VType w);
+  Vector4(const Vector3<VType>& vb, const VType w);
   // Convert from another vector type
   template <typename VType2>
-  static Self Cast(const Vector4<VType2> &vb);
+  static Self Cast(const Vector4<VType2>& vb);
   // Compare two vectors, return true if all their components are equal
-  bool operator==(const Self &vb) const;
-  bool operator!=(const Self &vb) const;
+  bool operator==(const Self& vb) const;
+  bool operator!=(const Self& vb) const;
   // Compare two vectors, return true if all their components are within
   // a difference of margin.
-  bool aequal(const Self &vb, FloatType margin) const;
+  bool aequal(const Self& vb, FloatType margin) const;
   // Compare two vectors, these comparisons are mostly for interaction
   // with STL.
-  bool operator<(const Self &vb) const;
-  bool operator>(const Self &vb) const;
-  bool operator<=(const Self &vb) const;
-  bool operator>=(const Self &vb) const;
+  bool operator<(const Self& vb) const;
+  bool operator>(const Self& vb) const;
+  bool operator<=(const Self& vb) const;
+  bool operator>=(const Self& vb) const;
 
   // Return the size of the vector
   static int Size() { return 4; }
   // Modify the coordinates of the current vector
   void Set(const VType x, const VType y, const VType z, const VType w);
-  Self &operator=(const Self &vb);
+  Self& operator=(const Self& vb);
   // add two vectors, component by component
-  Self &operator+=(const Self &vb);
+  Self& operator+=(const Self& vb);
   // subtract two vectors, component by component
-  Self &operator-=(const Self &vb);
+  Self& operator-=(const Self& vb);
   // multiply a vector by a scalar
-  Self &operator*=(const VType k);
+  Self& operator*=(const VType k);
   // divide a vector by a scalar : implemented that way for integer vectors
-  Self &operator/=(const VType k);
+  Self& operator/=(const VType k);
   // multiply two vectors component by component
-  Self MulComponents(const Self &vb) const;
+  Self MulComponents(const Self& vb) const;
   // divide two vectors component by component
-  Self DivComponents(const Self &vb) const;
+  Self DivComponents(const Self& vb) const;
   // add two vectors, component by component
-  Self operator+(const Self &vb) const;
+  Self operator+(const Self& vb) const;
   // subtract two vectors, component by component
-  Self operator-(const Self &vb) const;
+  Self operator-(const Self& vb) const;
   // Dot product.  Be aware that if VType is an integer type, the high bits of
   // the result are silently discarded.
-  VType DotProd(const Self &vb) const;
+  VType DotProd(const Self& vb) const;
   // Multiplication by a scalar
   Self operator*(const VType k) const;
   // Division by a scalar
   Self operator/(const VType k) const;
   // Access component #b for read/write operations
-  VType &operator[](const int b);
+  VType& operator[](const int b);
   // Access component #b for read only operations
   VType operator[](const int b) const;
   // Labeled Accessor methods.
-  void x(const VType &v);
+  void x(const VType& v);
   VType x() const;
-  void y(const VType &v);
+  void y(const VType& v);
   VType y() const;
-  void z(const VType &v);
+  void z(const VType& v);
   VType z() const;
-  void w(const VType &v);
+  void w(const VType& v);
   VType w() const;
   // return a pointer to the data array for interface with other libraries
   // like opencv
-  VType *Data();
-  const VType *Data() const;
+  VType* Data();
+  const VType* Data() const;
   // Return the squared Euclidean norm of the vector.  Be aware that if VType
   // is an integer type, the high bits of the result are silently discarded.
   VType Norm2(void) const;
@@ -155,23 +155,23 @@ class Vector4 {
 
 // change the sign of the components of a vector
 template <typename VType>
-Vector4<VType> operator-(const Vector4<VType> &vb);
+Vector4<VType> operator-(const Vector4<VType>& vb);
 // multiply by a scalar
 template <typename ScalarType, typename VType>
-Vector4<VType> operator*(const ScalarType k, const Vector4<VType> &v);
+Vector4<VType> operator*(const ScalarType k, const Vector4<VType>& v);
 // perform k /
 template <typename ScalarType, typename VType>
-Vector4<VType> operator/(const ScalarType k, const Vector4<VType> &v);
+Vector4<VType> operator/(const ScalarType k, const Vector4<VType>& v);
 // return a vector containing the max of v1 and v2 component by component
 template <typename VType>
-Vector4<VType> Max(const Vector4<VType> &v1, const Vector4<VType> &v2);
+Vector4<VType> Max(const Vector4<VType>& v1, const Vector4<VType>& v2);
 // return a vector containing the min of v1 and v2 component by component
 template <typename VType>
-Vector4<VType> Min(const Vector4<VType> &v1, const Vector4<VType> &v2);
+Vector4<VType> Min(const Vector4<VType>& v1, const Vector4<VType>& v2);
 // debug printing
 template <typename VType>
-std::ostream &operator<<(std::ostream &out,  // NOLINT
-                         const Vector4<VType> &va);
+std::ostream& operator<<(std::ostream& out,  // NOLINT
+                         const Vector4<VType>& va);
 
 typedef Vector4<uint8> Vector4_b;
 typedef Vector4<int> Vector4_i;

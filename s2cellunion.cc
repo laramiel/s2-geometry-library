@@ -21,7 +21,7 @@ using std::vector;
 
 // Returns true if the vector of cell_ids is sorted.  Used only in
 // DCHECKs.
-extern bool IsSorted(vector<S2CellId> const &cell_ids) {
+extern bool IsSorted(vector<S2CellId> const& cell_ids) {
   for (int i = 0; i + 1 < cell_ids.size(); ++i) {
     if (cell_ids[i + 1] < cell_ids[i]) {
       return false;
@@ -30,38 +30,38 @@ extern bool IsSorted(vector<S2CellId> const &cell_ids) {
   return true;
 }
 
-void S2CellUnion::Init(vector<S2CellId> const &cell_ids) {
+void S2CellUnion::Init(vector<S2CellId> const& cell_ids) {
   InitRaw(cell_ids);
   Normalize();
 }
 
-void S2CellUnion::Init(vector<uint64> const &cell_ids) {
+void S2CellUnion::Init(vector<uint64> const& cell_ids) {
   InitRaw(cell_ids);
   Normalize();
 }
 
-void S2CellUnion::InitSwap(vector<S2CellId> *cell_ids) {
+void S2CellUnion::InitSwap(vector<S2CellId>* cell_ids) {
   InitRawSwap(cell_ids);
   Normalize();
 }
 
-void S2CellUnion::InitRaw(vector<S2CellId> const &cell_ids) {
+void S2CellUnion::InitRaw(vector<S2CellId> const& cell_ids) {
   cell_ids_ = cell_ids;
 }
 
-void S2CellUnion::InitRaw(vector<uint64> const &cell_ids) {
+void S2CellUnion::InitRaw(vector<uint64> const& cell_ids) {
   cell_ids_.resize(cell_ids.size());
   for (int i = 0; i < num_cells(); ++i) {
     cell_ids_[i] = S2CellId(cell_ids[i]);
   }
 }
 
-void S2CellUnion::InitRawSwap(vector<S2CellId> *cell_ids) {
+void S2CellUnion::InitRawSwap(vector<S2CellId>* cell_ids) {
   cell_ids_.swap(*cell_ids);
   cell_ids->clear();
 }
 
-void S2CellUnion::Detach(vector<S2CellId> *cell_ids) {
+void S2CellUnion::Detach(vector<S2CellId>* cell_ids) {
   cell_ids_.swap(*cell_ids);
   cell_ids_.clear();
 }
@@ -73,8 +73,8 @@ void S2CellUnion::Pack(int excess) {
   }
 }
 
-S2CellUnion *S2CellUnion::Clone() const {
-  S2CellUnion *copy = new S2CellUnion;
+S2CellUnion* S2CellUnion::Clone() const {
+  S2CellUnion* copy = new S2CellUnion;
   copy->InitRaw(cell_ids_);
   return copy;
 }
@@ -133,7 +133,7 @@ bool S2CellUnion::Normalize() {
 }
 
 void S2CellUnion::Denormalize(int min_level, int level_mod,
-                              vector<S2CellId> *output) const {
+                              vector<S2CellId>* output) const {
   DCHECK_GE(min_level, 0);
   DCHECK_LE(min_level, S2CellId::kMaxLevel);
   DCHECK_GE(level_mod, 1);
@@ -196,7 +196,7 @@ S2LatLngRect S2CellUnion::GetRectBound() const {
   return bound;
 }
 
-bool S2CellUnion::Contains(S2CellId const &id) const {
+bool S2CellUnion::Contains(S2CellId const& id) const {
   // This function requires that Normalize has been called first.
   //
   // This is an exact test.  Each cell occupies a linear span of the S2
@@ -212,7 +212,7 @@ bool S2CellUnion::Contains(S2CellId const &id) const {
   return i != cell_ids_.begin() && (--i)->range_max() >= id;
 }
 
-bool S2CellUnion::Intersects(S2CellId const &id) const {
+bool S2CellUnion::Intersects(S2CellId const& id) const {
   // This function requires that Normalize has been called first.
   // This is an exact test; see the comments for Contains() above.
 
@@ -222,7 +222,7 @@ bool S2CellUnion::Intersects(S2CellId const &id) const {
   return i != cell_ids_.begin() && (--i)->range_max() >= id.range_min();
 }
 
-bool S2CellUnion::Contains(S2CellUnion const *y) const {
+bool S2CellUnion::Contains(S2CellUnion const* y) const {
   // TODO: A divide-and-conquer or alternating-skip-search approach may be
   // sigificantly faster in both the average and worst case.
 
@@ -232,7 +232,7 @@ bool S2CellUnion::Contains(S2CellUnion const *y) const {
   return true;
 }
 
-bool S2CellUnion::Intersects(S2CellUnion const *y) const {
+bool S2CellUnion::Intersects(S2CellUnion const* y) const {
   // TODO: A divide-and-conquer or alternating-skip-search approach may be
   // sigificantly faster in both the average and worst case.
 
@@ -242,7 +242,7 @@ bool S2CellUnion::Intersects(S2CellUnion const *y) const {
   return false;
 }
 
-void S2CellUnion::GetUnion(S2CellUnion const *x, S2CellUnion const *y) {
+void S2CellUnion::GetUnion(S2CellUnion const* x, S2CellUnion const* y) {
   DCHECK_NE(this, x);
   DCHECK_NE(this, y);
   cell_ids_.reserve(x->num_cells() + y->num_cells());
@@ -251,7 +251,7 @@ void S2CellUnion::GetUnion(S2CellUnion const *x, S2CellUnion const *y) {
   Normalize();
 }
 
-void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellId const &id) {
+void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellId const& id) {
   DCHECK_NE(this, x);
   cell_ids_.clear();
   if (x->Contains(id)) {
@@ -264,7 +264,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellId const &id) {
   }
 }
 
-void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellUnion const *y) {
+void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellUnion const* y) {
   DCHECK_NE(this, x);
   DCHECK_NE(this, y);
 
@@ -310,8 +310,8 @@ void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellUnion const *y) {
   DCHECK(!Normalize());
 }
 
-static void GetDifferenceInternal(S2CellId cell, S2CellUnion const *y,
-                                  vector<S2CellId> *cell_ids) {
+static void GetDifferenceInternal(S2CellId cell, S2CellUnion const* y,
+                                  vector<S2CellId>* cell_ids) {
   // Add the difference between cell and y to cell_ids.
   // If they intersect but the difference is non-empty, divides and conquers.
 
@@ -327,7 +327,7 @@ static void GetDifferenceInternal(S2CellId cell, S2CellUnion const *y,
   }
 }
 
-void S2CellUnion::GetDifference(S2CellUnion const *x, S2CellUnion const *y) {
+void S2CellUnion::GetDifference(S2CellUnion const* x, S2CellUnion const* y) {
   DCHECK_NE(this, x);
   DCHECK_NE(this, y);
   // TODO: this is approximately O(N*log(N)), but could probably use similar
@@ -360,7 +360,7 @@ void S2CellUnion::Expand(int level) {
   InitSwap(&output);
 }
 
-void S2CellUnion::Expand(S1Angle const &min_radius, int max_level_diff) {
+void S2CellUnion::Expand(S1Angle const& min_radius, int max_level_diff) {
   int min_level = S2CellId::kMaxLevel;
   for (int i = 0; i < num_cells(); ++i) {
     min_level = min(min_level, cell_id(i).level());
@@ -375,8 +375,8 @@ void S2CellUnion::Expand(S1Angle const &min_radius, int max_level_diff) {
   Expand(min(min_level + max_level_diff, radius_level));
 }
 
-void S2CellUnion::InitFromRange(S2CellId const &min_id,
-                                S2CellId const &max_id) {
+void S2CellUnion::InitFromRange(S2CellId const& min_id,
+                                S2CellId const& max_id) {
   DCHECK(min_id.is_leaf());
   DCHECK(max_id.is_leaf());
   DCHECK_LE(min_id, max_id);
@@ -431,18 +431,18 @@ double S2CellUnion::ExactArea() const {
   return area;
 }
 
-bool operator==(S2CellUnion const &x, S2CellUnion const &y) {
+bool operator==(S2CellUnion const& x, S2CellUnion const& y) {
   return x.cell_ids() == y.cell_ids();
 }
 
-bool S2CellUnion::Contains(S2Cell const &cell) const {
+bool S2CellUnion::Contains(S2Cell const& cell) const {
   return Contains(cell.id());
 }
 
-bool S2CellUnion::MayIntersect(S2Cell const &cell) const {
+bool S2CellUnion::MayIntersect(S2Cell const& cell) const {
   return Intersects(cell.id());
 }
 
-bool S2CellUnion::Contains(S2Point const &p) const {
+bool S2CellUnion::Contains(S2Point const& p) const {
   return Contains(S2CellId::FromPoint(p));
 }

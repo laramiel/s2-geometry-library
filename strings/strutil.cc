@@ -56,25 +56,25 @@ using std::vector;
 //    all do the obvious, trivial thing.
 // ----------------------------------------------------------------------
 
-string FloatToString(float f, const char *format) {
+string FloatToString(float f, const char* format) {
   char buf[80];
   snprintf(buf, sizeof(buf), format, f);
   return string(buf);
 }
 
-string IntToString(int i, const char *format) {
+string IntToString(int i, const char* format) {
   char buf[80];
   snprintf(buf, sizeof(buf), format, i);
   return string(buf);
 }
 
-string Int64ToString(int64 i64, const char *format) {
+string Int64ToString(int64 i64, const char* format) {
   char buf[80];
   snprintf(buf, sizeof(buf), format, i64);
   return string(buf);
 }
 
-string UInt64ToString(uint64 ui64, const char *format) {
+string UInt64ToString(uint64 ui64, const char* format) {
   char buf[80];
   snprintf(buf, sizeof(buf), format, ui64);
   return string(buf);
@@ -115,7 +115,7 @@ string UInt64ToString(uint64 ui64) {
 //    for FastTimeToBuffer(), we guarantee that it is.)
 // ----------------------------------------------------------------------
 
-char *FastInt64ToBuffer(int64 i, char *buffer) {
+char* FastInt64ToBuffer(int64 i, char* buffer) {
   FastInt64ToBufferLeft(i, buffer);
   return buffer;
 }
@@ -124,16 +124,16 @@ char *FastInt64ToBuffer(int64 i, char *buffer) {
 // null character.  Also used by FastInt32ToBufferLeft
 static const int kFastInt32ToBufferOffset = 11;
 
-char *FastInt32ToBuffer(int32 i, char *buffer) {
+char* FastInt32ToBuffer(int32 i, char* buffer) {
   FastInt32ToBufferLeft(i, buffer);
   return buffer;
 }
 
-char *FastHexToBuffer(int i, char *buffer) {
+char* FastHexToBuffer(int i, char* buffer) {
   CHECK(i >= 0) << "FastHexToBuffer() wants non-negative integers, not " << i;
 
-  static const char *hexdigits = "0123456789abcdef";
-  char *p = buffer + 21;
+  static const char* hexdigits = "0123456789abcdef";
+  char* p = buffer + 21;
   *p-- = '\0';
   do {
     *p-- = hexdigits[i & 15];  // mod by 16
@@ -142,8 +142,8 @@ char *FastHexToBuffer(int i, char *buffer) {
   return p + 1;
 }
 
-char *InternalFastHexToBuffer(uint64 value, char *buffer, int num_byte) {
-  static const char *hexdigits = "0123456789abcdef";
+char* InternalFastHexToBuffer(uint64 value, char* buffer, int num_byte) {
+  static const char* hexdigits = "0123456789abcdef";
   buffer[num_byte] = '\0';
   for (int i = num_byte - 1; i >= 0; i--) {
     buffer[i] = hexdigits[uint32(value) & 0xf];
@@ -152,11 +152,11 @@ char *InternalFastHexToBuffer(uint64 value, char *buffer, int num_byte) {
   return buffer;
 }
 
-char *FastHex64ToBuffer(uint64 value, char *buffer) {
+char* FastHex64ToBuffer(uint64 value, char* buffer) {
   return InternalFastHexToBuffer(value, buffer, 16);
 }
 
-char *FastHex32ToBuffer(uint32 value, char *buffer) {
+char* FastHex32ToBuffer(uint32 value, char* buffer) {
   return InternalFastHexToBuffer(value, buffer, 8);
 }
 
@@ -197,9 +197,9 @@ static const char two_ASCII_digits[100][2] = {
 // terminating the string).
 // ----------------------------------------------------------------------
 
-char *FastUInt32ToBufferLeft(uint32 u, char *buffer) {
+char* FastUInt32ToBufferLeft(uint32 u, char* buffer) {
   int digits;
-  const char *ASCII_digits = NULL;
+  const char* ASCII_digits = NULL;
   // The idea of this implementation is to trim the number of divides to as few
   // as possible by using multiplication and subtraction rather than mod (%),
   // and by outputting two digits at a time rather than one.
@@ -279,7 +279,7 @@ char *FastUInt32ToBufferLeft(uint32 u, char *buffer) {
   goto sublt100_000_000;
 }
 
-char *FastInt32ToBufferLeft(int32 i, char *buffer) {
+char* FastInt32ToBufferLeft(int32 i, char* buffer) {
   uint32 u = i;
   if (i < 0) {
     *buffer++ = '-';
@@ -291,9 +291,9 @@ char *FastInt32ToBufferLeft(int32 i, char *buffer) {
   return FastUInt32ToBufferLeft(u, buffer);
 }
 
-char *FastUInt64ToBufferLeft(uint64 u64, char *buffer) {
+char* FastUInt64ToBufferLeft(uint64 u64, char* buffer) {
   int digits;
-  const char *ASCII_digits = NULL;
+  const char* ASCII_digits = NULL;
 
   uint32 u = static_cast<uint32>(u64);
   if (u == u64) return FastUInt32ToBufferLeft(u, buffer);
@@ -333,7 +333,7 @@ char *FastUInt64ToBufferLeft(uint64 u64, char *buffer) {
   return buffer;
 }
 
-char *FastInt64ToBufferLeft(int64 i, char *buffer) {
+char* FastInt64ToBufferLeft(int64 i, char* buffer) {
   uint64 u = i;
   if (i < 0) {
     *buffer++ = '-';
@@ -342,14 +342,14 @@ char *FastInt64ToBufferLeft(int64 i, char *buffer) {
   return FastUInt64ToBufferLeft(u, buffer);
 }
 
-static inline void PutTwoDigits(int i, char *p) {
+static inline void PutTwoDigits(int i, char* p) {
   DCHECK_GE(i, 0);
   DCHECK_LT(i, 100);
   p[0] = two_ASCII_digits[i][0];
   p[1] = two_ASCII_digits[i][1];
 }
 
-char *FastTimeToBuffer(time_t s, char *buffer) {
+char* FastTimeToBuffer(time_t s, char* buffer) {
   if (s == 0) {
     time(&s);
   }
@@ -366,7 +366,7 @@ char *FastTimeToBuffer(time_t s, char *buffer) {
   // but strftime does locale stuff which we do not want
   // plus strftime takes > 10x the time of hard code
 
-  const char *weekday_name = "Xxx";
+  const char* weekday_name = "Xxx";
   switch (tm.tm_wday) {
     default: { DCHECK(false); } break;
     case 0:
@@ -392,7 +392,7 @@ char *FastTimeToBuffer(time_t s, char *buffer) {
       break;
   }
 
-  const char *month_name = "Xxx";
+  const char* month_name = "Xxx";
   switch (tm.tm_mon) {
     default: { DCHECK(false); } break;
     case 0:
@@ -472,20 +472,20 @@ char *FastTimeToBuffer(time_t s, char *buffer) {
 //    valid integer is found; else returns deflt
 //    UInt64 and Int64 cannot handle decimal numbers with leading 0s.
 // --------------------------------------------------------------------
-uint64 ParseLeadingUInt64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingUInt64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
-int64 ParseLeadingInt64Value(const char *str, int64 deflt) {
-  char *error = NULL;
+int64 ParseLeadingInt64Value(const char* str, int64 deflt) {
+  char* error = NULL;
   const int64 value = strtoll(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
-uint64 ParseLeadingHex64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingHex64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 16);
   return (error == str) ? deflt : value;
 }
@@ -499,20 +499,20 @@ uint64 ParseLeadingHex64Value(const char *str, uint64 deflt) {
 //    This can handle strings with leading 0s.
 // --------------------------------------------------------------------
 
-int64 ParseLeadingDec64Value(const char *str, int64 deflt) {
-  char *error = NULL;
+int64 ParseLeadingDec64Value(const char* str, int64 deflt) {
+  char* error = NULL;
   const int64 value = strtoll(str, &error, 10);
   return (error == str) ? deflt : value;
 }
 
-uint64 ParseLeadingUDec64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingUDec64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 10);
   return (error == str) ? deflt : value;
 }
 
-bool DictionaryParse(const string &encoded_str,
-                     vector<pair<string, string>> *items) {
+bool DictionaryParse(const string& encoded_str,
+                     vector<pair<string, string>>* items) {
   vector<string> entries;
   SplitStringUsing(encoded_str, ",", &entries);
   for (int i = 0; i < entries.size(); ++i) {

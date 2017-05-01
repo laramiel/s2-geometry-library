@@ -29,13 +29,13 @@ S2Point S2LatLng::ToPoint() const {
   return S2Point(cos(theta) * cosphi, sin(theta) * cosphi, sin(phi));
 }
 
-S2LatLng::S2LatLng(S2Point const &p)
+S2LatLng::S2LatLng(S2Point const& p)
     : coords_(Latitude(p).radians(), Longitude(p).radians()) {
   // The latitude and longitude are already normalized.
   DCHECK(is_valid());
 }
 
-S1Angle S2LatLng::GetDistance(S2LatLng const &o) const {
+S1Angle S2LatLng::GetDistance(S2LatLng const& o) const {
   // This implements the Haversine formula, which is numerically stable for
   // small distances but only gets about 8 digits of precision for very large
   // distances (e.g. antipodal points).  Note that 8 digits is still accurate
@@ -63,8 +63,8 @@ string S2LatLng::ToStringInDegrees() const {
   return StringPrintf("%f,%f", pt.lat().degrees(), pt.lng().degrees());
 }
 
-void S2LatLng::ToStringInDegrees(string *s) const { *s = ToStringInDegrees(); }
+void S2LatLng::ToStringInDegrees(string* s) const { *s = ToStringInDegrees(); }
 
-ostream &operator<<(ostream &os, S2LatLng const &ll) {
+ostream& operator<<(ostream& os, S2LatLng const& ll) {
   return os << "[" << ll.lat() << ", " << ll.lng() << "]";
 }

@@ -13,26 +13,26 @@
 class S2PointRegion : public S2Region {
  public:
   // Create a region containing the given point, which must be unit length.
-  inline explicit S2PointRegion(S2Point const &point);
+  inline explicit S2PointRegion(S2Point const& point);
 
   ~S2PointRegion();
 
-  S2Point const &point() const { return point_; }
+  S2Point const& point() const { return point_; }
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2PointRegion *Clone() const;
+  virtual S2PointRegion* Clone() const;
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const &cell) const { return false; }
-  virtual bool MayIntersect(S2Cell const &cell) const;
-  virtual bool VirtualContainsPoint(S2Point const &p) const {
+  virtual bool Contains(S2Cell const& cell) const { return false; }
+  virtual bool MayIntersect(S2Cell const& cell) const;
+  virtual bool VirtualContainsPoint(S2Point const& p) const {
     return Contains(p);
   }
-  bool Contains(S2Point const &p) const { return (point_ == p); }
-  virtual void Encode(Encoder *const encoder) const;
-  virtual bool Decode(Decoder *const decoder);
+  bool Contains(S2Point const& p) const { return (point_ == p); }
+  virtual void Encode(Encoder* const encoder) const;
+  virtual bool Decode(Decoder* const decoder);
 
  private:
   S2Point point_;
@@ -40,7 +40,7 @@ class S2PointRegion : public S2Region {
   DISALLOW_EVIL_CONSTRUCTORS(S2PointRegion);
 };
 
-S2PointRegion::S2PointRegion(S2Point const &point) : point_(point) {
+S2PointRegion::S2PointRegion(S2Point const& point) : point_(point) {
   DCHECK(S2::IsUnitLength(point));
 }
 

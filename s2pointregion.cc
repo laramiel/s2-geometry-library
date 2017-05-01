@@ -12,7 +12,7 @@ static const unsigned char kCurrentEncodingVersionNumber = 1;
 
 S2PointRegion::~S2PointRegion() {}
 
-S2PointRegion *S2PointRegion::Clone() const {
+S2PointRegion* S2PointRegion::Clone() const {
   return new S2PointRegion(point_);
 }
 
@@ -25,11 +25,11 @@ S2LatLngRect S2PointRegion::GetRectBound() const {
   return S2LatLngRect(ll, ll);
 }
 
-bool S2PointRegion::MayIntersect(S2Cell const &cell) const {
+bool S2PointRegion::MayIntersect(S2Cell const& cell) const {
   return cell.Contains(point_);
 }
 
-void S2PointRegion::Encode(Encoder *encoder) const {
+void S2PointRegion::Encode(Encoder* encoder) const {
   encoder->Ensure(30);  // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
@@ -39,7 +39,7 @@ void S2PointRegion::Encode(Encoder *encoder) const {
   DCHECK_GE(encoder->avail(), 0);
 }
 
-bool S2PointRegion::Decode(Decoder *decoder) {
+bool S2PointRegion::Decode(Decoder* decoder) {
   unsigned char version = decoder->get8();
   if (version > kCurrentEncodingVersionNumber) return false;
 

@@ -48,11 +48,11 @@ class S1Angle {
   // Return the angle between two points, which is also equal to the distance
   // between these points on the unit sphere.  The points do not need to be
   // normalized.
-  S1Angle(S2Point const &x, S2Point const &y);
+  S1Angle(S2Point const& x, S2Point const& y);
 
   // Like the constructor above, but return the angle (i.e., distance)
   // between two S2LatLng points.
-  S1Angle(S2LatLng const &x, S2LatLng const &y);
+  S1Angle(S2LatLng const& x, S2LatLng const& y);
 
   double radians() const { return radians_; }
   double degrees() const { return radians_ * (180 / M_PI); }
@@ -65,25 +65,25 @@ class S1Angle {
   S1Angle abs() const { return S1Angle(fabs(radians_)); }
 
   // Comparison operators.
-  friend inline bool operator==(S1Angle const &x, S1Angle const &y);
-  friend inline bool operator!=(S1Angle const &x, S1Angle const &y);
-  friend inline bool operator<(S1Angle const &x, S1Angle const &y);
-  friend inline bool operator>(S1Angle const &x, S1Angle const &y);
-  friend inline bool operator<=(S1Angle const &x, S1Angle const &y);
-  friend inline bool operator>=(S1Angle const &x, S1Angle const &y);
+  friend inline bool operator==(S1Angle const& x, S1Angle const& y);
+  friend inline bool operator!=(S1Angle const& x, S1Angle const& y);
+  friend inline bool operator<(S1Angle const& x, S1Angle const& y);
+  friend inline bool operator>(S1Angle const& x, S1Angle const& y);
+  friend inline bool operator<=(S1Angle const& x, S1Angle const& y);
+  friend inline bool operator>=(S1Angle const& x, S1Angle const& y);
 
   // Simple arithmetic operators for manipulating S1Angles.
-  friend inline S1Angle operator-(S1Angle const &a);
-  friend inline S1Angle operator+(S1Angle const &a, S1Angle const &b);
-  friend inline S1Angle operator-(S1Angle const &a, S1Angle const &b);
-  friend inline S1Angle operator*(double m, S1Angle const &a);
-  friend inline S1Angle operator*(S1Angle const &a, double m);
-  friend inline S1Angle operator/(S1Angle const &a, double m);
-  friend inline double operator/(S1Angle const &a, S1Angle const &b);
-  inline S1Angle &operator+=(S1Angle const &a);
-  inline S1Angle &operator-=(S1Angle const &a);
-  inline S1Angle &operator*=(double m);
-  inline S1Angle &operator/=(double m);
+  friend inline S1Angle operator-(S1Angle const& a);
+  friend inline S1Angle operator+(S1Angle const& a, S1Angle const& b);
+  friend inline S1Angle operator-(S1Angle const& a, S1Angle const& b);
+  friend inline S1Angle operator*(double m, S1Angle const& a);
+  friend inline S1Angle operator*(S1Angle const& a, double m);
+  friend inline S1Angle operator/(S1Angle const& a, double m);
+  friend inline double operator/(S1Angle const& a, S1Angle const& b);
+  inline S1Angle& operator+=(S1Angle const& a);
+  inline S1Angle& operator-=(S1Angle const& a);
+  inline S1Angle& operator*=(double m);
+  inline S1Angle& operator/=(double m);
 
   // Return the angle normalized to the range (-180, 180] degrees.
   S1Angle Normalized() const;
@@ -97,74 +97,74 @@ class S1Angle {
 };
 DECLARE_POD(S1Angle);
 
-inline bool operator==(S1Angle const &x, S1Angle const &y) {
+inline bool operator==(S1Angle const& x, S1Angle const& y) {
   return x.radians() == y.radians();
 }
 
-inline bool operator!=(S1Angle const &x, S1Angle const &y) {
+inline bool operator!=(S1Angle const& x, S1Angle const& y) {
   return x.radians() != y.radians();
 }
 
-inline bool operator<(S1Angle const &x, S1Angle const &y) {
+inline bool operator<(S1Angle const& x, S1Angle const& y) {
   return x.radians() < y.radians();
 }
 
-inline bool operator>(S1Angle const &x, S1Angle const &y) {
+inline bool operator>(S1Angle const& x, S1Angle const& y) {
   return x.radians() > y.radians();
 }
 
-inline bool operator<=(S1Angle const &x, S1Angle const &y) {
+inline bool operator<=(S1Angle const& x, S1Angle const& y) {
   return x.radians() <= y.radians();
 }
 
-inline bool operator>=(S1Angle const &x, S1Angle const &y) {
+inline bool operator>=(S1Angle const& x, S1Angle const& y) {
   return x.radians() >= y.radians();
 }
 
-inline S1Angle operator-(S1Angle const &a) {
+inline S1Angle operator-(S1Angle const& a) {
   return S1Angle::Radians(-a.radians());
 }
 
-inline S1Angle operator+(S1Angle const &a, S1Angle const &b) {
+inline S1Angle operator+(S1Angle const& a, S1Angle const& b) {
   return S1Angle::Radians(a.radians() + b.radians());
 }
 
-inline S1Angle operator-(S1Angle const &a, S1Angle const &b) {
+inline S1Angle operator-(S1Angle const& a, S1Angle const& b) {
   return S1Angle::Radians(a.radians() - b.radians());
 }
 
-inline S1Angle operator*(double m, S1Angle const &a) {
+inline S1Angle operator*(double m, S1Angle const& a) {
   return S1Angle::Radians(m * a.radians());
 }
 
-inline S1Angle operator*(S1Angle const &a, double m) {
+inline S1Angle operator*(S1Angle const& a, double m) {
   return S1Angle::Radians(m * a.radians());
 }
 
-inline S1Angle operator/(S1Angle const &a, double m) {
+inline S1Angle operator/(S1Angle const& a, double m) {
   return S1Angle::Radians(a.radians() / m);
 }
 
-inline double operator/(S1Angle const &a, S1Angle const &b) {
+inline double operator/(S1Angle const& a, S1Angle const& b) {
   return a.radians() / b.radians();
 }
 
-inline S1Angle &S1Angle::operator+=(S1Angle const &a) {
+inline S1Angle& S1Angle::operator+=(S1Angle const& a) {
   radians_ += a.radians();
   return *this;
 }
 
-inline S1Angle &S1Angle::operator-=(S1Angle const &a) {
+inline S1Angle& S1Angle::operator-=(S1Angle const& a) {
   radians_ -= a.radians();
   return *this;
 }
 
-inline S1Angle &S1Angle::operator*=(double m) {
+inline S1Angle& S1Angle::operator*=(double m) {
   radians_ *= m;
   return *this;
 }
 
-inline S1Angle &S1Angle::operator/=(double m) {
+inline S1Angle& S1Angle::operator/=(double m) {
   radians_ /= m;
   return *this;
 }
@@ -195,6 +195,6 @@ inline S1Angle S1Angle::UnsignedE7(uint32 e7) {
 
 // Writes the angle in degrees with 7 digits of precision after the
 // decimal point, e.g. "17.3745904".
-ostream &operator<<(ostream &os, S1Angle const &a);
+ostream& operator<<(ostream& os, S1Angle const& a);
 
 #endif  // UTIL_GEOMETRY_S1ANGLE_H_

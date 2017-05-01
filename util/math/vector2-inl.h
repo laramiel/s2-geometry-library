@@ -47,24 +47,24 @@ Vector2<VType>::Vector2(const VType x, const VType y) {
   c_[1] = y;
 }
 template <typename VType>
-Vector2<VType>::Vector2(const Self &vb) {
+Vector2<VType>::Vector2(const Self& vb) {
   c_[0] = vb.c_[0];
   c_[1] = vb.c_[1];
 }
 template <typename VType>
-Vector2<VType>::Vector2(const Vector3<VType> &vb) {
+Vector2<VType>::Vector2(const Vector3<VType>& vb) {
   c_[0] = vb.x();
   c_[1] = vb.y();
 }
 template <typename VType>
-Vector2<VType>::Vector2(const Vector4<VType> &vb) {
+Vector2<VType>::Vector2(const Vector4<VType>& vb) {
   c_[0] = vb.x();
   c_[1] = vb.y();
 }
 
 template <typename VType>
 template <typename VType2>
-Vector2<VType> Vector2<VType>::Cast(const Vector2<VType2> &vb) {
+Vector2<VType> Vector2<VType>::Cast(const Vector2<VType2>& vb) {
   return Self(static_cast<VType>(vb[0]), static_cast<VType>(vb[1]));
 }
 
@@ -75,57 +75,57 @@ void Vector2<VType>::Set(const VType x, const VType y) {
 }
 
 template <typename VType>
-const Vector2<VType> &Vector2<VType>::operator=(const Self &vb) {
+const Vector2<VType>& Vector2<VType>::operator=(const Self& vb) {
   c_[0] = vb.c_[0];
   c_[1] = vb.c_[1];
   return (*this);
 }
 
 template <typename VType>
-Vector2<VType> &Vector2<VType>::operator+=(const Self &vb) {
+Vector2<VType>& Vector2<VType>::operator+=(const Self& vb) {
   c_[0] += vb.c_[0];
   c_[1] += vb.c_[1];
   return (*this);
 }
 
 template <typename VType>
-Vector2<VType> &Vector2<VType>::operator-=(const Self &vb) {
+Vector2<VType>& Vector2<VType>::operator-=(const Self& vb) {
   c_[0] -= vb.c_[0];
   c_[1] -= vb.c_[1];
   return (*this);
 }
 
 template <typename VType>
-Vector2<VType> &Vector2<VType>::operator*=(const VType k) {
+Vector2<VType>& Vector2<VType>::operator*=(const VType k) {
   c_[0] *= k;
   c_[1] *= k;
   return (*this);
 }
 
 template <typename VType>
-Vector2<VType> &Vector2<VType>::operator/=(const VType k) {
+Vector2<VType>& Vector2<VType>::operator/=(const VType k) {
   c_[0] /= k;
   c_[1] /= k;
   return (*this);
 }
 
 template <typename VType>
-Vector2<VType> Vector2<VType>::MulComponents(const Self &vb) const {
+Vector2<VType> Vector2<VType>::MulComponents(const Self& vb) const {
   return Self(c_[0] * vb.c_[0], c_[1] * vb.c_[1]);
 }
 
 template <typename VType>
-Vector2<VType> Vector2<VType>::DivComponents(const Self &vb) const {
+Vector2<VType> Vector2<VType>::DivComponents(const Self& vb) const {
   return Self(c_[0] / vb.c_[0], c_[1] / vb.c_[1]);
 }
 
 template <typename VType>
-Vector2<VType> Vector2<VType>::operator+(const Self &vb) const {
+Vector2<VType> Vector2<VType>::operator+(const Self& vb) const {
   return Self(*this) += vb;
 }
 
 template <typename VType>
-Vector2<VType> Vector2<VType>::operator-(const Self &vb) const {
+Vector2<VType> Vector2<VType>::operator-(const Self& vb) const {
   return Self(*this) -= vb;
 }
 
@@ -135,7 +135,7 @@ Vector2<VType> Vector2<VType>::operator-() const {
 }
 
 template <typename VType>
-VType Vector2<VType>::DotProd(const Self &vb) const {
+VType Vector2<VType>::DotProd(const Self& vb) const {
   return c_[0] * vb.c_[0] + c_[1] * vb.c_[1];
 }
 
@@ -150,12 +150,12 @@ Vector2<VType> Vector2<VType>::operator/(const VType k) const {
 }
 
 template <typename VType>
-VType Vector2<VType>::CrossProd(const Self &vb) const {
+VType Vector2<VType>::CrossProd(const Self& vb) const {
   return c_[0] * vb.c_[1] - c_[1] * vb.c_[0];
 }
 
 template <typename VType>
-VType &Vector2<VType>::operator[](const int b) {
+VType& Vector2<VType>::operator[](const int b) {
   DCHECK(b >= 0);
   DCHECK(b <= 1);
   return c_[b];
@@ -169,7 +169,7 @@ VType Vector2<VType>::operator[](const int b) const {
 }
 
 template <typename VType>
-void Vector2<VType>::x(const VType &v) {
+void Vector2<VType>::x(const VType& v) {
   c_[0] = v;
 }
 
@@ -179,7 +179,7 @@ VType Vector2<VType>::x() const {
 }
 
 template <typename VType>
-void Vector2<VType>::y(const VType &v) {
+void Vector2<VType>::y(const VType& v) {
   c_[1] = v;
 }
 
@@ -191,13 +191,13 @@ VType Vector2<VType>::y() const {
 
 
 template <typename VType>
-VType *Vector2<VType>::Data() {
-  return reinterpret_cast<VType *>(c_);
+VType* Vector2<VType>::Data() {
+  return reinterpret_cast<VType*>(c_);
 }
 
 template <typename VType>
-const VType *Vector2<VType>::Data() const {
-  return reinterpret_cast<const VType *>(c_);
+const VType* Vector2<VType>::Data() const {
+  return reinterpret_cast<const VType*>(c_);
 }
 
 
@@ -213,7 +213,7 @@ typename Vector2<VType>::FloatType Vector2<VType>::Norm(void) const {
 }
 
 template <typename VType>
-typename Vector2<VType>::FloatType Vector2<VType>::Angle(const Self &v) const {
+typename Vector2<VType>::FloatType Vector2<VType>::Angle(const Self& v) const {
   return atan2(this->CrossProd(v), this->DotProd(v));
 }
 
@@ -228,22 +228,22 @@ Vector2<VType> Vector2<VType>::Normalize() const {
 }
 
 template <typename VType>
-bool Vector2<VType>::operator==(const Self &vb) const {
+bool Vector2<VType>::operator==(const Self& vb) const {
   return (c_[0] == vb.c_[0]) && (c_[1] == vb.c_[1]);
 }
 
 template <typename VType>
-bool Vector2<VType>::operator!=(const Self &vb) const {
+bool Vector2<VType>::operator!=(const Self& vb) const {
   return (c_[0] != vb.c_[0]) || (c_[1] != vb.c_[1]);
 }
 
 template <typename VType>
-bool Vector2<VType>::aequal(const Self &vb, FloatType margin) const {
+bool Vector2<VType>::aequal(const Self& vb, FloatType margin) const {
   return (fabs(c_[0] - vb.c_[0]) < margin) && (fabs(c_[1] - vb.c_[1]) < margin);
 }
 
 template <typename VType>
-bool Vector2<VType>::operator<(const Self &vb) const {
+bool Vector2<VType>::operator<(const Self& vb) const {
   if (c_[0] < vb.c_[0]) return true;
   if (vb.c_[0] < c_[0]) return false;
   if (c_[1] < vb.c_[1]) return true;
@@ -251,17 +251,17 @@ bool Vector2<VType>::operator<(const Self &vb) const {
 }
 
 template <typename VType>
-bool Vector2<VType>::operator>(const Self &vb) const {
+bool Vector2<VType>::operator>(const Self& vb) const {
   return vb.operator<(*this);
 }
 
 template <typename VType>
-bool Vector2<VType>::operator<=(const Self &vb) const {
+bool Vector2<VType>::operator<=(const Self& vb) const {
   return !operator>(vb);
 }
 
 template <typename VType>
-bool Vector2<VType>::operator>=(const Self &vb) const {
+bool Vector2<VType>::operator>=(const Self& vb) const {
   return !operator<(vb);
 }
 
@@ -336,17 +336,17 @@ Vector2<VType2> operator/(const ScalarType k, const Vector2<VType2> v) {
 }
 
 template <typename VType>
-Vector2<VType> Max(const Vector2<VType> &v1, const Vector2<VType> &v2) {
+Vector2<VType> Max(const Vector2<VType>& v1, const Vector2<VType>& v2) {
   return Vector2<VType>(max(v1[0], v2[0]), max(v1[1], v2[1]));
 }
 
 template <typename VType>
-Vector2<VType> Min(const Vector2<VType> &v1, const Vector2<VType> &v2) {
+Vector2<VType> Min(const Vector2<VType>& v1, const Vector2<VType>& v2) {
   return Vector2<VType>(min(v1[0], v2[0]), min(v1[1], v2[1]));
 }
 
 template <typename VType>
-std::ostream &operator<<(std::ostream &out, const Vector2<VType> &va) {
+std::ostream& operator<<(std::ostream& out, const Vector2<VType>& va) {
   out << "[" << va[0] << ", " << va[1] << "]";
   return out;
 }

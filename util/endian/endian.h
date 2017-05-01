@@ -96,19 +96,19 @@ class LittleEndian {
 #endif /* ENDIAN */
 
   // Functions to do unaligned loads and stores in little-endian order.
-  static uint16 Load16(const void *p) { return ToHost16(UNALIGNED_LOAD16(p)); }
+  static uint16 Load16(const void* p) { return ToHost16(UNALIGNED_LOAD16(p)); }
 
-  static void Store16(void *p, uint16 v) {
+  static void Store16(void* p, uint16 v) {
     UNALIGNED_STORE16(p, FromHost16(v));
   }
 
-  static uint32 Load32(const void *p) { return ToHost32(UNALIGNED_LOAD32(p)); }
+  static uint32 Load32(const void* p) { return ToHost32(UNALIGNED_LOAD32(p)); }
 
-  static void Store32(void *p, uint32 v) {
+  static void Store32(void* p, uint32 v) {
     UNALIGNED_STORE32(p, FromHost32(v));
   }
 
-  static uint64 Load64(const void *p) { return ToHost64(UNALIGNED_LOAD64(p)); }
+  static uint64 Load64(const void* p) { return ToHost64(UNALIGNED_LOAD64(p)); }
 
   // Build a uint64 from 1-8 bytes.
   // 8 * len least significant bits are loaded from the memory with
@@ -126,10 +126,10 @@ class LittleEndian {
   //
   // For speed reasons this function does not work for len == 0.
   // The caller needs to guarantee that 1 <= len <= 8.
-  static uint64 Load64VariableLength(const void *const p, int len) {
+  static uint64 Load64VariableLength(const void* const p, int len) {
     DCHECK_GE(len, 1);
     DCHECK_LE(len, 8);
-    const char *const buf = static_cast<const char *const>(p);
+    const char* const buf = static_cast<const char* const>(p);
     uint64 val = 0;
     --len;
     do {
@@ -141,19 +141,19 @@ class LittleEndian {
     return val;
   }
 
-  static void Store64(void *p, uint64 v) {
+  static void Store64(void* p, uint64 v) {
     UNALIGNED_STORE64(p, FromHost64(v));
   }
 
-  static uint128 Load128(const void *p) {
+  static uint128 Load128(const void* p) {
     return uint128(
-        ToHost64(UNALIGNED_LOAD64(reinterpret_cast<const uint64 *>(p) + 1)),
+        ToHost64(UNALIGNED_LOAD64(reinterpret_cast<const uint64*>(p) + 1)),
         ToHost64(UNALIGNED_LOAD64(p)));
   }
 
-  static void Store128(void *p, const uint128 v) {
+  static void Store128(void* p, const uint128 v) {
     UNALIGNED_STORE64(p, FromHost64(Uint128Low64(v)));
-    UNALIGNED_STORE64(reinterpret_cast<uint64 *>(p) + 1,
+    UNALIGNED_STORE64(reinterpret_cast<uint64*>(p) + 1,
                       FromHost64(Uint128High64(v)));
   }
 
@@ -161,12 +161,12 @@ class LittleEndian {
   // 8 * len least significant bits are loaded from the memory with
   // LittleEndian order. The 128 - 8 * len most significant bits are
   // set all to 0.
-  static uint128 Load128VariableLength(const void *p, int len) {
+  static uint128 Load128VariableLength(const void* p, int len) {
     if (len <= 8) {
       return uint128(Load64VariableLength(p, len));
     } else {
       return uint128(
-          Load64VariableLength(static_cast<const char *>(p) + 8, len - 8),
+          Load64VariableLength(static_cast<const char*>(p) + 8, len - 8),
           Load64(p));
     }
   }

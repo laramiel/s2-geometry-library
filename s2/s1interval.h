@@ -65,7 +65,7 @@ class S1Interval {
   double lo() const { return bounds_[0]; }
   double hi() const { return bounds_[1]; }
   double bound(int i) const { return bounds_[i]; }
-  Vector2_d const &bounds() const { return bounds_; }
+  Vector2_d const& bounds() const { return bounds_; }
 
   // Methods to modify one endpoint of an existing S1Interval.  Requires that
   // the resulting S1Interval is valid.  This implies you cannot call this
@@ -126,29 +126,29 @@ class S1Interval {
 
   // Return true if the interval contains the given interval 'y'.
   // Works for empty, full, and singleton intervals.
-  bool Contains(S1Interval const &y) const;
+  bool Contains(S1Interval const& y) const;
 
   // Returns true if the interior of this interval contains the entire
   // interval 'y'.  Note that x.InteriorContains(x) is true only when
   // x is the empty or full interval, and x.InteriorContains(S1Interval(p,p))
   // is equivalent to x.InteriorContains(p).
-  bool InteriorContains(S1Interval const &y) const;
+  bool InteriorContains(S1Interval const& y) const;
 
   // Return true if the two intervals contain any points in common.
   // Note that the point +/-Pi has two representations, so the intervals
   // [-Pi,-3] and [2,Pi] intersect, for example.
-  bool Intersects(S1Interval const &y) const;
+  bool Intersects(S1Interval const& y) const;
 
   // Return true if the interior of this interval contains any point of the
   // interval 'y' (including its boundary).  Works for empty, full, and
   // singleton intervals.
-  bool InteriorIntersects(S1Interval const &y) const;
+  bool InteriorIntersects(S1Interval const& y) const;
 
   // Return the Hausdorff distance to the given interval 'y'. For two
   // S1Intervals x and y, this distance is defined by
   //     h(x, y) = max_{p in x} min_{q in y} d(p, q),
   // where d(.,.) is measured along S1.
-  double GetDirectedHausdorffDistance(S1Interval const &y) const;
+  double GetDirectedHausdorffDistance(S1Interval const& y) const;
 
   // Expand the interval by the minimum amount necessary so that it
   // contains the given point "p" (an angle in the range [-Pi, Pi]).
@@ -161,19 +161,19 @@ class S1Interval {
 
   // Return the smallest interval that contains this interval and the
   // given interval "y".
-  S1Interval Union(S1Interval const &y) const;
+  S1Interval Union(S1Interval const& y) const;
 
   // Return the smallest interval that contains the intersection of this
   // interval with "y".  Note that the region of intersection may
   // consist of two disjoint intervals.
-  S1Interval Intersection(S1Interval const &y) const;
+  S1Interval Intersection(S1Interval const& y) const;
 
   // Return true if two intervals contains the same set of points.
-  inline bool operator==(S1Interval const &y) const;
+  inline bool operator==(S1Interval const& y) const;
 
   // Return true if the length of the symmetric difference between the two
   // intervals is at most the given tolerance.
-  bool ApproxEquals(S1Interval const &y, double max_error = 1e-15) const;
+  bool ApproxEquals(S1Interval const& y, double max_error = 1e-15) const;
 
  private:
   enum ArgsChecked { ARGS_CHECKED };
@@ -214,11 +214,11 @@ inline bool S1Interval::is_valid() const {
           !(lo() == -M_PI && hi() != M_PI) && !(hi() == -M_PI && lo() != M_PI));
 }
 
-inline bool S1Interval::operator==(S1Interval const &y) const {
+inline bool S1Interval::operator==(S1Interval const& y) const {
   return lo() == y.lo() && hi() == y.hi();
 }
 
-inline ostream &operator<<(ostream &os, S1Interval const &x) {
+inline ostream& operator<<(ostream& os, S1Interval const& x) {
   return os << "[" << x.lo() << ", " << x.hi() << "]";
 }
 

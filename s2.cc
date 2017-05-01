@@ -29,7 +29,7 @@ namespace __gnu_cxx {
 
 // The hash function due to Bob Jenkins (see
 // http://burtleburtle.net/bob/hash/index.html).
-static inline void mix(uint32 &a, uint32 &b, uint32 &c) {  // 32bit version
+static inline void mix(uint32& a, uint32& b, uint32& c) {  // 32bit version
   a -= b;
   a -= c;
   a ^= (c >> 13);
@@ -84,9 +84,9 @@ inline uint32 CollapseZero(uint32 bits) {
   return bits & 0x7ffffffe;
 }
 
-size_t hash<S2Point>::operator()(S2Point const &p) const {
+size_t hash<S2Point>::operator()(S2Point const& p) const {
   // This function is significantly faster than calling HashTo32().
-  uint32 const *data = reinterpret_cast<uint32 const *>(p.Data());
+  uint32 const* data = reinterpret_cast<uint32 const*>(p.Data());
   DCHECK_EQ((6 * sizeof(*data)), sizeof(p));
 
   // We call CollapseZero() on every 32-bit chunk to avoid having endian
@@ -104,9 +104,9 @@ size_t hash<S2Point>::operator()(S2Point const &p) const {
 
 }  // namespace __gnu_cxx
 
-bool S2::IsUnitLength(S2Point const &p) { return fabs(p.Norm2() - 1) <= 1e-15; }
+bool S2::IsUnitLength(S2Point const& p) { return fabs(p.Norm2() - 1) <= 1e-15; }
 
-S2Point S2::Ortho(S2Point const &a) {
+S2Point S2::Ortho(S2Point const& a) {
 #ifdef S2_TEST_DEGENERACIES
   // Vector3::Ortho() always returns a point on the X-Y, Y-Z, or X-Z planes.
   // This leads to many more degenerate cases in polygon operations.
@@ -120,25 +120,25 @@ S2Point S2::Ortho(S2Point const &a) {
 #endif
 }
 
-void S2::GetFrame(S2Point const &z, Matrix3x3_d *m) {
+void S2::GetFrame(S2Point const& z, Matrix3x3_d* m) {
   DCHECK(IsUnitLength(z));
   m->SetCol(2, z);
   m->SetCol(1, Ortho(z));
   m->SetCol(0, m->Col(1).CrossProd(z));  // Already unit-length.
 }
 
-S2Point S2::ToFrame(Matrix3x3_d const &m, S2Point const &p) {
+S2Point S2::ToFrame(Matrix3x3_d const& m, S2Point const& p) {
   // The inverse of an orthonormal matrix is its transpose.
   return m.Transpose() * p;
 }
 
-S2Point S2::FromFrame(Matrix3x3_d const &m, S2Point const &q) { return m * q; }
+S2Point S2::FromFrame(Matrix3x3_d const& m, S2Point const& q) { return m * q; }
 
-bool S2::ApproxEquals(S2Point const &a, S2Point const &b, double max_error) {
+bool S2::ApproxEquals(S2Point const& a, S2Point const& b, double max_error) {
   return a.Angle(b) <= max_error;
 }
 
-S2Point S2::RobustCrossProd(S2Point const &a, S2Point const &b) {
+S2Point S2::RobustCrossProd(S2Point const& a, S2Point const& b) {
   // The direction of a.CrossProd(b) becomes unstable as (a + b) or (a - b)
   // approaches zero.  This leads to situations where a.CrossProd(b) is not
   // very orthogonal to "a" and/or "b".  We could fix this using Gram-Schmidt,
@@ -161,7 +161,7 @@ S2Point S2::RobustCrossProd(S2Point const &a, S2Point const &b) {
   return Ortho(a);
 }
 
-bool S2::SimpleCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
+bool S2::SimpleCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
   // We compute the signed volume of the parallelepiped ABC.  The usual
   // formula for this is (AxB).C, but we compute it here using (CxA).B
   // in order to ensure that ABC and CBA are not both CCW.  This follows
@@ -174,7 +174,7 @@ bool S2::SimpleCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   return c.CrossProd(a).DotProd(b) > 0;
 }
 
-int S2::RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
+int S2::RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
   // We don't need RobustCrossProd() here because RobustCCW() does its own
   // error estimation and calls ExpensiveCCW() if there is any uncertainty
   // about the result.
@@ -269,9 +269,9 @@ typedef Vector3<ExactFloat> Vector3_xf;
 //   "Simulation of Simplicity" (Edelsbrunner and Muecke, ACM Transactions on
 //   Graphics, 1990).
 //
-static int SymbolicallyPerturbedCCW(Vector3_xf const &a, Vector3_xf const &b,
-                                    Vector3_xf const &c,
-                                    Vector3_xf const &b_cross_c) {
+static int SymbolicallyPerturbedCCW(Vector3_xf const& a, Vector3_xf const& b,
+                                    Vector3_xf const& c,
+                                    Vector3_xf const& b_cross_c) {
   // This method requires that the points are sorted in lexicographically
   // increasing order.  This is because every possible S2Point has its own
   // symbolic perturbation such that if A < B then the symbolic perturbation
@@ -362,7 +362,7 @@ static int SymbolicallyPerturbedCCW(Vector3_xf const &a, Vector3_xf const &b,
   return 1;  // dc[2] * db[1] * da[0]
 }
 
-int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
+int S2::ExpensiveCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
   // Return zero if and only if two points are the same.  This ensures (1).
   if (a == b || b == c || c == a) return 0;
 
@@ -410,7 +410,7 @@ int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
 
 #else  // SIMULATION_OF_SIMPLICITY
 
-static inline int PlanarCCW(Vector2_d const &a, Vector2_d const &b) {
+static inline int PlanarCCW(Vector2_d const& a, Vector2_d const& b) {
   // Return +1 if the edge AB is CCW around the origin, etc.
   double sab = (a.DotProd(b) > 0) ? -1 : 1;
   Vector2_d vab = a + sab * b;
@@ -427,8 +427,8 @@ static inline int PlanarCCW(Vector2_d const &a, Vector2_d const &b) {
   return 0;
 }
 
-static inline int PlanarOrderedCCW(Vector2_d const &a, Vector2_d const &b,
-                                   Vector2_d const &c) {
+static inline int PlanarOrderedCCW(Vector2_d const& a, Vector2_d const& b,
+                                   Vector2_d const& c) {
   int sum = 0;
   sum += PlanarCCW(a, b);
   sum += PlanarCCW(b, c);
@@ -438,7 +438,7 @@ static inline int PlanarOrderedCCW(Vector2_d const &a, Vector2_d const &b,
   return 0;
 }
 
-int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
+int S2::ExpensiveCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
   // Return zero if and only if two points are the same.  This ensures (1).
   if (a == b || b == c || c == a) return 0;
 
@@ -530,18 +530,18 @@ int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
 
 #endif  // SIMULATION_OF_SIMPLICITY
 
-double S2::Angle(S2Point const &a, S2Point const &b, S2Point const &c) {
+double S2::Angle(S2Point const& a, S2Point const& b, S2Point const& c) {
   return RobustCrossProd(a, b).Angle(RobustCrossProd(c, b));
 }
 
-double S2::TurnAngle(S2Point const &a, S2Point const &b, S2Point const &c) {
+double S2::TurnAngle(S2Point const& a, S2Point const& b, S2Point const& c) {
   // This is a bit less efficient because we compute all 3 cross products, but
   // it ensures that TurnAngle(a,b,c) == -TurnAngle(c,b,a) for all a,b,c.
   double angle = RobustCrossProd(b, a).Angle(RobustCrossProd(c, b));
   return (RobustCCW(a, b, c) > 0) ? angle : -angle;
 }
 
-double S2::Area(S2Point const &a, S2Point const &b, S2Point const &c) {
+double S2::Area(S2Point const& a, S2Point const& b, S2Point const& c) {
   DCHECK(IsUnitLength(a));
   DCHECK(IsUnitLength(b));
   DCHECK(IsUnitLength(c));
@@ -599,7 +599,7 @@ double S2::Area(S2Point const &a, S2Point const &b, S2Point const &c) {
                                 tan(0.5 * (s - sb)) * tan(0.5 * (s - sc)))));
 }
 
-double S2::GirardArea(S2Point const &a, S2Point const &b, S2Point const &c) {
+double S2::GirardArea(S2Point const& a, S2Point const& b, S2Point const& c) {
   // This is equivalent to the usual Girard's formula but is slightly
   // more accurate, faster to compute, and handles a == b == c without
   // a special case.  The use of RobustCrossProd() makes it much more
@@ -611,16 +611,16 @@ double S2::GirardArea(S2Point const &a, S2Point const &b, S2Point const &c) {
   return max(0.0, ab.Angle(ac) - ab.Angle(bc) + bc.Angle(ac));
 }
 
-double S2::SignedArea(S2Point const &a, S2Point const &b, S2Point const &c) {
+double S2::SignedArea(S2Point const& a, S2Point const& b, S2Point const& c) {
   return Area(a, b, c) * RobustCCW(a, b, c);
 }
 
-S2Point S2::PlanarCentroid(S2Point const &a, S2Point const &b,
-                           S2Point const &c) {
+S2Point S2::PlanarCentroid(S2Point const& a, S2Point const& b,
+                           S2Point const& c) {
   return (1. / 3) * (a + b + c);
 }
 
-S2Point S2::TrueCentroid(S2Point const &a, S2Point const &b, S2Point const &c) {
+S2Point S2::TrueCentroid(S2Point const& a, S2Point const& b, S2Point const& c) {
   DCHECK(IsUnitLength(a));
   DCHECK(IsUnitLength(b));
   DCHECK(IsUnitLength(c));
@@ -658,8 +658,8 @@ S2Point S2::TrueCentroid(S2Point const &a, S2Point const &b, S2Point const &c) {
                        x.CrossProd(y).DotProd(r));
 }
 
-bool S2::OrderedCCW(S2Point const &a, S2Point const &b, S2Point const &c,
-                    S2Point const &o) {
+bool S2::OrderedCCW(S2Point const& a, S2Point const& b, S2Point const& c,
+                    S2Point const& o) {
   // The last inequality below is ">" rather than ">=" so that we return true
   // if A == B or B == C, and otherwise false if A == C.  Recall that
   // RobustCCW(x,y,z) == -RobustCCW(z,y,x) for all x,y,z.

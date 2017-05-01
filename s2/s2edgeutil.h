@@ -22,10 +22,10 @@ class S2EdgeUtil {
     // AB is the given fixed edge, and C is the first vertex of the vertex
     // chain.  All parameters must point to fixed storage that persists for
     // the lifetime of the EdgeCrosser object.
-    inline EdgeCrosser(S2Point const *a, S2Point const *b, S2Point const *c);
+    inline EdgeCrosser(S2Point const* a, S2Point const* b, S2Point const* c);
 
     // Call this function when your chain 'jumps' to a new place.
-    inline void RestartAt(S2Point const *c);
+    inline void RestartAt(S2Point const* c);
 
     // This method is equivalent to calling the S2EdgeUtil::RobustCrossing()
     // function (defined below) on the edges AB and CD.  It returns +1 if
@@ -33,26 +33,26 @@ class S2EdgeUtil {
     // from different edges are the same.  Returns 0 or -1 if either edge is
     // degenerate.  As a side effect, it saves vertex D to be used as the next
     // vertex C.
-    inline int RobustCrossing(S2Point const *d);
+    inline int RobustCrossing(S2Point const* d);
 
     // This method is equivalent to the S2EdgeUtil::EdgeOrVertexCrossing()
     // method defined below.  It is similar to RobustCrossing, but handles
     // cases where two vertices are identical in a way that makes it easy to
     // implement point-in-polygon containment tests.
-    inline bool EdgeOrVertexCrossing(S2Point const *d);
+    inline bool EdgeOrVertexCrossing(S2Point const* d);
 
    private:
     // This function handles the "slow path" of RobustCrossing(), which does
     // not need to be inlined.
-    int RobustCrossingInternal(S2Point const *d);
+    int RobustCrossingInternal(S2Point const* d);
 
     // The fields below are all constant.
-    S2Point const *const a_;
-    S2Point const *const b_;
+    S2Point const* const a_;
+    S2Point const* const b_;
     S2Point const a_cross_b_;
 
     // The fields below are updated for each vertex in the chain.
-    S2Point const *c_;  // Previous vertex in the vertex chain.
+    S2Point const* c_;  // Previous vertex in the vertex chain.
     int acb_;           // The orientation of the triangle ACB.
   };
 
@@ -71,14 +71,14 @@ class S2EdgeUtil {
     // points for the lifetime of the bounder, you must at least store
     // the last two points and alternate which one you use for the
     // next point.
-    void AddPoint(S2Point const *b);
+    void AddPoint(S2Point const* b);
 
     // Return the bounding rectangle of the edge chain that connects the
     // vertices defined so far.
     S2LatLngRect GetBound() const { return bound_; }
 
    private:
-    S2Point const *a_;    // The previous vertex in the chain.
+    S2Point const* a_;    // The previous vertex in the chain.
     S2LatLng a_latlng_;   // The corresponding latitude-longitude.
     S2LatLngRect bound_;  // The current bounding rectangle.
   };
@@ -92,11 +92,11 @@ class S2EdgeUtil {
    public:
     // 'interval' is the longitude interval to be tested against, and
     // 'v0' is the first vertex of edge chain.
-    LongitudePruner(S1Interval const &interval, S2Point const &v0);
+    LongitudePruner(S1Interval const& interval, S2Point const& v0);
 
     // Returns true if the edge (v0, v1) intersects the given longitude
     // interval, and then saves 'v1' to be used as the next 'v0'.
-    inline bool Intersects(S2Point const &v1);
+    inline bool Intersects(S2Point const& v1);
 
    private:
     S1Interval interval_;  // The interval to be tested against.
@@ -108,8 +108,8 @@ class S2EdgeUtil {
   //
   //  (1) SimpleCrossing(b,a,c,d) == SimpleCrossing(a,b,c,d)
   //  (2) SimpleCrossing(c,d,a,b) == SimpleCrossing(a,b,c,d)
-  static bool SimpleCrossing(S2Point const &a, S2Point const &b,
-                             S2Point const &c, S2Point const &d);
+  static bool SimpleCrossing(S2Point const& a, S2Point const& b,
+                             S2Point const& c, S2Point const& d);
 
   // Like SimpleCrossing, except that points that lie exactly on a line are
   // arbitrarily classified as being on one side or the other (according to
@@ -125,8 +125,8 @@ class S2EdgeUtil {
   //
   // Note that if you want to check an edge against a *chain* of other
   // edges, it is much more efficient to use an EdgeCrosser (above).
-  static int RobustCrossing(S2Point const &a, S2Point const &b,
-                            S2Point const &c, S2Point const &d);
+  static int RobustCrossing(S2Point const& a, S2Point const& b,
+                            S2Point const& c, S2Point const& d);
 
   // Given two edges AB and CD where at least two vertices are identical
   // (i.e. RobustCrossing(a,b,c,d) == 0), this function defines whether the
@@ -151,16 +151,16 @@ class S2EdgeUtil {
   //      VC(a,b,c,d) and VC(c,d,a,b) is true
   //
   // It is an error to call this method with 4 distinct vertices.
-  static bool VertexCrossing(S2Point const &a, S2Point const &b,
-                             S2Point const &c, S2Point const &d);
+  static bool VertexCrossing(S2Point const& a, S2Point const& b,
+                             S2Point const& c, S2Point const& d);
 
   // A convenience function that calls RobustCrossing() to handle cases
   // where all four vertices are distinct, and VertexCrossing() to handle
   // cases where two or more vertices are the same.  This defines a crossing
   // function such that point-in-polygon containment tests can be implemented
   // by simply counting edge crossings.
-  static bool EdgeOrVertexCrossing(S2Point const &a, S2Point const &b,
-                                   S2Point const &c, S2Point const &d);
+  static bool EdgeOrVertexCrossing(S2Point const& a, S2Point const& b,
+                                   S2Point const& c, S2Point const& d);
 
   // Given two edges AB and CD such that RobustCrossing() is true, return
   // their intersection point.  Useful properties of GetIntersection (GI):
@@ -172,8 +172,8 @@ class S2EdgeUtil {
   // AB and CD, but if the edges intersect at a very small angle then X may
   // not be close to the true mathematical intersection point P.  See the
   // description of "kIntersectionTolerance" below for details.
-  static S2Point GetIntersection(S2Point const &a, S2Point const &b,
-                                 S2Point const &c, S2Point const &d);
+  static S2Point GetIntersection(S2Point const& a, S2Point const& b,
+                                 S2Point const& c, S2Point const& d);
 
   // This distance is an upper bound on the distance from the intersection
   // point returned by GetIntersection() to either of the two edges that were
@@ -188,59 +188,59 @@ class S2EdgeUtil {
   // Given a point X and an edge AB, return the distance ratio AX / (AX + BX).
   // If X happens to be on the line segment AB, this is the fraction "t" such
   // that X == Interpolate(A, B, t).  Requires that A and B are distinct.
-  static double GetDistanceFraction(S2Point const &x, S2Point const &a,
-                                    S2Point const &b);
+  static double GetDistanceFraction(S2Point const& x, S2Point const& a,
+                                    S2Point const& b);
 
   // Return the point X along the line segment AB whose distance from A is the
   // given fraction "t" of the distance AB.  Does NOT require that "t" be
   // between 0 and 1.  Note that all distances are measured on the surface of
   // the sphere, so this is more complicated than just computing (1-t)*a + t*b
   // and normalizing the result.
-  static S2Point Interpolate(double t, S2Point const &a, S2Point const &b);
+  static S2Point Interpolate(double t, S2Point const& a, S2Point const& b);
 
   // Like Interpolate(), except that the parameter "ax" represents the desired
   // distance from A to the result X rather than a fraction between 0 and 1.
-  static S2Point InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
-                                       S2Point const &b);
+  static S2Point InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                       S2Point const& b);
 
   // A slightly more efficient version of InterpolateAtDistance() that can be
   // used when the distance AB is already known.
-  static S2Point InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
-                                       S2Point const &b, S1Angle const &ab);
+  static S2Point InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                       S2Point const& b, S1Angle const& ab);
 
   // Return the minimum distance from X to any point on the edge AB.  All
   // arguments should be unit length.  The result is very accurate for small
   // distances but may have some numerical error if the distance is large
   // (approximately Pi/2 or greater).  The case A == B is handled correctly.
-  static S1Angle GetDistance(S2Point const &x, S2Point const &a,
-                             S2Point const &b);
+  static S1Angle GetDistance(S2Point const& x, S2Point const& a,
+                             S2Point const& b);
 
   // A slightly more efficient version of GetDistance() where the cross
   // product of the two endpoints has been precomputed.  The cross product
   // does not need to be normalized, but should be computed using
   // S2::RobustCrossProd() for the most accurate results.
-  static S1Angle GetDistance(S2Point const &x, S2Point const &a,
-                             S2Point const &b, S2Point const &a_cross_b);
+  static S1Angle GetDistance(S2Point const& x, S2Point const& a,
+                             S2Point const& b, S2Point const& a_cross_b);
 
   // Return the point along the edge AB that is closest to the point X.
   // The fractional distance of this point along the edge AB can be obtained
   // using GetDistanceFraction() above.
-  static S2Point GetClosestPoint(S2Point const &x, S2Point const &a,
-                                 S2Point const &b);
+  static S2Point GetClosestPoint(S2Point const& x, S2Point const& a,
+                                 S2Point const& b);
 
   // A slightly more efficient version of GetClosestPoint() where the cross
   // product of the two endpoints has been precomputed.  The cross product
   // does not need to be normalized, but should be computed using
   // S2::RobustCrossProd() for the most accurate results.
-  static S2Point GetClosestPoint(S2Point const &x, S2Point const &a,
-                                 S2Point const &b, S2Point const &a_cross_b);
+  static S2Point GetClosestPoint(S2Point const& x, S2Point const& a,
+                                 S2Point const& b, S2Point const& a_cross_b);
 
   // Return true if every point on edge B=b0b1 is no further than "tolerance"
   // from some point on edge A=a0a1.
   // Requires that tolerance is less than 90 degrees.
-  static bool IsEdgeBNearEdgeA(S2Point const &a0, S2Point const &a1,
-                               S2Point const &b0, S2Point const &b1,
-                               S1Angle const &tolerance);
+  static bool IsEdgeBNearEdgeA(S2Point const& a0, S2Point const& a1,
+                               S2Point const& b0, S2Point const& b1,
+                               S1Angle const& tolerance);
 
   // For an edge chain (x0, x1, x2), a wedge is the region to the left
   // of the edges. More precisely, it is the union of all the rays
@@ -249,14 +249,14 @@ class S2EdgeUtil {
   // (a0, ab1, a2) and B = (b0, a12, b2). These are used in S2Loops.
 
   // Returns true if wedge A fully contains or is equal to wedge B.
-  static bool WedgeContains(S2Point const &a0, S2Point const &ab1,
-                            S2Point const &a2, S2Point const &b0,
-                            S2Point const &b2);
+  static bool WedgeContains(S2Point const& a0, S2Point const& ab1,
+                            S2Point const& a2, S2Point const& b0,
+                            S2Point const& b2);
 
   // Returns true if the intersection of the two wedges is not empty.
-  static bool WedgeIntersects(S2Point const &a0, S2Point const &ab1,
-                              S2Point const &a2, S2Point const &b0,
-                              S2Point const &b2);
+  static bool WedgeIntersects(S2Point const& a0, S2Point const& ab1,
+                              S2Point const& a2, S2Point const& b0,
+                              S2Point const& b2);
 
   // Detailed relation from wedges A to wedge B.
   enum WedgeRelation {
@@ -268,25 +268,25 @@ class S2EdgeUtil {
   };
 
   // Return the relation from wedge A to B.
-  static WedgeRelation GetWedgeRelation(S2Point const &a0, S2Point const &ab1,
-                                        S2Point const &a2, S2Point const &b0,
-                                        S2Point const &b2);
+  static WedgeRelation GetWedgeRelation(S2Point const& a0, S2Point const& ab1,
+                                        S2Point const& a2, S2Point const& b0,
+                                        S2Point const& b2);
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(S2EdgeUtil);  // Contains only static methods.
 };
 
-inline S2EdgeUtil::EdgeCrosser::EdgeCrosser(S2Point const *a, S2Point const *b,
-                                            S2Point const *c)
+inline S2EdgeUtil::EdgeCrosser::EdgeCrosser(S2Point const* a, S2Point const* b,
+                                            S2Point const* c)
     : a_(a), b_(b), a_cross_b_(a_->CrossProd(*b_)) {
   RestartAt(c);
 }
 
-inline void S2EdgeUtil::EdgeCrosser::RestartAt(S2Point const *c) {
+inline void S2EdgeUtil::EdgeCrosser::RestartAt(S2Point const* c) {
   c_ = c;
   acb_ = -S2::RobustCCW(*a_, *b_, *c_, a_cross_b_);
 }
 
-inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const *d) {
+inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const* d) {
   // For there to be an edge crossing, the triangles ACB, CBD, BDA, DAC must
   // all be oriented the same way (CW or CCW).  We keep the orientation of ACB
   // as part of our state.  When each new point D arrives, we compute the
@@ -314,16 +314,16 @@ inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const *d) {
   return result;
 }
 
-inline bool S2EdgeUtil::EdgeCrosser::EdgeOrVertexCrossing(S2Point const *d) {
+inline bool S2EdgeUtil::EdgeCrosser::EdgeOrVertexCrossing(S2Point const* d) {
   // We need to copy c_ since it is clobbered by RobustCrossing().
-  S2Point const *c = c_;
+  S2Point const* c = c_;
   int crossing = RobustCrossing(d);
   if (crossing < 0) return false;
   if (crossing > 0) return true;
   return VertexCrossing(*a_, *b_, *c, *d);
 }
 
-inline bool S2EdgeUtil::LongitudePruner::Intersects(S2Point const &v1) {
+inline bool S2EdgeUtil::LongitudePruner::Intersects(S2Point const& v1) {
   double lng1 = S2LatLng::Longitude(v1).radians();
   bool result = interval_.Intersects(S1Interval::FromPointPair(lng0_, lng1));
   lng0_ = lng1;
