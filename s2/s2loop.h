@@ -13,10 +13,10 @@ using std::vector;
 
 #include "base/logging.h"
 #include "base/macros.h"
-#include "s2edgeindex.h"
-#include "s2region.h"
-#include "s2latlngrect.h"
-#include "s2edgeutil.h"
+#include "s2/s2edgeindex.h"
+#include "s2/s2region.h"
+#include "s2/s2latlngrect.h"
+#include "s2/s2edgeutil.h"
 
 class S2Loop;
 // Defined in the cc file. A helper class for AreBoundariesCrossing.

@@ -10,13 +10,13 @@ using std::vector;
 #include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "util/math/matrix3x3-inl.h"
-#include "s2polyline.h"
+#include "s2/s2polyline.h"
 
 #include "util/coding/coder.h"
-#include "s2cap.h"
-#include "s2cell.h"
-#include "s2latlng.h"
-#include "s2edgeutil.h"
+#include "s2/s2cap.h"
+#include "s2/s2cell.h"
+#include "s2/s2latlng.h"
+#include "s2/s2edgeutil.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 

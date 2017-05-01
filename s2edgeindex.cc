@@ -51,7 +51,7 @@
 
 
 
-#include "s2edgeindex.h"
+#include "s2/s2edgeindex.h"
 
 #include <algorithm>
 using std::min;
@@ -70,10 +70,10 @@ using std::make_pair;
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "s2cell.h"
-#include "s2edgeutil.h"
-#include "s2polyline.h"
-#include "s2regioncoverer.h"
+#include "s2/s2cell.h"
+#include "s2/s2edgeutil.h"
+#include "s2/s2polyline.h"
+#include "s2/s2regioncoverer.h"
 
 
 void S2EdgeIndex::Reset() {

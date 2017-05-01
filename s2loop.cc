@@ -26,15 +26,15 @@ using std::pair;
 using std::make_pair;
 
 
-#include "s2loop.h"
+#include "s2/s2loop.h"
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "base/scoped_ptr.h"
 #include "util/coding/coder.h"
-#include "s2cap.h"
-#include "s2cell.h"
-#include "s2edgeindex.h"
+#include "s2/s2cap.h"
+#include "s2/s2cell.h"
+#include "s2/s2edgeindex.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 

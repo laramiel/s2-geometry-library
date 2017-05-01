@@ -2,7 +2,7 @@
 
 #include "base/logging.h"
 #include "strings/stringprintf.h"
-#include "s2latlng.h"
+#include "s2/s2latlng.h"
 
 S2LatLng S2LatLng::Normalized() const {
   // remainder(x, 2 * M_PI) reduces its argument to the range [-M_PI, M_PI]

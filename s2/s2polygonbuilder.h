@@ -31,8 +31,8 @@ using std::vector;
 
 #include "base/basictypes.h"
 #include "base/scoped_ptr.h"
-#include "s2.h"
-#include "s1angle.h"
+#include "s2/s2.h"
+#include "s2/s1angle.h"
 #include "util/math/matrix3x3.h"
 
 class S2Loop;

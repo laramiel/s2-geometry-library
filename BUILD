@@ -134,7 +134,6 @@ cc_library(
         "-DS2_USE_EXACTFLOAT",
         "-DHASH_NAMESPACE=std",
         "-std=c++11",
-        "-Is2",
     ],
     deps = [ ":base" ],
 )

@@ -8,8 +8,8 @@ using std::string;
 
 #include <ostream>
 #include "base/basictypes.h"
-#include "s1angle.h"
-#include "s2.h"
+#include "s2/s1angle.h"
+#include "s2/s2.h"
 #include "util/math/vector2-inl.h"
 
 // This class represents a point on the unit sphere as a pair

@@ -1,6 +1,6 @@
 // Copyright 2006 Google Inc. All Rights Reserved.
 
-#include "s2polygonbuilder.h"
+#include "s2/s2polygonbuilder.h"
 
 #include <algorithm>
 using std::min;
@@ -31,9 +31,9 @@ using std::vector;
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/scoped_ptr.h"
-#include "s2.h"
-#include "s2cellid.h"
-#include "s2polygon.h"
+#include "s2/s2.h"
+#include "s2/s2cellid.h"
+#include "s2/s2polygon.h"
 #include "util/math/matrix3x3-inl.h"
 
 void S2PolygonBuilderOptions::set_undirected_edges(bool undirected_edges) {
