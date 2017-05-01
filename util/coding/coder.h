@@ -365,7 +365,7 @@ inline void Encoder::putfloat(float f) {
 
 inline void Encoder::putdouble(double d) {
   uint64 v;
-  static_assert(sizeof(f) == sizeof(v), "double is not 64 bits");
+  static_assert(sizeof(d) == sizeof(v), "double is not 64 bits");
   memcpy(&v, &d, sizeof(d));
   put64(v);
 }
@@ -415,7 +415,7 @@ inline float Decoder::getfloat() {
 inline double Decoder::getdouble() {
   uint64 v = get64();
   double d;
-  static_assert(sizeof(f) == sizeof(v), "double is not 64 bits");
+  static_assert(sizeof(d) == sizeof(v), "double is not 64 bits");
   memcpy(&d, &v, sizeof(d));
   return d;
 }
