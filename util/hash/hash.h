@@ -37,25 +37,25 @@ using __gnu_cxx::hash_multiset;
 
 // --------------- Hashing -----------------------------------------------------
 
-uint32 Hash32StringWithSeedReferenceImplementation(const char *s, uint32 len,
+uint32 Hash32StringWithSeedReferenceImplementation(const char* s, uint32 len,
                                                    uint32 seed);
 
-uint32 Hash32StringWithSeed(const char *s, uint32 len, uint32 c);
+uint32 Hash32StringWithSeed(const char* s, uint32 len, uint32 c);
 
-uint64 Hash64StringWithSeed(const char *s, uint32 len, uint64 seed);
+uint64 Hash64StringWithSeed(const char* s, uint32 len, uint64 seed);
 
-template<typename T>
+template <typename T>
 inline uint64 Hash64NumWithSeed(T num, uint64 seed) {
-  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num),
-                              sizeof(num), seed);
+  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num), sizeof(num),
+                              seed);
 }
 inline uint64 Hash64FloatWithSeed(float num, uint64 seed) {
-  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num),
-                              sizeof(num), seed);
+  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num), sizeof(num),
+                              seed);
 }
 inline uint64 Hash64DoubleWithSeed(double num, uint64 seed) {
-  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num),
-                              sizeof(num), seed);
+  return Hash64StringWithSeed(reinterpret_cast<const char*>(&num), sizeof(num),
+                              seed);
 }
 
 namespace hash_internal {
@@ -82,8 +82,8 @@ inline size_t HashStringThoroughly(const char* s, size_t len) {
     return Hash64StringWithSeed(s, static_cast<uint32>(len),
                                 hash_internal::kMix64);
   }
-  return static_cast<size_t>(Hash32StringWithSeed(s, static_cast<uint32>(len),
-                             hash_internal::kMix32));
+  return static_cast<size_t>(
+      Hash32StringWithSeed(s, static_cast<uint32>(len), hash_internal::kMix32));
 }
 
 inline size_t HashTo32(const char* s, size_t len) {
@@ -109,23 +109,26 @@ struct hash {
 };
 #endif  // defined(_MSC_VER)
 
-template<> struct hash<int64> {
+template <>
+struct hash<int64> {
   size_t operator()(int64 x) const { return static_cast<size_t>(x); }
 };
 
-template<> struct hash<uint64> {
+template <>
+struct hash<uint64> {
   size_t operator()(uint64 x) const { return static_cast<size_t>(x); }
 };
 
 #endif  // !defined(_STLP_LONG_LONG) && !(defined(_MSC_VER) && _MSC_VER >= 1600)
 
-template<> struct hash<bool> {
+template <>
+struct hash<bool> {
   size_t operator()(bool x) const { return static_cast<size_t>(x); }
 };
 
 #if defined(__GNUC__)
 // Use our nice hash function for strings
-template<class _CharT, class _Traits, class _Alloc>
+template <class _CharT, class _Traits, class _Alloc>
 struct hash<std::basic_string<_CharT, _Traits, _Alloc> > {
   size_t operator()(const std::basic_string<_CharT, _Traits, _Alloc>& k) const {
     return HashTo32(k.data(), static_cast<uint32>(k.length()));
@@ -133,7 +136,8 @@ struct hash<std::basic_string<_CharT, _Traits, _Alloc> > {
 };
 
 // they don't define a hash for const string at all
-template<> struct hash<const std::string> {
+template <>
+struct hash<const std::string> {
   size_t operator()(const std::string& k) const {
     return HashTo32(k.data(), static_cast<uint32>(k.length()));
   }
@@ -146,9 +150,9 @@ template<> struct hash<const std::string> {
 
 // --------------- Fingerprints ------------------------------------------------
 
-uint64 Fingerprint(const char *s, uint32 len);
+uint64 Fingerprint(const char* s, uint32 len);
 
-template<typename T>
+template <typename T>
 inline uint64 Fingerprint(T num) {
   return Fingerprint(reinterpret_cast<const char*>(&num), sizeof(num));
 }

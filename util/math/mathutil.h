@@ -38,11 +38,14 @@ inline T sgn(const T x) {
 
 class MathUtil {
  public:
-
   // Return type of RealRootsForQuadratic (below).  The enum values are
   // chosen to be sensible if converted to bool or int, and should not be
   // changed lightly.
-  enum QuadraticRootType {kNoRealRoots = 0, kAmbiguous = 1, kTwoRealRoots = 2};
+  enum QuadraticRootType {
+    kNoRealRoots = 0,
+    kAmbiguous = 1,
+    kTwoRealRoots = 2
+  };
 
   // Returns the QuadraticRootType of the equation a * x^2 + b * x + c = 0.
   // Normal cases are kNoRealRoots, in which case *r1 and *r2 are not
@@ -58,8 +61,8 @@ class MathUtil {
   static inline QuadraticRootType RealRootsForQuadratic(long double a,
                                                         long double b,
                                                         long double c,
-                                                        long double *r1,
-                                                        long double *r2) {
+                                                        long double* r1,
+                                                        long double* r2) {
     // Deal with degenerate cases where leading coefficients vanish.
     if (a == 0.0) {
       return DegenerateQuadraticRoots(b, c, r1, r2);
@@ -89,8 +92,7 @@ class MathUtil {
   }
 
   // Returns the discriminant of the quadratic equation a * x^2 + b * x + c = 0.
-  static inline long double QuadraticDiscriminant(long double a,
-                                                  long double b,
+  static inline long double QuadraticDiscriminant(long double a, long double b,
                                                   long double c) {
     return b * b - 4 * a * c;
   }
@@ -100,8 +102,7 @@ class MathUtil {
   // -> a + a*epsilon) could change the sign of the discriminant. [When the
   // discriminant is exactly 0 the quadratic is (2*a*x + b)^2 = 0 and the
   // root is - b / (2*a).]
-  static inline bool QuadraticIsAmbiguous(long double a,
-                                          long double b,
+  static inline bool QuadraticIsAmbiguous(long double a, long double b,
                                           long double c,
                                           long double discriminant,
                                           long double epsilon) {
@@ -115,12 +116,9 @@ class MathUtil {
   // Returns in *r1 and *r2 the roots of a "normal" quadratic equation
   // whose discriminant (b*b - 4*a*c) is known and positive.  Preconditions
   // (will DCHECK and return false if not satisfied): a != 0, discriminant > 0.
-  static inline bool RealQuadraticRoots(long double a,
-                                        long double b,
-                                        long double c,
-                                        long double discriminant,
-                                        long double *r1,
-                                        long double *r2) {
+  static inline bool RealQuadraticRoots(long double a, long double b,
+                                        long double c, long double discriminant,
+                                        long double* r1, long double* r2) {
     if (discriminant <= 0 || a == 0) {
       // A case that should have been excluded by the caller.
       DCHECK(false);
@@ -139,8 +137,8 @@ class MathUtil {
     // producing a very inaccurate root.  Avoid the risk of cancellation with
     // the following rearrangement.  (Note we don't use sgn(b) because we
     // need sgn(0) = +1 or -1.)
-    long double const q = -0.5 *
-        (b + ((b >= 0) ? sqrt(discriminant) : -sqrt(discriminant)));
+    long double const q =
+        -0.5 * (b + ((b >= 0) ? sqrt(discriminant) : -sqrt(discriminant)));
     *r1 = q / a;  // If a is very small this produces +/- HUGE_VAL.
     *r2 = c / q;  // q cannot be too small.
     return true;
@@ -155,19 +153,16 @@ class MathUtil {
   // discriminant is zero).
   static QuadraticRootType DegenerateQuadraticRoots(long double b,
                                                     long double c,
-                                                    long double *r1,
-                                                    long double *r2);
+                                                    long double* r1,
+                                                    long double* r2);
 
   // Solves for the real roots of x^3+ax^2+bx+c=0, returns true iff
   // all three are real, in which case the roots are stored (in any
   // order) in r1, r2, r3; otherwise, exactly one real root exists and
   // it is stored in r1.
-  static bool RealRootsForCubic(long double a,
-                                long double b,
-                                long double c,
-                                long double *r1,
-                                long double *r2,
-                                long double *r3);
+  static bool RealRootsForCubic(long double a, long double b, long double c,
+                                long double* r1, long double* r2,
+                                long double* r3);
 
 
   // ----------------------------------------------------------------------
@@ -177,7 +172,7 @@ class MathUtil {
   //   f(x) = 1/(1+e^(-lambda x))
   // --------------------------------------------------------------------
   static double Sigmoid(double x, double lambda) {
-    return 1/(1+exp(-lambda*x));
+    return 1 / (1 + exp(-lambda * x));
   }
 
   // ----------------------------------------------------------------------
@@ -202,12 +197,12 @@ class MathUtil {
   // will still be within 10% of either f(1) or f(10) then we set: start
   // = 1 finish = 10 tolerance = 0.1
   // --------------------------------------------------------------------
-  static double Sigmoid2(double x, double start_x,
-                         double finish_x, double tolerance) {
+  static double Sigmoid2(double x, double start_x, double finish_x,
+                         double tolerance) {
     DCHECK_GT(tolerance, 0);
     DCHECK_LT(tolerance, 1);
     DCHECK_NE(finish_x - start_x, 0);
-    double lambda = log((1-tolerance)/tolerance)*2/(finish_x - start_x);
+    double lambda = log((1 - tolerance) / tolerance) * 2 / (finish_x - start_x);
     return Sigmoid(x - 0.5 * (start_x + finish_x), lambda);
   }
 
@@ -223,8 +218,8 @@ class MathUtil {
 
   // Returns the greatest common divisor of two unsigned integers x and y,
   // and assigns a, and b such that a*x + b*y = gcd(x, y).
-  static unsigned int ExtendedGCD(unsigned int x, unsigned int y,
-                                  int* a, int* b);
+  static unsigned int ExtendedGCD(unsigned int x, unsigned int y, int* a,
+                                  int* b);
 
   // Returns the least common multiple of two unsigned integers.  Returns zero
   // if either is zero.
@@ -301,7 +296,9 @@ class MathUtil {
 
   // Example usage: IntRound(3.6) (no need for IntRound<double>(3.6)).
   template <class FloatIn>
-  static int IntRound(FloatIn x) { return Round<int>(x); }
+  static int IntRound(FloatIn x) {
+    return Round<int>(x);
+  }
 
   // --------------------------------------------------------------------
   // FastIntRound, FastInt64Round
@@ -334,28 +331,26 @@ class MathUtil {
   //   --------------------------------------------------------------------
 
   static int32 FastIntRound(double x) {
-    // This function is not templatized because gcc doesn't seem to be able
-    // to deal with inline assembly code in templatized functions, and there
-    // is no advantage to passing an argument type of "float" on Intel
-    // architectures anyway.
+// This function is not templatized because gcc doesn't seem to be able
+// to deal with inline assembly code in templatized functions, and there
+// is no advantage to passing an argument type of "float" on Intel
+// architectures anyway.
 
 #if defined __GNUC__ && (defined __i386__ || defined __SSE2__)
 #if defined __SSE2__
     // SSE2.
     int32 result;
-    __asm__ __volatile__
-        ("cvtsd2si %1, %0"
-         : "=r" (result)    // Output operand is a register
-         : "x" (x));        // Input operand is an xmm register
+    __asm__ __volatile__("cvtsd2si %1, %0"
+                         : "=r"(result)  // Output operand is a register
+                         : "x"(x));      // Input operand is an xmm register
     return result;
 #elif defined __i386__
     // FPU stack.  Adapted from /usr/include/bits/mathinline.h.
     int32 result;
-    __asm__ __volatile__
-        ("fistpl %0"
-         : "=m" (result)    // Output operand is a memory location
-         : "t" (x)          // Input operand is top of FP stack
-         : "st");           // Clobbers (pops) top of FP stack
+    __asm__ __volatile__("fistpl %0"
+                         : "=m"(result)  // Output operand is a memory location
+                         : "t"(x)        // Input operand is top of FP stack
+                         : "st");        // Clobbers (pops) top of FP stack
     return result;
 #endif  // if defined __x86_64__ || ...
 #else
@@ -368,20 +363,18 @@ class MathUtil {
 #if defined __x86_64__
     // SSE2.
     int64 result;
-    __asm__ __volatile__
-        ("cvtsd2si %1, %0"
-         : "=r" (result)    // Output operand is a register
-         : "x" (x));        // Input operand is an xmm register
+    __asm__ __volatile__("cvtsd2si %1, %0"
+                         : "=r"(result)  // Output operand is a register
+                         : "x"(x));      // Input operand is an xmm register
     return result;
 #elif defined __i386__
     // There is no CVTSD2SI in i386 to produce a 64 bit int, even with SSE2.
     // FPU stack.  Adapted from /usr/include/bits/mathinline.h.
     int64 result;
-    __asm__ __volatile__
-        ("fistpll %0"
-         : "=m" (result)    // Output operand is a memory location
-         : "t" (x)          // Input operand is top of FP stack
-         : "st");           // Clobbers (pops) top of FP stack
+    __asm__ __volatile__("fistpll %0"
+                         : "=m"(result)  // Output operand is a memory location
+                         : "t"(x)        // Input operand is top of FP stack
+                         : "st");        // Clobbers (pops) top of FP stack
     return result;
 #endif  // if defined __i386__
 #else
@@ -401,7 +394,7 @@ class MathUtil {
 
   // Returns an approximation An for the n-th element of the harmonic
   // serices Hn = 1 + ... + 1/n.  Sets error e such that |An-Hn| < e.
-  static double Harmonic(int64 n, double *e);
+  static double Harmonic(int64 n, double* e);
 
   // Returns Stirling's Approximation for log(n!) which has an error
   // of at worst 1/(1260*n^5).
@@ -459,7 +452,7 @@ class MathUtil {
   // which should be OK because, although they (can) have different
   // bit representation, they are observably the same when examined
   // with arithmetic and (in)equality operators.
-  template<typename T>
+  template <typename T>
   static T Max(const T x, const T y) {
     return MathLimits<T>::IsNaN(x) || x > y ? x : y;
   }
@@ -468,7 +461,7 @@ class MathUtil {
   // Works correctly for special floating point values.
   // Note: 0.0 and -0.0 are not differentiated by Min (Min(-0.0, 0.0) is 0.0),
   // which should be OK: see the comment for Max above.
-  template<typename T>
+  template <typename T>
   static T Min(const T x, const T y) {
     return MathLimits<T>::IsNaN(x) || x < y ? x : y;
   }
@@ -478,7 +471,7 @@ class MathUtil {
   // for special floating point values.
   // Note: 0.0 and -0.0 are not differentiated by Abs (Abs(0.0) is -0.0),
   // which should be OK: see the comment for Max above.
-  template<typename T>
+  template <typename T>
   static T Abs(const T x) {
     return x > 0 ? x : -x;
   }
@@ -489,7 +482,7 @@ class MathUtil {
   //   +1 if x > 0,
   //    0 if x = 0.
   //  nan if x is nan.
-  template<typename T>
+  template <typename T>
   static T Sign(const T x) {
     return MathLimits<T>::IsNaN(x) ? x : (x == 0 ? 0 : (x > 0 ? 1 : -1));
   }
@@ -502,7 +495,7 @@ class MathUtil {
 
   // Absolute value of the difference between two numbers.
   // Works correctly for signed types and special floating point values.
-  template<typename T>
+  template <typename T>
   static typename MathLimits<T>::UnsignedType AbsDiff(const T x, const T y) {
     return x > y ? x - y : y - x;
   }
@@ -525,7 +518,7 @@ class MathUtil {
   //
   // This and other Within* NearBy* functions below
   // work correctly for signed types and special floating point values.
-  template<typename T>
+  template <typename T>
   static bool WithinMargin(const T x, const T y, const T margin) {
     DCHECK_GE(margin, 0);
     // this is a little faster than x <= y + margin  &&  x >= y - margin
@@ -538,7 +531,7 @@ class MathUtil {
   // both for large magnitude numbers > 1 and for small magnitude numbers < 1,
   // zero is never within a fraction of any
   // non-zero finite number (fraction is required to be < 1).
-  template<typename T>
+  template <typename T>
   static bool WithinFraction(const T x, const T y, const T fraction);
 
   // If two (usually floating point) numbers are within a certain
@@ -547,23 +540,23 @@ class MathUtil {
   //   WithinFraction(x, y, fraction)  ||  WithinMargin(x, y, margin)
   // E.g. WithinFraction(0.0, 1e-10, 1e-5) is false but
   //      WithinFractionOrMargin(0.0, 1e-10, 1e-5, 1e-5) is true.
-  template<typename T>
-  static bool WithinFractionOrMargin(const T x, const T y,
-                                     const T fraction, const T margin);
+  template <typename T>
+  static bool WithinFractionOrMargin(const T x, const T y, const T fraction,
+                                     const T margin);
 
   // NearBy* functions below are geared as replacements for CHECK_EQ()
   // over floating-point numbers.
 
   // Same as WithinMargin(x, y, MathLimits<T>::kStdError)
   // Works as == for integer types.
-  template<typename T>
+  template <typename T>
   static bool NearByMargin(const T x, const T y) {
     return AbsDiff(x, y) <= MathLimits<T>::kStdError;
   }
 
   // Same as WithinFraction(x, y, MathLimits<T>::kStdError)
   // Works as == for integer types.
-  template<typename T>
+  template <typename T>
   static bool NearByFraction(const T x, const T y) {
     return WithinFraction(x, y, MathLimits<T>::kStdError);
   }
@@ -571,10 +564,10 @@ class MathUtil {
   // Same as WithinFractionOrMargin(x, y, MathLimits<T>::kStdError,
   //                                      MathLimits<T>::kStdError)
   // Works as == for integer types.
-  template<typename T>
+  template <typename T>
   static bool NearByFractionOrMargin(const T x, const T y) {
     return WithinFractionOrMargin(x, y, MathLimits<T>::kStdError,
-                                        MathLimits<T>::kStdError);
+                                  MathLimits<T>::kStdError);
   }
 
   // Tests whether two values are close enough to each other to be considered
@@ -619,7 +612,7 @@ class MathUtil {
   // Both cases may produce errors in excess of standard_error.
   // In any case, you should not test the results of calculations which have
   // not been vetted for possible cancellation errors and the like.
-  template<typename T>
+  template <typename T>
   static bool AlmostEquals(const T x, const T y) {
     if (x == y)  // Covers +inf and -inf, and is a shortcut for finite values.
       return true;
@@ -634,13 +627,13 @@ class MathUtil {
   }
 
   // Returns the clamped value to be between low and high inclusively.
-  template<typename T>
+  template <typename T>
   static const T& Clamp(const T& low, const T& high, const T& value) {
     return std::max(low, std::min(value, high));
   }
 
   // Clamps value to be between min and max inclusively.
-  template<typename T>
+  template <typename T>
   static void ClampValue(const T& low, const T& high, T* value) {
     *value = Clamp(low, high, *value);
   }
@@ -654,32 +647,32 @@ class MathUtil {
 // Intel versions when possible.  Note that gcc does not currently support
 // partial specialization of templatized functions.
 
-template<>
+template <>
 inline int32 MathUtil::Round<int32, double>(double x) {
   return FastIntRound(x);
 }
 
-template<>
+template <>
 inline int32 MathUtil::Round<int32, float>(float x) {
   return FastIntRound(x);
 }
 
-template<>
+template <>
 inline int64 MathUtil::Round<int64, double>(double x) {
   return FastInt64Round(x);
 }
 
-template<>
+template <>
 inline int64 MathUtil::Round<int64, float>(float x) {
   return FastInt64Round(x);
 }
 
 #endif
 
-template<typename T>
+template <typename T>
 bool MathUtil::WithinFraction(const T x, const T y, const T fraction) {
   // not just "0 <= fraction" to fool the compiler for unsigned types
-  DCHECK((0 < fraction || 0 == fraction)  &&  fraction < 1);
+  DCHECK((0 < fraction || 0 == fraction) && fraction < 1);
 
   // Template specialization will convert the if() condition to a constant,
   // which will cause the compiler to generate code for either the "if" part
@@ -694,11 +687,11 @@ bool MathUtil::WithinFraction(const T x, const T y, const T fraction) {
   }
 }
 
-template<typename T>
-bool MathUtil::WithinFractionOrMargin(const T x, const T y,
-                                      const T fraction, const T margin) {
+template <typename T>
+bool MathUtil::WithinFractionOrMargin(const T x, const T y, const T fraction,
+                                      const T margin) {
   // not just "0 <= fraction" to fool the compiler for unsigned types
-  DCHECK((0 < fraction || 0 == fraction)  &&  fraction < 1  &&  margin >= 0);
+  DCHECK((0 < fraction || 0 == fraction) && fraction < 1 && margin >= 0);
 
   // Template specialization will convert the if() condition to a constant,
   // which will cause the compiler to generate code for either the "if" part
