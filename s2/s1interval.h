@@ -8,10 +8,10 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
+#include <math.h>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "util/math/vector2-inl.h"
-#include <math.h>
 
 // An S1Interval represents a closed interval on a unit circle (also known
 // as a 1-dimensional sphere).  It is capable of representing the empty
@@ -33,7 +33,7 @@ using std::endl;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S1Interval {
-public:
+ public:
   // Constructor.  Both endpoints must be in the range -Pi to Pi inclusive.
   // The value -Pi is converted internally to Pi except for the Full()
   // and Empty() intervals.
@@ -175,7 +175,7 @@ public:
   // intervals is at most the given tolerance.
   bool ApproxEquals(S1Interval const &y, double max_error = 1e-15) const;
 
-private:
+ private:
   enum ArgsChecked { ARGS_CHECKED };
 
   // Internal constructor that assumes that both arguments are in the
@@ -191,10 +191,8 @@ private:
 DECLARE_POD(S1Interval);
 
 inline S1Interval::S1Interval(double lo, double hi) : bounds_(lo, hi) {
-  if (lo == -M_PI && hi != M_PI)
-    set_lo(M_PI);
-  if (hi == -M_PI && lo != M_PI)
-    set_hi(M_PI);
+  if (lo == -M_PI && hi != M_PI) set_lo(M_PI);
+  if (hi == -M_PI && lo != M_PI) set_hi(M_PI);
   DCHECK(is_valid());
 }
 
@@ -224,4 +222,4 @@ inline ostream &operator<<(ostream &os, S1Interval const &x) {
   return os << "[" << x.lo() << ", " << x.hi() << "]";
 }
 
-#endif // UTIL_GEOMETRY_S1INTERVAL_H_
+#endif  // UTIL_GEOMETRY_S1INTERVAL_H_

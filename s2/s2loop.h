@@ -23,7 +23,7 @@ class WedgeProcessor;
 
 // Indexing structure to efficiently compute intersections.
 class S2LoopIndex : public S2EdgeIndex {
-public:
+ public:
   explicit S2LoopIndex(S2Loop const *loop) : loop_(loop) {}
   virtual ~S2LoopIndex() {}
 
@@ -35,7 +35,7 @@ public:
   virtual S2Point const *edge_to(int index) const;
   virtual int num_edges() const;
 
-private:
+ private:
   S2Loop const *loop_;
 };
 
@@ -58,7 +58,7 @@ private:
 // TODO(user): When doing operations on two loops, always create the
 // edgeindex for the bigger of the two.  Same for polygons.
 class S2Loop : public S2Region {
-public:
+ public:
   // Create an empty S2Loop that should be initialized by calling Init() or
   // Decode().
   S2Loop();
@@ -245,7 +245,7 @@ public:
   virtual bool Contains(S2Cell const &cell) const;
   virtual bool MayIntersect(S2Cell const &cell) const;
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' does not need to be normalized.
@@ -255,7 +255,7 @@ public:
   virtual bool Decode(Decoder *const decoder);
   virtual bool DecodeWithinScope(Decoder *const decoder);
 
-private:
+ private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
   explicit S2Loop(S2Loop const *src);
@@ -425,4 +425,4 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const &, S2Point const &,
   return sum;
 }
 
-#endif // UTIL_GEOMETRY_S2LOOP_H__
+#endif  // UTIL_GEOMETRY_S2LOOP_H__

@@ -31,7 +31,7 @@
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2Cap : public S2Region {
-public:
+ public:
   // The default constructor returns an empty S2Cap.
   S2Cap() : axis_(1, 0, 0), height_(-1) {}
 
@@ -124,7 +124,7 @@ public:
   virtual bool Contains(S2Cell const &cell) const;
   virtual bool MayIntersect(S2Cell const &cell) const;
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' should be a unit-length vector.
@@ -146,7 +146,7 @@ public:
   // from the given cap "other".
   bool ApproxEquals(S2Cap const &other, double max_error = 1e-14);
 
-private:
+ private:
   S2Cap(S2Point const &axis, double height) : axis_(axis), height_(height) {
     DCHECK(is_valid());
   }
@@ -171,4 +171,4 @@ inline S2Cap S2Cap::FromAxisArea(S2Point const &axis, double area) {
 
 ostream &operator<<(ostream &os, S2Cap const &cap);
 
-#endif // UTIL_GEOMETRY_S2CAP_H_
+#endif  // UTIL_GEOMETRY_S2CAP_H_

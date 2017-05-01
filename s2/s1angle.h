@@ -6,10 +6,10 @@
 #include <iosfwd>
 using std::ostream;
 // to forward declare ostream
+#include <math.h>
 #include "base/basictypes.h"
 #include "s2/s2.h"
 #include "util/math/mathutil.h"
-#include <math.h>
 
 class S2LatLng;
 
@@ -25,7 +25,7 @@ class S2LatLng;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S1Angle {
-public:
+ public:
   // These methods construct S1Angle objects from their measure in radians
   // or degrees.
   inline static S1Angle Radians(double radians);
@@ -91,7 +91,7 @@ public:
   // Normalize this angle to the range (-180, 180] degrees.
   void Normalize();
 
-private:
+ private:
   explicit S1Angle(double radians) : radians_(radians) {}
   double radians_;
 };
@@ -197,4 +197,4 @@ inline S1Angle S1Angle::UnsignedE7(uint32 e7) {
 // decimal point, e.g. "17.3745904".
 ostream &operator<<(ostream &os, S1Angle const &a);
 
-#endif // UTIL_GEOMETRY_S1ANGLE_H_
+#endif  // UTIL_GEOMETRY_S1ANGLE_H_

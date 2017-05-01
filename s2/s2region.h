@@ -20,7 +20,7 @@ class S2LatLngRect;
 // of virtual methods that are implemented by all subtypes, the interface
 // is restricted to methods that are useful for computing approximations.
 class S2Region {
-public:
+ public:
   virtual ~S2Region();
 
   // Return a deep copy of this region.  If you want to narrow the result to a
@@ -98,4 +98,4 @@ public:
   // subtypes may relax this restriction.
 };
 
-#endif // UTIL_GEOMETRY_S2REGION_H_
+#endif  // UTIL_GEOMETRY_S2REGION_H_

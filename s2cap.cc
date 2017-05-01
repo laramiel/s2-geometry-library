@@ -20,8 +20,7 @@ double GetHeightForAngle(double radians) {
   DCHECK_GE(radians, 0);
 
   // Caps of Pi radians or more are full.
-  if (radians >= M_PI)
-    return 2;
+  if (radians >= M_PI) return 2;
 
   // The height of the cap can be computed as 1 - cos(radians), but this isn't
   // very accurate for angles close to zero (where cos(radians) is almost 1).
@@ -30,7 +29,7 @@ double GetHeightForAngle(double radians) {
   return 2 * d * d;
 }
 
-} // namespace
+}  // namespace
 
 S2Cap S2Cap::FromAxisAngle(S2Point const &axis, S1Angle const &angle) {
   DCHECK(S2::IsUnitLength(axis));
@@ -42,8 +41,7 @@ S1Angle S2Cap::angle() const {
   // This could also be computed as acos(1 - height_), but the following
   // formula is much more accurate when the cap height is small.  It
   // follows from the relationship h = 1 - cos(theta) = 2 sin^2(theta/2).
-  if (is_empty())
-    return S1Angle::Radians(-1);
+  if (is_empty()) return S1Angle::Radians(-1);
   return S1Angle::Radians(2 * asin(sqrt(0.5 * height_)));
 }
 
@@ -55,15 +53,13 @@ S2Cap S2Cap::Complement() const {
 }
 
 bool S2Cap::Contains(S2Cap const &other) const {
-  if (is_full() || other.is_empty())
-    return true;
+  if (is_full() || other.is_empty()) return true;
   return angle().radians() >=
          axis_.Angle(other.axis_) + other.angle().radians();
 }
 
 bool S2Cap::Intersects(S2Cap const &other) const {
-  if (is_empty() || other.is_empty())
-    return false;
+  if (is_empty() || other.is_empty()) return false;
 
   return (angle().radians() + other.angle().radians() >=
           axis_.Angle(other.axis_));
@@ -71,8 +67,7 @@ bool S2Cap::Intersects(S2Cap const &other) const {
 
 bool S2Cap::InteriorIntersects(S2Cap const &other) const {
   // Make sure this cap has an interior and the other cap is non-empty.
-  if (height_ <= 0 || other.is_empty())
-    return false;
+  if (height_ <= 0 || other.is_empty()) return false;
 
   return (angle().radians() + other.angle().radians() >
           axis_.Angle(other.axis_));
@@ -106,8 +101,7 @@ void S2Cap::AddCap(S2Cap const &other) {
 
 S2Cap S2Cap::Expanded(S1Angle const &distance) const {
   DCHECK_GE(distance.radians(), 0);
-  if (is_empty())
-    return Empty();
+  if (is_empty()) return Empty();
   return FromAxisAngle(axis_, angle() + distance);
 }
 
@@ -116,8 +110,7 @@ S2Cap *S2Cap::Clone() const { return new S2Cap(*this); }
 S2Cap S2Cap::GetCapBound() const { return *this; }
 
 S2LatLngRect S2Cap::GetRectBound() const {
-  if (is_empty())
-    return S2LatLngRect::Empty();
+  if (is_empty()) return S2LatLngRect::Empty();
 
   // Convert the axis to a (lat,lng) pair, and compute the cap angle.
   S2LatLng axis_ll(axis_);
@@ -170,23 +163,20 @@ bool S2Cap::Intersects(S2Cell const &cell, S2Point const *vertices) const {
   // If the cap is a hemisphere or larger, the cell and the complement of the
   // cap are both convex.  Therefore since no vertex of the cell is contained,
   // no other interior point of the cell is contained either.
-  if (height_ >= 1)
-    return false;
+  if (height_ >= 1) return false;
 
   // We need to check for empty caps due to the axis check just below.
-  if (is_empty())
-    return false;
+  if (is_empty()) return false;
 
   // Optimization: return true if the cell contains the cap axis.  (This
   // allows half of the edge checks below to be skipped.)
-  if (cell.Contains(axis_))
-    return true;
+  if (cell.Contains(axis_)) return true;
 
   // At this point we know that the cell does not contain the cap axis,
   // and the cap does not contain any cell vertex.  The only way that they
   // can intersect is if the cap intersects the interior of some edge.
 
-  double sin2_angle = height_ * (2 - height_); // sin^2(cap_angle)
+  double sin2_angle = height_ * (2 - height_);  // sin^2(cap_angle)
   for (int k = 0; k < 4; ++k) {
     S2Point edge = cell.GetEdgeRaw(k);
     double dot = axis_.DotProd(edge);
@@ -199,7 +189,7 @@ bool S2Cap::Intersects(S2Cell const &cell, S2Point const *vertices) const {
     }
     // The Norm2() factor is necessary because "edge" is not normalized.
     if (dot * dot > sin2_angle * edge.Norm2()) {
-      return false; // Entire cap is on the exterior side of this edge.
+      return false;  // Entire cap is on the exterior side of this edge.
     }
     // Otherwise, the great circle containing this edge intersects
     // the interior of the cap.  We just need to check whether the point
@@ -219,8 +209,7 @@ bool S2Cap::Contains(S2Cell const &cell) const {
   S2Point vertices[4];
   for (int k = 0; k < 4; ++k) {
     vertices[k] = cell.GetVertex(k);
-    if (!Contains(vertices[k]))
-      return false;
+    if (!Contains(vertices[k])) return false;
   }
   // Otherwise, return true if the complement of the cap does not intersect
   // the cell.  (This test is slightly conservative, because technically we
@@ -233,8 +222,7 @@ bool S2Cap::MayIntersect(S2Cell const &cell) const {
   S2Point vertices[4];
   for (int k = 0; k < 4; ++k) {
     vertices[k] = cell.GetVertex(k);
-    if (Contains(vertices[k]))
-      return true;
+    if (Contains(vertices[k])) return true;
   }
   return Intersects(cell, vertices);
 }

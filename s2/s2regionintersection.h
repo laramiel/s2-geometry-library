@@ -19,7 +19,7 @@ class S2LatLngRect;
 // It is convenient for computing a covering of the intersection of a set of
 // regions.
 class S2RegionIntersection : public S2Region {
-public:
+ public:
   // Creates an empty intersection that should be initialized by calling Init().
   // Note: an intersection of no regions covers the entire sphere.
   S2RegionIntersection();
@@ -56,7 +56,7 @@ public:
   }
   virtual bool Decode(Decoder *const decoder) { return false; }
 
-private:
+ private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
   S2RegionIntersection(S2RegionIntersection const *src);
@@ -66,4 +66,4 @@ private:
   DISALLOW_EVIL_CONSTRUCTORS(S2RegionIntersection);
 };
 
-#endif // UTIL_GEOMETRY_S2REGIONINTERSECTION_H__
+#endif  // UTIL_GEOMETRY_S2REGIONINTERSECTION_H__

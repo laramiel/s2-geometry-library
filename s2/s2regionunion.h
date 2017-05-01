@@ -18,7 +18,7 @@ class S2LatLngRect;
 // An S2RegionUnion represents a union of possibly overlapping regions.
 // It is convenient for computing a covering of a set of regions.
 class S2RegionUnion : public S2Region {
-public:
+ public:
   // Create an empty region.  Can be made non-empty by calling Init() or Add().
   S2RegionUnion();
 
@@ -59,7 +59,7 @@ public:
   }
   virtual bool Decode(Decoder *const decoder) { return false; }
 
-private:
+ private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
   S2RegionUnion(S2RegionUnion const *src);
@@ -69,4 +69,4 @@ private:
   DISALLOW_EVIL_CONSTRUCTORS(S2RegionUnion);
 };
 
-#endif // UTIL_GEOMETRY_S2REGIONUNION_H__
+#endif  // UTIL_GEOMETRY_S2REGIONUNION_H__

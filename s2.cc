@@ -13,7 +13,7 @@
 int const S2::kMaxCellLevel;
 int const S2::kSwapMask;
 int const S2::kInvertMask;
-double const S2::kMaxDetError = 0.8e-15; // 14 * (2**-54)
+double const S2::kMaxDetError = 0.8e-15;  // 14 * (2**-54)
 
 static_assert(S2::kSwapMask == 0x01 && S2::kInvertMask == 0x02,
               "masks_changed");
@@ -29,7 +29,7 @@ namespace __gnu_cxx {
 
 // The hash function due to Bob Jenkins (see
 // http://burtleburtle.net/bob/hash/index.html).
-static inline void mix(uint32 &a, uint32 &b, uint32 &c) { // 32bit version
+static inline void mix(uint32 &a, uint32 &b, uint32 &c) {  // 32bit version
   a -= b;
   a -= c;
   a ^= (c >> 13);
@@ -93,7 +93,7 @@ size_t hash<S2Point>::operator()(S2Point const &p) const {
   // dependencies.
   uint32 a = CollapseZero(data[0]);
   uint32 b = CollapseZero(data[1]);
-  uint32 c = CollapseZero(data[2]) + 0x12b9b0a1UL; // An arbitrary number
+  uint32 c = CollapseZero(data[2]) + 0x12b9b0a1UL;  // An arbitrary number
   mix(a, b, c);
   a += CollapseZero(data[3]);
   b += CollapseZero(data[4]);
@@ -102,7 +102,7 @@ size_t hash<S2Point>::operator()(S2Point const &p) const {
   return c;
 }
 
-} // namespace __gnu_cxx
+}  // namespace __gnu_cxx
 
 bool S2::IsUnitLength(S2Point const &p) { return fabs(p.Norm2() - 1) <= 1e-15; }
 
@@ -113,8 +113,7 @@ S2Point S2::Ortho(S2Point const &a) {
   return a.Ortho();
 #else
   int k = a.LargestAbsComponent() - 1;
-  if (k < 0)
-    k = 2;
+  if (k < 0) k = 2;
   S2Point temp(0.012, 0.0053, 0.00457);
   temp[k] = 1;
   return a.CrossProd(temp).Normalize();
@@ -125,7 +124,7 @@ void S2::GetFrame(S2Point const &z, Matrix3x3_d *m) {
   DCHECK(IsUnitLength(z));
   m->SetCol(2, z);
   m->SetCol(1, Ortho(z));
-  m->SetCol(0, m->Col(1).CrossProd(z)); // Already unit-length.
+  m->SetCol(0, m->Col(1).CrossProd(z));  // Already unit-length.
 }
 
 S2Point S2::ToFrame(Matrix3x3_d const &m, S2Point const &p) {
@@ -155,8 +154,7 @@ S2Point S2::RobustCrossProd(S2Point const &a, S2Point const &b) {
   DCHECK(IsUnitLength(a));
   DCHECK(IsUnitLength(b));
   S2Point x = (b + a).CrossProd(b - a);
-  if (x != S2Point(0, 0, 0))
-    return x;
+  if (x != S2Point(0, 0, 0)) return x;
 
   // The only result that makes sense mathematically is to return zero, but
   // we find it more convenient to return an arbitrary orthogonal vector.
@@ -206,7 +204,7 @@ int S2::RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
 // ExactFloat only supports exact calculations with floating-point numbers.
 #include "util/math/exactfloat/exactfloat.h"
 
-#else // S2_USE_EXACTFLOAT
+#else  // S2_USE_EXACTFLOAT
 
 // MPFloat requires a "maximum precision" to be specified.
 //
@@ -240,7 +238,7 @@ int S2::RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
 #include "util/math/mpfloat/mpfloat.h"
 typedef MPFloat<6300> ExactFloat;
 
-#endif // S2_USE_EXACTFLOAT
+#endif  // S2_USE_EXACTFLOAT
 
 typedef Vector3<ExactFloat> Vector3_xf;
 
@@ -332,54 +330,41 @@ static int SymbolicallyPerturbedCCW(Vector3_xf const &a, Vector3_xf const &b,
   // some of the signs are different because the opposite cross product is
   // used (e.g., B x C rather than C x B).
 
-  int det_sign = b_cross_c[2].sgn(); // da[2]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = b_cross_c[1].sgn(); // da[1]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = b_cross_c[0].sgn(); // da[0]
-  if (det_sign != 0)
-    return det_sign;
+  int det_sign = b_cross_c[2].sgn();  // da[2]
+  if (det_sign != 0) return det_sign;
+  det_sign = b_cross_c[1].sgn();  // da[1]
+  if (det_sign != 0) return det_sign;
+  det_sign = b_cross_c[0].sgn();  // da[0]
+  if (det_sign != 0) return det_sign;
 
-  det_sign = (c[0] * a[1] - c[1] * a[0]).sgn(); // db[2]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = c[0].sgn(); // db[2] * da[1]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = -(c[1].sgn()); // db[2] * da[0]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = (c[2] * a[0] - c[0] * a[2]).sgn(); // db[1]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = c[2].sgn(); // db[1] * da[0]
-  if (det_sign != 0)
-    return det_sign;
+  det_sign = (c[0] * a[1] - c[1] * a[0]).sgn();  // db[2]
+  if (det_sign != 0) return det_sign;
+  det_sign = c[0].sgn();  // db[2] * da[1]
+  if (det_sign != 0) return det_sign;
+  det_sign = -(c[1].sgn());  // db[2] * da[0]
+  if (det_sign != 0) return det_sign;
+  det_sign = (c[2] * a[0] - c[0] * a[2]).sgn();  // db[1]
+  if (det_sign != 0) return det_sign;
+  det_sign = c[2].sgn();  // db[1] * da[0]
+  if (det_sign != 0) return det_sign;
   // The following test is listed in the paper, but it is redundant because
   // the previous tests guarantee that C == (0, 0, 0).
-  DCHECK_EQ(0, (c[1] * a[2] - c[2] * a[1]).sgn()); // db[0]
+  DCHECK_EQ(0, (c[1] * a[2] - c[2] * a[1]).sgn());  // db[0]
 
-  det_sign = (a[0] * b[1] - a[1] * b[0]).sgn(); // dc[2]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = -(b[0].sgn()); // dc[2] * da[1]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = b[1].sgn(); // dc[2] * da[0]
-  if (det_sign != 0)
-    return det_sign;
-  det_sign = a[0].sgn(); // dc[2] * db[1]
-  if (det_sign != 0)
-    return det_sign;
-  return 1; // dc[2] * db[1] * da[0]
+  det_sign = (a[0] * b[1] - a[1] * b[0]).sgn();  // dc[2]
+  if (det_sign != 0) return det_sign;
+  det_sign = -(b[0].sgn());  // dc[2] * da[1]
+  if (det_sign != 0) return det_sign;
+  det_sign = b[1].sgn();  // dc[2] * da[0]
+  if (det_sign != 0) return det_sign;
+  det_sign = a[0].sgn();  // dc[2] * db[1]
+  if (det_sign != 0) return det_sign;
+  return 1;  // dc[2] * db[1] * da[0]
 }
 
 int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   // Return zero if and only if two points are the same.  This ensures (1).
-  if (a == b || b == c || c == a)
-    return 0;
+  if (a == b || b == c || c == a) return 0;
 
   // Sort the three points in lexicographic order, keeping track of the sign
   // of the permutation.  (Each exchange inverts the sign of the determinant.)
@@ -423,7 +408,7 @@ int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   return perm_sign * det_sign;
 }
 
-#else // SIMULATION_OF_SIMPLICITY
+#else  // SIMULATION_OF_SIMPLICITY
 
 static inline int PlanarCCW(Vector2_d const &a, Vector2_d const &b) {
   // Return +1 if the edge AB is CCW around the origin, etc.
@@ -437,10 +422,8 @@ static inline int PlanarCCW(Vector2_d const &a, Vector2_d const &b) {
   } else {
     sign = vab.CrossProd(b);
   }
-  if (sign > 0)
-    return 1;
-  if (sign < 0)
-    return -1;
+  if (sign > 0) return 1;
+  if (sign < 0) return -1;
   return 0;
 }
 
@@ -450,17 +433,14 @@ static inline int PlanarOrderedCCW(Vector2_d const &a, Vector2_d const &b,
   sum += PlanarCCW(a, b);
   sum += PlanarCCW(b, c);
   sum += PlanarCCW(c, a);
-  if (sum > 0)
-    return 1;
-  if (sum < 0)
-    return -1;
+  if (sum > 0) return 1;
+  if (sum < 0) return -1;
   return 0;
 }
 
 int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   // Return zero if and only if two points are the same.  This ensures (1).
-  if (a == b || b == c || c == a)
-    return 0;
+  if (a == b || b == c || c == a) return 0;
 
   // Now compute the determinant in a stable way.  Since all three points are
   // unit length and we know that the determinant is very close to zero, this
@@ -508,21 +488,19 @@ int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   if (dca < dbc || (dca == dbc && a < b)) {
     if (dab < dbc || (dab == dbc && a < c)) {
       // The "sab" factor converts A +/- B into B +/- A.
-      sign = vab.CrossProd(vca).DotProd(a) * sab; // BC is longest edge
+      sign = vab.CrossProd(vca).DotProd(a) * sab;  // BC is longest edge
     } else {
-      sign = vca.CrossProd(vbc).DotProd(c) * sca; // AB is longest edge
+      sign = vca.CrossProd(vbc).DotProd(c) * sca;  // AB is longest edge
     }
   } else {
     if (dab < dca || (dab == dca && b < c)) {
-      sign = vbc.CrossProd(vab).DotProd(b) * sbc; // CA is longest edge
+      sign = vbc.CrossProd(vab).DotProd(b) * sbc;  // CA is longest edge
     } else {
-      sign = vca.CrossProd(vbc).DotProd(c) * sca; // AB is longest edge
+      sign = vca.CrossProd(vbc).DotProd(c) * sca;  // AB is longest edge
     }
   }
-  if (sign > 0)
-    return 1;
-  if (sign < 0)
-    return -1;
+  if (sign > 0) return 1;
+  if (sign < 0) return -1;
 
   // The points A, B, and C are numerically indistinguishable from coplanar.
   // This may be due to roundoff error, or the points may in fact be exactly
@@ -550,7 +528,7 @@ int S2::ExpensiveCCW(S2Point const &a, S2Point const &b, S2Point const &c) {
   return ccw;
 }
 
-#endif // SIMULATION_OF_SIMPLICITY
+#endif  // SIMULATION_OF_SIMPLICITY
 
 double S2::Angle(S2Point const &a, S2Point const &b, S2Point const &c) {
   return RobustCrossProd(a, b).Angle(RobustCrossProd(c, b));
@@ -612,8 +590,7 @@ double S2::Area(S2Point const &a, S2Point const &b, S2Point const &c) {
     if (dmin < 1e-2 * s * s2 * s2) {
       // This triangle is skinny enough to consider Girard's formula.
       double area = GirardArea(a, b, c);
-      if (dmin < s * (0.1 * area))
-        return area;
+      if (dmin < s * (0.1 * area)) return area;
     }
   }
   // Use l'Huilier's formula.
@@ -688,31 +665,28 @@ bool S2::OrderedCCW(S2Point const &a, S2Point const &b, S2Point const &c,
   // RobustCCW(x,y,z) == -RobustCCW(z,y,x) for all x,y,z.
 
   int sum = 0;
-  if (RobustCCW(b, o, a) >= 0)
-    ++sum;
-  if (RobustCCW(c, o, b) >= 0)
-    ++sum;
-  if (RobustCCW(a, o, c) > 0)
-    ++sum;
+  if (RobustCCW(b, o, a) >= 0) ++sum;
+  if (RobustCCW(c, o, b) >= 0) ++sum;
+  if (RobustCCW(a, o, c) > 0) ++sum;
   return sum >= 2;
 }
 
 // kIJtoPos[orientation][ij] -> pos
 int const S2::kIJtoPos[4][4] = {
     // (0,0) (0,1) (1,0) (1,1)
-    {0, 1, 3, 2}, // canonical order
-    {0, 3, 1, 2}, // axes swapped
-    {2, 3, 1, 0}, // bits inverted
-    {2, 1, 3, 0}, // swapped & inverted
+    {0, 1, 3, 2},  // canonical order
+    {0, 3, 1, 2},  // axes swapped
+    {2, 3, 1, 0},  // bits inverted
+    {2, 1, 3, 0},  // swapped & inverted
 };
 
 // kPosToIJ[orientation][pos] -> ij
 int const S2::kPosToIJ[4][4] = {
     // 0  1  2  3
-    {0, 1, 3, 2}, // canonical order:    (0,0), (0,1), (1,1), (1,0)
-    {0, 2, 3, 1}, // axes swapped:       (0,0), (1,0), (1,1), (0,1)
-    {3, 2, 0, 1}, // bits inverted:      (1,1), (1,0), (0,0), (0,1)
-    {3, 1, 0, 2}, // swapped & inverted: (1,1), (0,1), (0,0), (1,0)
+    {0, 1, 3, 2},  // canonical order:    (0,0), (0,1), (1,1), (1,0)
+    {0, 2, 3, 1},  // axes swapped:       (0,0), (1,0), (1,1), (0,1)
+    {3, 2, 0, 1},  // bits inverted:      (1,1), (1,0), (0,0), (0,1)
+    {3, 1, 0, 2},  // swapped & inverted: (1,1), (0,1), (0,0), (1,0)
 };
 
 // kPosToOrientation[pos] -> orientation_modifier
@@ -727,100 +701,100 @@ int const S2::kPosToOrientation[4] = {
 // the tangent projection than the linear one).
 
 S2::LengthMetric const S2::kMinAngleSpan(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.0 :               // 1.000
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :         // 1.571
-            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 4. / 3 : // 1.333
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.0 :                // 1.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :          // 1.571
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 4. / 3 :  // 1.333
                 0);
 
 S2::LengthMetric const S2::kMaxAngleSpan(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 :         // 2.000
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 : // 1.571
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 :          // 2.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :  // 1.571
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.704897179199218452
-                                                     : // 1.705
+                                                     :  // 1.705
                 0);
 
-S2::LengthMetric const S2::kAvgAngleSpan(M_PI / 2); // 1.571
+S2::LengthMetric const S2::kAvgAngleSpan(M_PI / 2);  // 1.571
 // This is true for all projections.
 
 S2::LengthMetric const S2::kMinWidth(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2. / 3) :          // 0.816
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) : // 1.111
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2. / 3) :           // 0.816
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :  // 1.111
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3
-                                                     : // 0.943
+                                                     :  // 0.943
                 0);
 
 S2::LengthMetric const S2::kMaxWidth(S2::kMaxAngleSpan.deriv());
 // This is true for all projections.
 
 S2::LengthMetric const S2::kAvgWidth(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.411459345844456965 :  // 1.411
-        S2_PROJECTION == S2_TAN_PROJECTION ? 1.437318638925160885 : // 1.437
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.411459345844456965 :   // 1.411
+        S2_PROJECTION == S2_TAN_PROJECTION ? 1.437318638925160885 :  // 1.437
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.434523672886099389
-                                                     : // 1.435
+                                                     :  // 1.435
                 0);
 
 S2::LengthMetric const S2::kMinEdge(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :       // 0.943
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) : // 1.111
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :        // 0.943
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :  // 1.111
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3
-                                                     : // 0.943
+                                                     :  // 0.943
                 0);
 
 S2::LengthMetric const S2::kMaxEdge(S2::kMaxAngleSpan.deriv());
 // This is true for all projections.
 
 S2::LengthMetric const S2::kAvgEdge(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.440034192955603643 :  // 1.440
-        S2_PROJECTION == S2_TAN_PROJECTION ? 1.461667032546739266 : // 1.462
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.440034192955603643 :   // 1.440
+        S2_PROJECTION == S2_TAN_PROJECTION ? 1.461667032546739266 :  // 1.462
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.459213746386106062
-                                                     : // 1.459
+                                                     :  // 1.459
                 0);
 
 S2::LengthMetric const S2::kMinDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :     // 0.943
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2) / 3 : // 1.481
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :      // 0.943
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2) / 3 :  // 1.481
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9
-                                                     : // 1.257
+                                                     :  // 1.257
                 0);
 
 S2::LengthMetric const S2::kMaxDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) :          // 2.828
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2. / 3) : // 2.565
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) :           // 2.828
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2. / 3) :  // 2.565
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.438654594434021032
-                                                     : // 2.439
+                                                     :  // 2.439
                 0);
 
 S2::LengthMetric const S2::kAvgDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2.031817866418812674 :  // 2.032
-        S2_PROJECTION == S2_TAN_PROJECTION ? 2.063623197195635753 : // 2.064
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2.031817866418812674 :   // 2.032
+        S2_PROJECTION == S2_TAN_PROJECTION ? 2.063623197195635753 :  // 2.064
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.060422738998471683
-                                                     : // 2.060
+                                                     :  // 2.060
                 0);
 
 S2::AreaMetric const S2::kMinArea(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 / (3 * sqrt(3)) : // 0.770
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 / (3 * sqrt(3)) :  // 0.770
         S2_PROJECTION == S2_TAN_PROJECTION ? (M_PI * M_PI) / (4 * sqrt(2))
-                                           : // 1.745
+                                           :  // 1.745
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9
-                                                     : // 1.257
+                                                     :  // 1.257
                 0);
 
 S2::AreaMetric const S2::kMaxArea(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 :                // 4.000
-        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * M_PI / 4 : // 2.467
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 :                 // 4.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * M_PI / 4 :  // 2.467
             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.635799256963161491
-                                                     : // 2.636
+                                                     :  // 2.636
                 0);
 
-S2::AreaMetric const S2::kAvgArea(4 * M_PI / 6); // 2.094
+S2::AreaMetric const S2::kAvgArea(4 * M_PI / 6);  // 2.094
 // This is true for all projections.
 
 double const S2::kMaxEdgeAspect =
-    (S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2) :  // 1.414
-         S2_PROJECTION == S2_TAN_PROJECTION ? sqrt(2) : // 1.414
+    (S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2) :   // 1.414
+         S2_PROJECTION == S2_TAN_PROJECTION ? sqrt(2) :  // 1.414
              S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.442615274452682920
-                                                      : // 1.443
+                                                      :  // 1.443
                  0);
 
-double const S2::kMaxDiagAspect = sqrt(3); // 1.732
+double const S2::kMaxDiagAspect = sqrt(3);  // 1.732
 // This is true for all projections.

@@ -126,8 +126,7 @@ void S2EdgeIndex::IncrementQueryCount() { query_count_++; }
 // while the marginal cost to find is 3ms.  Thus, this is a reasonable
 // thing to do.
 void S2EdgeIndex::PredictAdditionalCalls(int n) {
-  if (index_computed_)
-    return;
+  if (index_computed_) return;
   if (num_edges() > 100 && (query_count_ + n) > 30) {
     ComputeIndex();
   }
@@ -144,7 +143,7 @@ void S2EdgeIndex::GetEdgesInParentCells(const vector<S2CellId> &cover,
     for (int parent_level = it->level() - 1;
          parent_level >= minimum_s2_level_used; --parent_level) {
       if (!parent_cells.insert(it->parent(parent_level)).second) {
-        break; // cell is already in => parents are too.
+        break;  // cell is already in => parents are too.
       }
     }
   }
@@ -175,8 +174,7 @@ static bool LenientCrossing(S2Point const &a, S2Point const &b,
   if (fabs(acb) < kMaxDetError || fabs(bda) < kMaxDetError) {
     return true;
   }
-  if (acb * bda < 0)
-    return false;
+  if (acb * bda < 0) return false;
   double cbd = c.CrossProd(b).DotProd(d);
   double dac = d.CrossProd(a).DotProd(c);
   if (fabs(cbd) < kMaxDetError || fabs(dac) < kMaxDetError) {
@@ -326,8 +324,7 @@ static S2CellId ContainingCell(S2Point const &pa, S2Point const &pb) {
   S2CellId a = S2CellId::FromPoint(pa);
   S2CellId b = S2CellId::FromPoint(pb);
 
-  if (a.face() != b.face())
-    return S2CellId::Sentinel();
+  if (a.face() != b.face()) return S2CellId::Sentinel();
 
   while (a != b) {
     a = a.parent();

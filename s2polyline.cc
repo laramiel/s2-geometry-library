@@ -103,12 +103,12 @@ S2Point S2Polyline::GetCentroid() const {
     // The centroid (multiplied by length) is a vector toward the midpoint
     // of the edge, whose length is twice the sin of half the angle between
     // the two vertices.  Defining theta to be this angle, we have:
-    S2Point vsum = vertex(i - 1) + vertex(i);  // Length == 2*cos(theta)
-    S2Point vdiff = vertex(i - 1) - vertex(i); // Length == 2*sin(theta)
+    S2Point vsum = vertex(i - 1) + vertex(i);   // Length == 2*cos(theta)
+    S2Point vdiff = vertex(i - 1) - vertex(i);  // Length == 2*sin(theta)
     double cos2 = vsum.Norm2();
     double sin2 = vdiff.Norm2();
-    DCHECK_GT(cos2, 0); // Otherwise edge is undefined, and result is NaN.
-    centroid += sqrt(sin2 / cos2) * vsum; // Length == 2*sin(theta)
+    DCHECK_GT(cos2, 0);  // Otherwise edge is undefined, and result is NaN.
+    centroid += sqrt(sin2 / cos2) * vsum;  // Length == 2*sin(theta)
   }
   return centroid;
 }
@@ -215,15 +215,14 @@ bool S2Polyline::IsOnRight(S2Point const &point) const {
   if (closest_point == vertex(next_vertex - 1) && next_vertex > 1 &&
       next_vertex < num_vertices()) {
     if (point == vertex(next_vertex - 1))
-      return false; // Polyline vertices are not on the RHS.
+      return false;  // Polyline vertices are not on the RHS.
     return S2::OrderedCCW(vertex(next_vertex - 2), point, vertex(next_vertex),
                           vertex(next_vertex - 1));
   }
 
   // Otherwise, the closest point C is incident to exactly one polyline edge.
   // We test the point P against that edge.
-  if (next_vertex == num_vertices())
-    --next_vertex;
+  if (next_vertex == num_vertices()) --next_vertex;
 
   return S2::RobustCCW(point, vertex(next_vertex), vertex(next_vertex - 1)) > 0;
 }
@@ -263,15 +262,13 @@ S2LatLngRect S2Polyline::GetRectBound() const {
 S2Cap S2Polyline::GetCapBound() const { return GetRectBound().GetCapBound(); }
 
 bool S2Polyline::MayIntersect(S2Cell const &cell) const {
-  if (num_vertices() == 0)
-    return false;
+  if (num_vertices() == 0) return false;
 
   // We only need to check whether the cell contains vertex 0 for correctness,
   // but these tests are cheap compared to edge crossings so we might as well
   // check all the vertices.
   for (int i = 0; i < num_vertices(); ++i) {
-    if (cell.Contains(vertex(i)))
-      return true;
+    if (cell.Contains(vertex(i))) return true;
   }
   S2Point cell_vertices[4];
   for (int i = 0; i < 4; ++i) {
@@ -291,7 +288,7 @@ bool S2Polyline::MayIntersect(S2Cell const &cell) const {
 }
 
 void S2Polyline::Encode(Encoder *const encoder) const {
-  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 10); // sufficient
+  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 10);  // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
   encoder->put32(num_vertices_);
@@ -302,8 +299,7 @@ void S2Polyline::Encode(Encoder *const encoder) const {
 
 bool S2Polyline::Decode(Decoder *const decoder) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber)
-    return false;
+  if (version > kCurrentEncodingVersionNumber) return false;
 
   num_vertices_ = decoder->get32();
   delete[] vertices_;
@@ -359,19 +355,16 @@ int FindEndVertex(S2Polyline const &polyline, S1Angle const &tolerance,
     // We don't allow simplification to create edges longer than 90 degrees,
     // to avoid numeric instability as lengths approach 180 degrees.  (We do
     // need to allow for original edges longer than 90 degrees, though.)
-    if (distance > M_PI / 2 && last_distance > 0)
-      break;
+    if (distance > M_PI / 2 && last_distance > 0) break;
 
     // Vertices must be in increasing order along the ray, except for the
     // initial disc around the origin.
-    if (distance < last_distance && last_distance > tolerance.radians())
-      break;
+    if (distance < last_distance && last_distance > tolerance.radians()) break;
     last_distance = distance;
 
     // Points that are within the tolerance distance of the origin do not
     // constrain the ray direction, so we can ignore them.
-    if (distance <= tolerance.radians())
-      continue;
+    if (distance <= tolerance.radians()) continue;
 
     // If the current wedge of angles does not contain the angle to this
     // vertex, then stop right now.  Note that the wedge of possible ray
@@ -381,8 +374,7 @@ int FindEndVertex(S2Polyline const &polyline, S1Angle const &tolerance,
     // complicated and also make the worst-case running time more than linear.
     S2Point direction = S2::ToFrame(frame, candidate);
     double center = atan2(direction.y(), direction.x());
-    if (!current_wedge.Contains(center))
-      break;
+    if (!current_wedge.Contains(center)) break;
 
     // To determine how this vertex constrains the possible ray angles,
     // consider the triangle ABC where A is the origin, B is the candidate
@@ -407,8 +399,7 @@ int FindEndVertex(S2Polyline const &polyline, S1Angle const &tolerance,
 void S2Polyline::SubsampleVertices(S1Angle const &tolerance,
                                    vector<int> *indices) const {
   indices->clear();
-  if (num_vertices() == 0)
-    return;
+  if (num_vertices() == 0) return;
 
   indices->push_back(0);
   S1Angle clamped_tolerance = max(tolerance, S1Angle::Radians(0));
@@ -423,8 +414,7 @@ void S2Polyline::SubsampleVertices(S1Angle const &tolerance,
 }
 
 bool S2Polyline::ApproxEquals(S2Polyline const *b, double max_error) const {
-  if (num_vertices() != b->num_vertices())
-    return false;
+  if (num_vertices() != b->num_vertices()) return false;
   for (int offset = 0; offset < num_vertices(); ++offset) {
     if (!S2::ApproxEquals(vertex(offset), b->vertex(offset), max_error)) {
       return false;
@@ -455,25 +445,22 @@ struct SearchState {
   int j;
   bool i_in_progress;
 };
-} // namespace
+}  // namespace
 
 namespace std {
-template <> struct less<SearchState> {
+template <>
+struct less<SearchState> {
   // This operator is needed for storing SearchStates in a set.  The ordering
   // chosen has no special meaning.
   inline bool operator()(SearchState const &lhs, SearchState const &rhs) const {
-    if (lhs.i < rhs.i)
-      return true;
-    if (lhs.i > rhs.i)
-      return false;
-    if (lhs.j < rhs.j)
-      return true;
-    if (lhs.j > rhs.j)
-      return false;
+    if (lhs.i < rhs.i) return true;
+    if (lhs.i > rhs.i) return false;
+    if (lhs.j < rhs.j) return true;
+    if (lhs.j > rhs.j) return false;
     return !lhs.i_in_progress && rhs.i_in_progress;
   }
 };
-} // namespace std
+}  // namespace std
 
 bool S2Polyline::NearlyCoversPolyline(S2Polyline const &covered,
                                       S1Angle const &max_error) const {
@@ -538,8 +525,7 @@ bool S2Polyline::NearlyCoversPolyline(S2Polyline const &covered,
   while (!pending.empty()) {
     SearchState const state = pending.back();
     pending.pop_back();
-    if (!done.insert(state).second)
-      continue;
+    if (!done.insert(state).second) continue;
 
     int const next_i = NextDistinctVertex(*this, state.i);
     int const next_j = NextDistinctVertex(covered, state.j);

@@ -50,7 +50,7 @@ class S2CellUnion;
 // algorithm may spend a lot of time subdividing cells all the way to leaf
 // level to try to find contained cells.
 class S2RegionCoverer {
-public:
+ public:
   // By default, the covering uses at most 8 cells at any level.  This gives
   // a reasonable tradeoff between the number of cells used and the accuracy
   // of the approximation (see table below).
@@ -133,12 +133,12 @@ public:
   static void GetSimpleCovering(S2Region const &region, S2Point const &start,
                                 int level, vector<S2CellId> *output);
 
-private:
+ private:
   struct Candidate {
     S2Cell cell;
-    bool is_terminal;       // Cell should not be expanded further.
-    int num_children;       // Number of children that intersect the region.
-    Candidate *children[0]; // Actual size may be 0, 4, 16, or 64 elements.
+    bool is_terminal;        // Cell should not be expanded further.
+    int num_children;        // Number of children that intersect the region.
+    Candidate *children[0];  // Actual size may be 0, 4, 16, or 64 elements.
   };
 
   // If the cell intersects the given region, return a new candidate with no
@@ -206,4 +206,4 @@ private:
   DISALLOW_EVIL_CONSTRUCTORS(S2RegionCoverer);
 };
 
-#endif // UTIL_GEOMETRY_S2REGION_COVERER_H_
+#endif  // UTIL_GEOMETRY_S2REGION_COVERER_H_

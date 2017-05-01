@@ -16,7 +16,7 @@ using std::vector;
 
 #include "base/basictypes.h"
 #include "base/logging.h"
-#include "base/port.h" // for HASH_NAMESPACE_DECLARATION_START
+#include "base/port.h"  // for HASH_NAMESPACE_DECLARATION_START
 #include "s2/s2.h"
 #include "util/math/vector2.h"
 
@@ -54,13 +54,13 @@ class S2LatLng;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S2CellId {
-public:
+ public:
   // Although only 60 bits are needed to represent the index of a leaf
   // cell, we need an extra bit in order to represent the position of
   // the center of the leaf cell along the Hilbert curve.
   static int const kFaceBits = 3;
   static int const kNumFaces = 6;
-  static int const kMaxLevel = S2::kMaxCellLevel; // Valid levels: 0..kMaxLevel
+  static int const kMaxLevel = S2::kMaxCellLevel;  // Valid levels: 0..kMaxLevel
   static int const kPosBits = 2 * kMaxLevel + 1;
   static int const kMaxSize = 1 << kMaxLevel;
 
@@ -288,7 +288,7 @@ public:
     return uint64(1) << (2 * (kMaxLevel - level));
   }
 
-private:
+ private:
   // This is the offset required to wrap around from the beginning of the
   // Hilbert curve to the end or vice versa; see next_wrap() and prev_wrap().
   static uint64 const kWrapOffset = uint64(kNumFaces) << kPosBits;
@@ -312,7 +312,7 @@ private:
   inline static S2CellId FromFaceIJSame(int face, int i, int j, bool same_face);
 
   uint64 id_;
-} PACKED; // Necessary so that structures containing S2CellId's can be PACKED.
+} PACKED;  // Necessary so that structures containing S2CellId's can be PACKED.
 DECLARE_POD(S2CellId);
 
 inline bool operator==(S2CellId const &x, S2CellId const &y) {
@@ -450,16 +450,14 @@ inline S2CellId S2CellId::prev() const { return S2CellId(id_ - (lsb() << 1)); }
 inline S2CellId S2CellId::next_wrap() const {
   DCHECK(is_valid());
   S2CellId n = next();
-  if (n.id_ < kWrapOffset)
-    return n;
+  if (n.id_ < kWrapOffset) return n;
   return S2CellId(n.id_ - kWrapOffset);
 }
 
 inline S2CellId S2CellId::prev_wrap() const {
   DCHECK(is_valid());
   S2CellId p = prev();
-  if (p.id_ < kWrapOffset)
-    return p;
+  if (p.id_ < kWrapOffset) return p;
   return S2CellId(p.id_ + kWrapOffset);
 }
 
@@ -482,14 +480,15 @@ ostream &operator<<(ostream &os, S2CellId const &id);
 
 namespace __gnu_cxx {
 
-template <> struct hash<S2CellId> {
+template <>
+struct hash<S2CellId> {
   size_t operator()(S2CellId const &id) const {
     return static_cast<size_t>(id.id() >> 32) + static_cast<size_t>(id.id());
   }
 };
 
-} // namespace __gnu_cxx
+}  // namespace __gnu_cxx
 
-#endif // SWIG
+#endif  // SWIG
 
-#endif // UTIL_GEOMETRY_S2CELLID_H_
+#endif  // UTIL_GEOMETRY_S2CELLID_H_

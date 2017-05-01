@@ -5,6 +5,10 @@
 using std::numeric_limits;
 #include <stdint.h>
 
+#include <iterator>
+using std::back_insert_iterator;
+
+
 #include "base/commandlineflags.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
@@ -13,8 +17,8 @@ using std::numeric_limits;
 #include "strings/strutil.h"
 #include "util/hash/hash_jenkins_lookup2.h"
 
-static const uint32 MIX32 = 0x12b9b0a1UL; // pi; an arbitrary number
-static const uint64 MIX64 = GG_ULONGLONG(0x2b992ddfa23249d6); // more of pi
+static const uint32 MIX32 = 0x12b9b0a1UL;  // pi; an arbitrary number
+static const uint64 MIX64 = GG_ULONGLONG(0x2b992ddfa23249d6);  // more of pi
 
 // ----------------------------------------------------------------------
 // Hash32StringWithSeed()
@@ -63,29 +67,29 @@ extern uint32 Hash32StringWithSeedReferenceImplementation(const char *s,
 //
 
 inline uint32 Hash32NumWithSeed(uint32 num, uint32 c) {
-  uint32 b = 0x9e3779b9UL; // the golden ratio; an arbitrary value
+  uint32 b = 0x9e3779b9UL;  // the golden ratio; an arbitrary value
   mix(num, b, c);
   return c;
 }
 
 inline uint64 Hash64NumWithSeed(uint64 num, uint64 c) {
-  uint64 b = GG_ULONGLONG(0xe08c1d668b756f82); // more of the golden ratio
+  uint64 b = GG_ULONGLONG(0xe08c1d668b756f82);  // more of the golden ratio
   mix(num, b, c);
   return c;
 }
 
-#define HASH_TO(arglist, command)                                              \
-  inline uint32 HashTo32 arglist {                                             \
-    uint32 retval = command;                                                   \
-    return retval == kIllegalHash32 ? retval - 1 : retval;                     \
-  }                                                                            \
-  inline uint16 HashTo16 arglist {                                             \
-    uint16 retval16 = command >> 16; /* take upper 16 bits */                  \
-    return retval16 == kIllegalHash16 ? retval16 - 1 : retval16;               \
-  }                                                                            \
-  inline unsigned char HashTo8 arglist {                                       \
-    unsigned char retval8 = command >> 24; /* take upper 8 bits */             \
-    return retval8 == kIllegalHash8 ? retval8 - 1 : retval8;                   \
+#define HASH_TO(arglist, command)                                  \
+  inline uint32 HashTo32 arglist {                                 \
+    uint32 retval = command;                                       \
+    return retval == kIllegalHash32 ? retval - 1 : retval;         \
+  }                                                                \
+  inline uint16 HashTo16 arglist {                                 \
+    uint16 retval16 = command >> 16; /* take upper 16 bits */      \
+    return retval16 == kIllegalHash16 ? retval16 - 1 : retval16;   \
+  }                                                                \
+  inline unsigned char HashTo8 arglist {                           \
+    unsigned char retval8 = command >> 24; /* take upper 8 bits */ \
+    return retval8 == kIllegalHash8 ? retval8 - 1 : retval8;       \
   }
 
 // This defines:
@@ -109,31 +113,33 @@ HASH_TO((int64 c), static_cast<uint32>(Hash64NumWithSeed(c, MIX64) >> 32))
 HASH_TO((intptr_t c), static_cast<uint32>(Hash64NumWithSeed(c, MIX64) >> 32))
 #endif
 
-#undef HASH_TO // clean up the macro space
+#undef HASH_TO  // clean up the macro space
 
-// HASH_NAMESPACE_DECLARATION_START
-namespace __gnu_cxx {
+
+namespace std {
 
 #if defined(__GNUC__)
 // Use our nice hash function for strings
-template <class _CharT, class _Traits, class _Alloc>
-struct hash<basic_string<_CharT, _Traits, _Alloc>> {
-  size_t operator()(const basic_string<_CharT, _Traits, _Alloc> &k) const {
-    return HashTo32(k.data(), static_cast<uint32>(k.length()));
-  }
-};
+// template<class _CharT, class _Traits, class _Alloc>
+// struct hash<basic_string<_CharT, _Traits, _Alloc> > {
+//  size_t operator()(const basic_string<_CharT, _Traits, _Alloc>& k) const {
+//    return HashTo32(k.data(), static_cast<uint32>(k.length()));
+//  }
+//};
 
 // they don't define a hash for const string at all
-template <> struct hash<const string> {
+template <>
+struct hash<const string> {
   size_t operator()(const string &k) const {
     return HashTo32(k.data(), static_cast<uint32>(k.length()));
   }
 };
-#endif // __GNUC__
+#endif  // __GNUC__
 
 // MSVC's STL requires an ever-so slightly different decl
 #if defined STL_MSVC
-template <> struct hash<char const *> : PortableHashBase {
+template <>
+struct hash<char const *> : PortableHashBase {
   size_t operator()(char const *const k) const {
     return HashTo32(k, strlen(k));
   }
@@ -143,7 +149,8 @@ template <> struct hash<char const *> : PortableHashBase {
   }
 };
 
-template <> struct hash<string> : PortableHashBase {
+template <>
+struct hash<string> : PortableHashBase {
   size_t operator()(const string &k) const {
     return HashTo32(k.data(), k.length());
   }
@@ -153,7 +160,8 @@ template <> struct hash<string> : PortableHashBase {
 
 #endif
 
-} // hash namespace
+}  // hash namespace
+
 
 namespace {
 // NOTE(user): we have to implement our own interator because
@@ -161,7 +169,8 @@ namespace {
 // errors, perhaps since string != std::string.
 // This is not a fully functional iterator, but is
 // sufficient for SplitStringToIteratorUsing().
-template <typename T> struct simple_insert_iterator {
+template <typename T>
+struct simple_insert_iterator {
   T *t_;
   simple_insert_iterator(T *t) : t_(t) {}
 
@@ -175,10 +184,11 @@ template <typename T> struct simple_insert_iterator {
   simple_insert_iterator<T> &operator++(int) { return *this; }
 };
 
-// Used to populate a hash_map out of pairs of consecutive strings in
+// Used to populate a unordered_map out of pairs of consecutive strings in
 // SplitStringToIterator{Using|AllowEmpty}().
-template <typename T> struct simple_hash_map_iterator {
-  typedef hash_map<T, T> hashmap;
+template <typename T>
+struct simple_hash_map_iterator {
+  typedef unordered_map<T, T> hashmap;
   hashmap *t;
   bool even;
   typename hashmap::iterator curr;
@@ -202,7 +212,7 @@ template <typename T> struct simple_hash_map_iterator {
   simple_hash_map_iterator<T> &operator++(int i) { return *this; }
 };
 
-} // anonymous namespace
+}  // anonymous namespace
 
 // ----------------------------------------------------------------------
 // SplitStringIntoNPiecesAllowEmpty()
@@ -259,8 +269,8 @@ void SplitStringAllowEmpty(const string &full, const char *delim,
 }
 
 void SplitStringToHashsetAllowEmpty(const string &full, const char *delim,
-                                    hash_set<string> *result) {
-  simple_insert_iterator<hash_set<string>> it(result);
+                                    unordered_set<string> *result) {
+  simple_insert_iterator<unordered_set<string>> it(result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
 
@@ -271,7 +281,7 @@ void SplitStringToSetAllowEmpty(const string &full, const char *delim,
 }
 
 void SplitStringToHashmapAllowEmpty(const string &full, const char *delim,
-                                    hash_map<string, string> *result) {
+                                    unordered_map<string, string> *result) {
   simple_hash_map_iterator<string> it(result);
   SplitStringToIteratorAllowEmpty(full, delim, 0, it);
 }
@@ -295,7 +305,7 @@ static int CalculateReserveForVector(const string &full, const char *delim) {
     const char *p = full.data();
     const char *end = p + full.size();
     while (p != end) {
-      if (*p == c) { // This could be optimized with hasless(v,1) trick.
+      if (*p == c) {  // This could be optimized with hasless(v,1) trick.
         ++p;
       } else {
         while (++p != end && *p != c) {
@@ -362,8 +372,8 @@ void SplitStringUsing(const string &full, const char *delim,
 }
 
 void SplitStringToHashsetUsing(const string &full, const char *delim,
-                               hash_set<string> *result) {
-  simple_insert_iterator<hash_set<string>> it(result);
+                               unordered_set<string> *result) {
+  simple_insert_iterator<unordered_set<string>> it(result);
   SplitStringToIteratorUsing(full, delim, it);
 }
 
@@ -374,7 +384,7 @@ void SplitStringToSetUsing(const string &full, const char *delim,
 }
 
 void SplitStringToHashmapUsing(const string &full, const char *delim,
-                               hash_map<string, string> *result) {
+                               unordered_map<string, string> *result) {
   simple_hash_map_iterator<string> it(result);
   SplitStringToIteratorUsing(full, delim, it);
 }
@@ -428,27 +438,26 @@ static inline uint64 strtou64_16(const char *source, char **end) {
   return strtou64(source, end, 16);
 }
 
-#define DEFINE_SPLIT_ONE_NUMBER_TOKEN(name, type, function)                    \
-  bool SplitOne##name##Token(const char **source, const char *delim,           \
-                             type *value) {                                    \
-    assert(source);                                                            \
-    assert(delim);                                                             \
-    assert(value);                                                             \
-    if (!*source)                                                              \
-      return false;                                                            \
-    /* Parse int */                                                            \
-    char *end;                                                                 \
-    *value = function(*source, &end);                                          \
-    if (end == *source)                                                        \
-      return false; /* number not present at start of string */                \
-    if (end[0] && !strchr(delim, end[0]))                                      \
-      return false; /* Garbage characters after int */                         \
-    /* Advance past token */                                                   \
-    if (*end != '\0')                                                          \
-      *source = const_cast<const char *>(end + 1);                             \
-    else                                                                       \
-      *source = NULL;                                                          \
-    return true;                                                               \
+#define DEFINE_SPLIT_ONE_NUMBER_TOKEN(name, type, function)          \
+  bool SplitOne##name##Token(const char **source, const char *delim, \
+                             type *value) {                          \
+    assert(source);                                                  \
+    assert(delim);                                                   \
+    assert(value);                                                   \
+    if (!*source) return false;                                      \
+    /* Parse int */                                                  \
+    char *end;                                                       \
+    *value = function(*source, &end);                                \
+    if (end == *source)                                              \
+      return false; /* number not present at start of string */      \
+    if (end[0] && !strchr(delim, end[0]))                            \
+      return false; /* Garbage characters after int */               \
+    /* Advance past token */                                         \
+    if (*end != '\0')                                                \
+      *source = const_cast<const char *>(end + 1);                   \
+    else                                                             \
+      *source = NULL;                                                \
+    return true;                                                     \
   }
 
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Int, int, strto32_0)
@@ -457,7 +466,7 @@ DEFINE_SPLIT_ONE_NUMBER_TOKEN(Uint32, uint32, strtou32_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Int64, int64, strto64_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Uint64, uint64, strtou64_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Double, double, strtod)
-#ifdef COMPILER_MSVC // has no strtof()
+#ifdef COMPILER_MSVC  // has no strtof()
 // Note: does an implicit cast to float.
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Float, float, strtod)
 #else

@@ -18,7 +18,7 @@ class S1Angle;
 // straight edges (geodesics).  Edges of length 0 and 180 degrees are not
 // allowed, i.e. adjacent vertices should not be identical or antipodal.
 class S2Polyline : public S2Region {
-public:
+ public:
   // Creates an empty S2Polyline that should be initialized by calling Init()
   // or Decode().
   S2Polyline();
@@ -177,7 +177,7 @@ public:
   virtual void Encode(Encoder *const encoder) const;
   virtual bool Decode(Decoder *const decoder);
 
-private:
+ private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
   S2Polyline(S2Polyline const *src);
@@ -191,4 +191,4 @@ private:
   DISALLOW_EVIL_CONSTRUCTORS(S2Polyline);
 };
 
-#endif // UTIL_GEOMETRY_S2POLYLINE_H__
+#endif  // UTIL_GEOMETRY_S2POLYLINE_H__

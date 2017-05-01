@@ -2,13 +2,14 @@
 
 #include "stringprintf.h"
 
-#include <stdarg.h> // For va_list and related operations
-#include <stdio.h>  // MSVC requires this for _vsnprintf
+#include <stdarg.h>  // For va_list and related operations
+#include <stdio.h>   // MSVC requires this for _vsnprintf
 #include <vector>
 using std::vector;
 
 #include <string>
 using std::string;
+
 #include "base/logging.h"
 
 // Max arguments supported by StringPrintVector

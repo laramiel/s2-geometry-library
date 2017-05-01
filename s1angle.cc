@@ -2,9 +2,9 @@
 
 #include "s2/s1angle.h"
 
-#include <iostream>
 #include <math.h>
 #include <stdio.h>
+#include <iostream>
 using std::ostream;
 using std::cout;
 using std::endl;
@@ -24,8 +24,7 @@ S1Angle S1Angle::Normalized() const {
 
 void S1Angle::Normalize() {
   radians_ = remainder(radians_, 2.0 * M_PI);
-  if (radians_ <= -M_PI)
-    radians_ = M_PI;
+  if (radians_ <= -M_PI) radians_ = M_PI;
 }
 
 ostream &operator<<(ostream &os, S1Angle const &a) {

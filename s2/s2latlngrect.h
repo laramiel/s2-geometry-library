@@ -24,7 +24,7 @@ using std::endl;
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2LatLngRect : public S2Region {
-public:
+ public:
   // Construct a rectangle from minimum and maximum latitudes and longitudes.
   // If lo.lng() > hi.lng(), the rectangle spans the 180 degree longitude
   // line. Both points must be normalized, with lo.lat() <= hi.lat().
@@ -220,7 +220,7 @@ public:
   virtual S2LatLngRect GetRectBound() const;
   virtual bool Contains(S2Cell const &cell) const;
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // This test is cheap but is NOT exact.  Use Intersects() if you want a more
@@ -236,7 +236,7 @@ public:
   virtual void Encode(Encoder *const encoder) const;
   virtual bool Decode(Decoder *const decoder);
 
-private:
+ private:
   // Return true if the edge AB intersects the given edge of constant
   // longitude.
   static bool IntersectsLngEdge(S2Point const &a, S2Point const &b,
@@ -309,4 +309,4 @@ inline bool S2LatLngRect::operator!=(S2LatLngRect const &other) const {
 
 ostream &operator<<(ostream &os, S2LatLngRect const &r);
 
-#endif // UTIL_GEOMETRY_S2LATLNGRECT_H_
+#endif  // UTIL_GEOMETRY_S2LATLNGRECT_H_

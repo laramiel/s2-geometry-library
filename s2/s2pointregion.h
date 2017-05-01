@@ -11,7 +11,7 @@
 // An S2PointRegion is a region that contains a single point.  It is more
 // expensive than the raw S2Point type and is useful mainly for completeness.
 class S2PointRegion : public S2Region {
-public:
+ public:
   // Create a region containing the given point, which must be unit length.
   inline explicit S2PointRegion(S2Point const &point);
 
@@ -34,7 +34,7 @@ public:
   virtual void Encode(Encoder *const encoder) const;
   virtual bool Decode(Decoder *const decoder);
 
-private:
+ private:
   S2Point point_;
 
   DISALLOW_EVIL_CONSTRUCTORS(S2PointRegion);
@@ -44,4 +44,4 @@ S2PointRegion::S2PointRegion(S2Point const &point) : point_(point) {
   DCHECK(S2::IsUnitLength(point));
 }
 
-#endif // UTIL_GEOMETRY_S2POINTREGION_H__
+#endif  // UTIL_GEOMETRY_S2POINTREGION_H__

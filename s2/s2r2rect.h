@@ -37,7 +37,7 @@ typedef Vector2_d R2Point;
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2R2Rect : public S2Region {
-public:
+ public:
   // Construct a rectangle from the given lower-left and upper-right points.
   inline S2R2Rect(R2Point const &lo, R2Point const &hi);
 
@@ -157,7 +157,7 @@ public:
   virtual S2Cap GetCapBound() const;
   virtual S2LatLngRect GetRectBound() const;
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
   bool Contains(S2Point const &p) const;
   virtual bool Contains(S2Cell const &cell) const;
@@ -167,7 +167,7 @@ public:
   }
   virtual bool Decode(Decoder *const decoder) { return false; }
 
-private:
+ private:
   R1Interval x_;
   R1Interval y_;
 };
@@ -199,4 +199,4 @@ inline bool S2R2Rect::operator==(S2R2Rect const &other) const {
 
 ostream &operator<<(ostream &os, S2R2Rect const &r);
 
-#endif // UTIL_GEOMETRY_S2R2RECT_H_
+#endif  // UTIL_GEOMETRY_S2R2RECT_H_

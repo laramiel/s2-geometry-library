@@ -107,8 +107,7 @@ S2Point S2R2Rect::ToS2Point(R2Point const &p) {
 }
 
 S2Cap S2R2Rect::GetCapBound() const {
-  if (is_empty())
-    return S2Cap::Empty();
+  if (is_empty()) return S2Cap::Empty();
 
   // The rectangle is a convex polygon on the sphere, since it is a subset of
   // one cube face.  Its bounding cap is also a convex region on the sphere,
@@ -129,20 +128,17 @@ S2LatLngRect S2R2Rect::GetRectBound() const {
 
 bool S2R2Rect::Contains(S2Point const &p) const {
   S2CellId cellid = S2CellId::FromPoint(p);
-  if (cellid.face() != 0)
-    return false;
+  if (cellid.face() != 0) return false;
   return Contains(cellid.GetCenterST());
 }
 
 bool S2R2Rect::Contains(S2Cell const &cell) const {
-  if (cell.face() != 0)
-    return false;
+  if (cell.face() != 0) return false;
   return Contains(S2R2Rect::FromCell(cell));
 }
 
 bool S2R2Rect::MayIntersect(S2Cell const &cell) const {
-  if (cell.face() != 0)
-    return false;
+  if (cell.face() != 0) return false;
   return Intersects(S2R2Rect::FromCell(cell));
 }
 

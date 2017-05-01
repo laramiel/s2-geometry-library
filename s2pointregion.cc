@@ -30,7 +30,7 @@ bool S2PointRegion::MayIntersect(S2Cell const &cell) const {
 }
 
 void S2PointRegion::Encode(Encoder *encoder) const {
-  encoder->Ensure(30); // sufficient
+  encoder->Ensure(30);  // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
   for (int i = 0; i < 3; ++i) {
@@ -41,8 +41,7 @@ void S2PointRegion::Encode(Encoder *encoder) const {
 
 bool S2PointRegion::Decode(Decoder *decoder) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber)
-    return false;
+  if (version > kCurrentEncodingVersionNumber) return false;
 
   for (int i = 0; i < 3; ++i) {
     point_[i] = decoder->getdouble();

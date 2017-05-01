@@ -6,11 +6,11 @@
 #include <string>
 using std::string;
 
+#include <ostream>
 #include "base/basictypes.h"
 #include "s2/s1angle.h"
 #include "s2/s2.h"
 #include "util/math/vector2-inl.h"
-#include <ostream>
 
 // This class represents a point on the unit sphere as a pair
 // of latitude-longitude coordinates.  Like the rest of the "geometry"
@@ -21,7 +21,7 @@ using std::string;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class S2LatLng {
-public:
+ public:
   // Constructor.  The latitude and longitude are allowed to be outside
   // the is_valid() range.  However, note that most methods that accept
   // S2LatLngs expect them to be normalized (see Normalized() below).
@@ -104,7 +104,7 @@ public:
   string ToStringInDegrees() const;
   void ToStringInDegrees(string *s) const;
 
-private:
+ private:
   // Internal constructor.
   inline S2LatLng(Vector2_d const &coords) : coords_(coords) {}
 
@@ -187,4 +187,4 @@ inline S2LatLng operator*(S2LatLng const &a, double m) {
 
 ostream &operator<<(ostream &os, S2LatLng const &ll);
 
-#endif // UTIL_GEOMETRY_S2LATLNG_H__
+#endif  // UTIL_GEOMETRY_S2LATLNG_H__

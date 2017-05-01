@@ -27,7 +27,7 @@ using std::endl;
 // This class is intended to be copied by value as desired.  It uses
 // the default copy constructor and assignment operator.
 class R1Interval {
-public:
+ public:
   // Constructor.  If lo > hi, the interval is empty.
   R1Interval(double lo, double hi) : bounds_(lo, hi) {}
 
@@ -89,16 +89,14 @@ public:
 
   // Return true if this interval contains the interval 'y'.
   bool Contains(R1Interval const &y) const {
-    if (y.is_empty())
-      return true;
+    if (y.is_empty()) return true;
     return y.lo() >= lo() && y.hi() <= hi();
   }
 
   // Return true if the interior of this interval contains the entire
   // interval 'y' (including its boundary).
   bool InteriorContains(R1Interval const &y) const {
-    if (y.is_empty())
-      return true;
+    if (y.is_empty()) return true;
     return y.lo() > lo() && y.hi() < hi();
   }
 
@@ -122,10 +120,8 @@ public:
   // R1Intervals x and y, this distance is defined as
   //     h(x, y) = max_{p in x} min_{q in y} d(p, q).
   double GetDirectedHausdorffDistance(R1Interval const &y) const {
-    if (is_empty())
-      return 0.0;
-    if (y.is_empty())
-      return HUGE_VAL;
+    if (is_empty()) return 0.0;
+    if (y.is_empty()) return HUGE_VAL;
     return max(0.0, max(hi() - y.hi(), y.lo() - lo()));
   }
 
@@ -146,18 +142,15 @@ public:
   // is always empty.
   R1Interval Expanded(double radius) const {
     DCHECK_GE(radius, 0);
-    if (is_empty())
-      return *this;
+    if (is_empty()) return *this;
     return R1Interval(lo() - radius, hi() + radius);
   }
 
   // Return the smallest interval that contains this interval and the
   // given interval "y".
   R1Interval Union(R1Interval const &y) const {
-    if (is_empty())
-      return y;
-    if (y.is_empty())
-      return *this;
+    if (is_empty()) return y;
+    if (y.is_empty()) return *this;
     return R1Interval(min(lo(), y.lo()), max(hi(), y.hi()));
   }
 
@@ -175,14 +168,12 @@ public:
   // Return true if length of the symmetric difference between the two
   // intervals is at most the given tolerance.
   bool ApproxEquals(R1Interval const &y, double max_error = 1e-15) const {
-    if (is_empty())
-      return y.GetLength() <= max_error;
-    if (y.is_empty())
-      return GetLength() <= max_error;
+    if (is_empty()) return y.GetLength() <= max_error;
+    if (y.is_empty()) return GetLength() <= max_error;
     return fabs(y.lo() - lo()) + fabs(y.hi() - hi()) <= max_error;
   }
 
-private:
+ private:
   Vector2_d bounds_;
 };
 DECLARE_POD(R1Interval);
@@ -191,4 +182,4 @@ inline ostream &operator<<(ostream &os, R1Interval const &x) {
   return os << "[" << x.lo() << ", " << x.hi() << "]";
 }
 
-#endif // UTIL_GEOMETRY_R1INTERVAL_H_
+#endif  // UTIL_GEOMETRY_R1INTERVAL_H_

@@ -1,6 +1,7 @@
 // Copyright 2008 Google Inc. All Rights Reserved.
 
 #include "util/math/mathutil.h"
+
 #include <vector>
 using std::vector;
 
@@ -63,7 +64,7 @@ bool MathUtil::RealRootsForCubic(long double const a,
   }
 
   long double const A =
-    -sgn(R) * pow(fabs(R) + sqrt(R_squared - Q_cubed), 1.0/3.0L);
+    -sgn(R) * pow(abs(R) + sqrt(R_squared - Q_cubed), 1.0/3.0L);
 
   if (A != 0.0) {  // in which case, B from NR is zero
     *r1 = A + Q / A - a_third;

@@ -71,18 +71,15 @@ bool S2PolygonBuilder::AddEdge(S2Point const &v0, S2Point const &v1) {
   // If xor_edges is true, we look for an existing edge in the opposite
   // direction.  We either delete that edge or insert a new one.
 
-  if (v0 == v1)
-    return false;
+  if (v0 == v1) return false;
   if (options_.xor_edges() && HasEdge(v1, v0)) {
     EraseEdge(v1, v0);
     return false;
   }
-  if (edges_->find(v0) == edges_->end())
-    starting_vertices_.push_back(v0);
+  if (edges_->find(v0) == edges_->end()) starting_vertices_.push_back(v0);
   (*edges_)[v0].insert(v1);
   if (options_.undirected_edges()) {
-    if (edges_->find(v1) == edges_->end())
-      starting_vertices_.push_back(v1);
+    if (edges_->find(v1) == edges_->end()) starting_vertices_.push_back(v1);
     (*edges_)[v1].insert(v0);
   }
   return true;
@@ -109,15 +106,13 @@ void S2PolygonBuilder::EraseEdge(S2Point const &v0, S2Point const &v1) {
   VertexSet *vset = &(*edges_)[v0];
   DCHECK(vset->find(v1) != vset->end());
   vset->erase(vset->find(v1));
-  if (vset->empty())
-    edges_->erase(v0);
+  if (vset->empty()) edges_->erase(v0);
 
   if (options_.undirected_edges()) {
     vset = &(*edges_)[v1];
     DCHECK(vset->find(v0) != vset->end());
     vset->erase(vset->find(v0));
-    if (vset->empty())
-      edges_->erase(v1);
+    if (vset->empty()) edges_->erase(v1);
   }
 }
 
@@ -174,8 +169,8 @@ S2Loop *S2PolygonBuilder::AssembleLoop(S2Point const &v0, S2Point const &v1,
   // vertex that we have seen before *except* for the first vertex (v0).
   // This ensures that only CCW loops are constructed when possible.
 
-  vector<S2Point> path;         // The path so far.
-  hash_map<S2Point, int> index; // Maps a vertex to its index in "path".
+  vector<S2Point> path;          // The path so far.
+  hash_map<S2Point, int> index;  // Maps a vertex to its index in "path".
   path.push_back(v0);
   path.push_back(v1);
   index[v1] = 1;
@@ -190,8 +185,7 @@ S2Loop *S2PolygonBuilder::AssembleLoop(S2Point const &v0, S2Point const &v1,
       VertexSet const &vset = candidates->second;
       for (VertexSet::const_iterator i = vset.begin(); i != vset.end(); ++i) {
         // We prefer the leftmost outgoing edge, ignoring any reverse edges.
-        if (*i == v0)
-          continue;
+        if (*i == v0) continue;
         if (!v2_found || S2::OrderedCCW(v0, v2, *i, v1)) {
           v2 = *i;
         }
@@ -229,7 +223,7 @@ S2Loop *S2PolygonBuilder::AssembleLoop(S2Point const &v0, S2Point const &v1,
       }
 
       if (options_.undirected_edges() && !loop->IsNormalized()) {
-        scoped_ptr<S2Loop> deleter(loop); // XXX for debugging
+        scoped_ptr<S2Loop> deleter(loop);  // XXX for debugging
         return AssembleLoop(path[1], path[0], unused_edges);
       }
       return loop;
@@ -249,18 +243,19 @@ class S2PolygonBuilder::PointIndex {
   // fixed-radius queries and has various special-purpose operations to avoid
   // the need for additional data structures.
 
-private:
+ private:
   typedef multimap<S2CellId, S2Point> Map;
   Map map_;
 
   double vertex_radius_;
   double edge_fraction_;
   int level_;
-  vector<S2CellId> ids_; // Allocated here for efficiency.
+  vector<S2CellId> ids_;  // Allocated here for efficiency.
 
-public:
+ public:
   PointIndex(double vertex_radius, double edge_fraction)
-      : vertex_radius_(vertex_radius), edge_fraction_(edge_fraction),
+      : vertex_radius_(vertex_radius),
+        edge_fraction_(edge_fraction),
         // We compute an S2CellId level such that the vertex neighbors at that
         // level of any point A are a covering for spherical cap (i.e. "disc")
         // of the given search radius centered at A.  This requires that the
@@ -326,15 +321,13 @@ public:
 
     double best_dist = 2 * vertex_radius_;
     for (int i = ids_.size(); --i >= 0;) {
-      if (i > 0 && ids_[i - 1] == ids_[i])
-        continue; // Skip duplicates.
+      if (i > 0 && ids_[i - 1] == ids_[i]) continue;  // Skip duplicates.
 
       S2CellId const &max_id = ids_[i].range_max();
       for (Map::const_iterator j = map_.lower_bound(ids_[i].range_min());
            j->first <= max_id; ++j) {
         S2Point const &p = j->second;
-        if (p == v0 || p == v1)
-          continue;
+        if (p == v0 || p == v1) continue;
         double dist = S2EdgeUtil::GetDistance(p, v0, v1, normal).radians();
         if (dist < best_dist) {
           best_dist = dist;
@@ -346,7 +339,7 @@ public:
     return (best_dist < edge_fraction_ * vertex_radius_);
   }
 
-private:
+ private:
   DISALLOW_EVIL_CONSTRUCTORS(PointIndex);
 };
 
@@ -384,15 +377,14 @@ void S2PolygonBuilder::BuildMergeMap(PointIndex *index, MergeMap *merge_map) {
   for (hash_set<S2Point>::const_iterator vstart = vertices.begin();
        vstart != vertices.end(); ++vstart) {
     // Skip any vertices that have already been merged with another vertex.
-    if (merge_map->find(*vstart) != merge_map->end())
-      continue;
+    if (merge_map->find(*vstart) != merge_map->end()) continue;
 
     // Grow a maximal mergeable component starting from "vstart", the
     // canonical representative of the mergeable group.
     frontier.push_back(*vstart);
     while (!frontier.empty()) {
       index->QueryCap(frontier.back(), &mergeable);
-      frontier.pop_back(); // Do this before entering the loop below.
+      frontier.pop_back();  // Do this before entering the loop below.
       for (int j = mergeable.size(); --j >= 0;) {
         S2Point const &v1 = mergeable[j];
         if (v1 != *vstart) {
@@ -408,8 +400,7 @@ void S2PolygonBuilder::BuildMergeMap(PointIndex *index, MergeMap *merge_map) {
 }
 
 void S2PolygonBuilder::MoveVertices(MergeMap const &merge_map) {
-  if (merge_map.empty())
-    return;
+  if (merge_map.empty()) return;
 
   // We need to copy the set of edges affected by the move, since
   // edges_ could be reallocated when we start modifying it.
@@ -437,11 +428,9 @@ void S2PolygonBuilder::MoveVertices(MergeMap const &merge_map) {
     S2Point v1 = edges[i].second;
     EraseEdge(v0, v1);
     MergeMap::const_iterator new0 = merge_map.find(v0);
-    if (new0 != merge_map.end())
-      v0 = new0->second;
+    if (new0 != merge_map.end()) v0 = new0->second;
     MergeMap::const_iterator new1 = merge_map.find(v1);
-    if (new1 != merge_map.end())
-      v1 = new1->second;
+    if (new1 != merge_map.end()) v1 = new1->second;
     AddEdge(v0, v1);
   }
 }
@@ -468,21 +457,17 @@ void S2PolygonBuilder::SpliceEdges(PointIndex *index) {
   while (!edges.empty()) {
     S2Point v0 = edges.back().first;
     S2Point v1 = edges.back().second;
-    edges.pop_back(); // Do this before pushing new edges.
+    edges.pop_back();  // Do this before pushing new edges.
 
     // If we are xoring, edges may be erased before we get to them.
-    if (options_.xor_edges() && !HasEdge(v0, v1))
-      continue;
+    if (options_.xor_edges() && !HasEdge(v0, v1)) continue;
 
     S2Point vmid;
-    if (!index->FindNearbyPoint(v0, v1, &vmid))
-      continue;
+    if (!index->FindNearbyPoint(v0, v1, &vmid)) continue;
 
     EraseEdge(v0, v1);
-    if (AddEdge(v0, vmid))
-      edges.push_back(make_pair(v0, vmid));
-    if (AddEdge(vmid, v1))
-      edges.push_back(make_pair(vmid, v1));
+    if (AddEdge(v0, vmid)) edges.push_back(make_pair(v0, vmid));
+    if (AddEdge(vmid, v1)) edges.push_back(make_pair(vmid, v1));
   }
 }
 
@@ -500,8 +485,7 @@ bool S2PolygonBuilder::AssembleLoops(vector<S2Loop *> *loops,
   }
 
   EdgeList dummy_unused_edges;
-  if (unused_edges == NULL)
-    unused_edges = &dummy_unused_edges;
+  if (unused_edges == NULL) unused_edges = &dummy_unused_edges;
 
   // We repeatedly choose an edge and attempt to assemble a loop
   // starting from that edge.  (This is always possible unless the

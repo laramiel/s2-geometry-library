@@ -52,8 +52,7 @@ S2LatLng S2LatLngRect::GetSize() const {
 }
 
 double S2LatLngRect::Area() const {
-  if (is_empty())
-    return 0.0;
+  if (is_empty()) return 0.0;
   // This is the size difference of the two spherical caps, multiplied by
   // the longitude ratio.
   return lng().GetLength() *
@@ -146,8 +145,7 @@ S2Cap S2LatLngRect::GetCapBound() const {
   // through the center of the lat-long rectangle and one whose axis
   // is the north or south pole.  We return the smaller of the two caps.
 
-  if (is_empty())
-    return S2Cap::Empty();
+  if (is_empty()) return S2Cap::Empty();
 
   double pole_z, pole_angle;
   if (lat_.lo() + lat_.hi() < 0) {
@@ -173,8 +171,7 @@ S2Cap S2LatLngRect::GetCapBound() const {
       for (int k = 0; k < 4; ++k) {
         mid_cap.AddPoint(GetVertex(k).ToPoint());
       }
-      if (mid_cap.height() < pole_cap.height())
-        return mid_cap;
+      if (mid_cap.height() < pole_cap.height()) return mid_cap;
     }
   }
   return pole_cap;
@@ -201,7 +198,7 @@ bool S2LatLngRect::MayIntersect(S2Cell const &cell) const {
 }
 
 void S2LatLngRect::Encode(Encoder *encoder) const {
-  encoder->Ensure(40); // sufficient
+  encoder->Ensure(40);  // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
   encoder->putdouble(lat_.lo());
@@ -214,8 +211,7 @@ void S2LatLngRect::Encode(Encoder *encoder) const {
 
 bool S2LatLngRect::Decode(Decoder *decoder) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber)
-    return false;
+  if (version > kCurrentEncodingVersionNumber) return false;
 
   double lat_lo = decoder->getdouble();
   double lat_hi = decoder->getdouble();
@@ -250,8 +246,7 @@ bool S2LatLngRect::IntersectsLatEdge(S2Point const &a, S2Point const &b,
 
   // First, compute the normal to the plane AB that points vaguely north.
   S2Point z = S2::RobustCrossProd(a, b).Normalize();
-  if (z[2] < 0)
-    z = -z;
+  if (z[2] < 0) z = -z;
 
   // Extend this to an orthonormal frame (x,y,z) where x is the direction
   // where the great circle through AB achieves its maximium latitude.
@@ -264,7 +259,7 @@ bool S2LatLngRect::IntersectsLatEdge(S2Point const &a, S2Point const &b,
   // above) where the great circle intersects the given line of latitude.
   double sin_lat = sin(lat);
   if (fabs(sin_lat) >= x[2]) {
-    return false; // The great circle does not reach the given latitude.
+    return false;  // The great circle does not reach the given latitude.
   }
   DCHECK_GT(x[2], 0);
   double cos_theta = sin_lat / x[2];
@@ -283,14 +278,12 @@ bool S2LatLngRect::IntersectsLatEdge(S2Point const &a, S2Point const &b,
   if (ab_theta.Contains(theta)) {
     // Check if the intersection point is also in the given "lng" interval.
     S2Point isect = x * cos_theta + y * sin_theta;
-    if (lng.Contains(atan2(isect[1], isect[0])))
-      return true;
+    if (lng.Contains(atan2(isect[1], isect[0]))) return true;
   }
   if (ab_theta.Contains(-theta)) {
     // Check if the intersection point is also in the given "lng" interval.
     S2Point isect = x * cos_theta - y * sin_theta;
-    if (lng.Contains(atan2(isect[1], isect[0])))
-      return true;
+    if (lng.Contains(atan2(isect[1], isect[0]))) return true;
   }
   return false;
 }
@@ -300,16 +293,12 @@ bool S2LatLngRect::Intersects(S2Cell const &cell) const {
   // other.  Once these are disposed of, then the regions will intersect
   // if and only if their boundaries intersect.
 
-  if (is_empty())
-    return false;
-  if (Contains(cell.GetCenterRaw()))
-    return true;
-  if (cell.Contains(GetCenter().ToPoint()))
-    return true;
+  if (is_empty()) return false;
+  if (Contains(cell.GetCenterRaw())) return true;
+  if (cell.Contains(GetCenter().ToPoint())) return true;
 
   // Quick rejection test (not required for correctness).
-  if (!Intersects(cell.GetRectBound()))
-    return false;
+  if (!Intersects(cell.GetRectBound())) return false;
 
   // Precompute the cell vertices as points and latitude-longitudes.  We also
   // check whether the S2Cell contains any corner of the rectangle, or
@@ -318,12 +307,10 @@ bool S2LatLngRect::Intersects(S2Cell const &cell) const {
   S2Point cell_v[4];
   S2LatLng cell_ll[4];
   for (int i = 0; i < 4; ++i) {
-    cell_v[i] = cell.GetVertex(i); // Must be normalized.
+    cell_v[i] = cell.GetVertex(i);  // Must be normalized.
     cell_ll[i] = S2LatLng(cell_v[i]);
-    if (Contains(cell_ll[i]))
-      return true;
-    if (cell.Contains(GetVertex(i).ToPoint()))
-      return true;
+    if (Contains(cell_ll[i])) return true;
+    if (cell.Contains(GetVertex(i).ToPoint())) return true;
   }
 
   // Now check whether the boundaries intersect.  Unfortunately, a
@@ -333,23 +320,18 @@ bool S2LatLngRect::Intersects(S2Cell const &cell) const {
   for (int i = 0; i < 4; ++i) {
     S1Interval edge_lng = S1Interval::FromPointPair(
         cell_ll[i].lng().radians(), cell_ll[(i + 1) & 3].lng().radians());
-    if (!lng_.Intersects(edge_lng))
-      continue;
+    if (!lng_.Intersects(edge_lng)) continue;
 
     S2Point const &a = cell_v[i];
     S2Point const &b = cell_v[(i + 1) & 3];
     if (edge_lng.Contains(lng_.lo())) {
-      if (IntersectsLngEdge(a, b, lat_, lng_.lo()))
-        return true;
+      if (IntersectsLngEdge(a, b, lat_, lng_.lo())) return true;
     }
     if (edge_lng.Contains(lng_.hi())) {
-      if (IntersectsLngEdge(a, b, lat_, lng_.hi()))
-        return true;
+      if (IntersectsLngEdge(a, b, lat_, lng_.hi())) return true;
     }
-    if (IntersectsLatEdge(a, b, lat_.lo(), lng_))
-      return true;
-    if (IntersectsLatEdge(a, b, lat_.hi(), lng_))
-      return true;
+    if (IntersectsLatEdge(a, b, lat_.lo(), lng_)) return true;
+    if (IntersectsLatEdge(a, b, lat_.hi(), lng_)) return true;
   }
   return false;
 }
@@ -363,7 +345,7 @@ S1Angle S2LatLngRect::GetDistance(S2LatLngRect const &other) const {
   // First, handle the trivial cases where the longitude intervals overlap.
   if (a.lng().Intersects(b.lng())) {
     if (a.lat().Intersects(b.lat()))
-      return S1Angle::Radians(0); // Intersection between a and b.
+      return S1Angle::Radians(0);  // Intersection between a and b.
 
     // We found an overlap in the longitude interval, but not in the latitude
     // interval. This means the shortest path travels along some line of
@@ -445,13 +427,13 @@ S1Angle S2LatLngRect::GetHausdorffDistance(S2LatLngRect const &other) const {
              other.GetDirectedHausdorffDistance(*this));
 }
 
-S1Angle
-S2LatLngRect::GetDirectedHausdorffDistance(S2LatLngRect const &other) const {
+S1Angle S2LatLngRect::GetDirectedHausdorffDistance(
+    S2LatLngRect const &other) const {
   if (is_empty()) {
     return S1Angle::Radians(0);
   }
   if (other.is_empty()) {
-    return S1Angle::Radians(M_PI); // maximum possible distance on S2
+    return S1Angle::Radians(M_PI);  // maximum possible distance on S2
   }
 
   double lng_distance = lng().GetDirectedHausdorffDistance(other.lng());
@@ -573,8 +555,7 @@ S1Angle S2LatLngRect::GetInteriorMaxDistance(R1Interval const &a_lat,
                                              S2Point const &b) {
   // Longitude 0 is in the y=0 plane. b.x() >= 0 implies that the maximum
   // does not occur in the interior of a_lat.
-  if (a_lat.is_empty() || b.x() >= 0)
-    return S1Angle::Radians(-1);
+  if (a_lat.is_empty() || b.x() >= 0) return S1Angle::Radians(-1);
 
   // Project b to the y=0 plane. The antipodal of the normalized projection is
   // the point at which the maxium distance from b occurs, if it is contained

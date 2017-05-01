@@ -91,8 +91,7 @@ bool S2CellUnion::Normalize() {
     S2CellId id = cell_id(i);
 
     // Check whether this cell is contained by the previous cell.
-    if (!output.empty() && output.back().contains(id))
-      continue;
+    if (!output.empty() && output.back().contains(id)) continue;
 
     // Discard any previous cells contained by this cell.
     while (!output.empty() && id.contains(output.back())) {
@@ -166,8 +165,7 @@ void S2CellUnion::Denormalize(int min_level, int level_mod,
 S2Cap S2CellUnion::GetCapBound() const {
   // Compute the approximate centroid of the region.  This won't produce the
   // bounding cap of minimal area, but it should be close enough.
-  if (cell_ids_.empty())
-    return S2Cap::Empty();
+  if (cell_ids_.empty()) return S2Cap::Empty();
   S2Point centroid(0, 0, 0);
   for (int i = 0; i < num_cells(); ++i) {
     double area = S2Cell::AverageArea(cell_id(i).level());
@@ -210,8 +208,7 @@ bool S2CellUnion::Contains(S2CellId const &id) const {
 
   vector<S2CellId>::const_iterator i =
       lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
-  if (i != cell_ids_.end() && i->range_min() <= id)
-    return true;
+  if (i != cell_ids_.end() && i->range_min() <= id) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id;
 }
 
@@ -221,8 +218,7 @@ bool S2CellUnion::Intersects(S2CellId const &id) const {
 
   vector<S2CellId>::const_iterator i =
       lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
-  if (i != cell_ids_.end() && i->range_min() <= id.range_max())
-    return true;
+  if (i != cell_ids_.end() && i->range_min() <= id.range_max()) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id.range_min();
 }
 
@@ -231,8 +227,7 @@ bool S2CellUnion::Contains(S2CellUnion const *y) const {
   // sigificantly faster in both the average and worst case.
 
   for (int i = 0; i < y->num_cells(); ++i) {
-    if (!Contains(y->cell_id(i)))
-      return false;
+    if (!Contains(y->cell_id(i))) return false;
   }
   return true;
 }
@@ -242,8 +237,7 @@ bool S2CellUnion::Intersects(S2CellUnion const *y) const {
   // sigificantly faster in both the average and worst case.
 
   for (int i = 0; i < y->num_cells(); ++i) {
-    if (Intersects(y->cell_id(i)))
-      return true;
+    if (Intersects(y->cell_id(i))) return true;
   }
   return false;
 }
@@ -266,8 +260,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellId const &id) {
     vector<S2CellId>::const_iterator i =
         lower_bound(x->cell_ids_.begin(), x->cell_ids_.end(), id.range_min());
     S2CellId idmax = id.range_max();
-    while (i != x->cell_ids_.end() && *i <= idmax)
-      cell_ids_.push_back(*i++);
+    while (i != x->cell_ids_.end() && *i <= idmax) cell_ids_.push_back(*i++);
   }
 }
 
@@ -293,8 +286,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellUnion const *y) {
         // Advance "j" to the first cell possibly contained by *i.
         j = lower_bound(j + 1, y->cell_ids_.end(), imin);
         // The previous cell *(j-1) may now contain *i.
-        if (*i <= (j - 1)->range_max())
-          --j;
+        if (*i <= (j - 1)->range_max()) --j;
       }
     } else if (jmin > imin) {
       // Identical to the code above with "i" and "j" reversed.
@@ -302,8 +294,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const *x, S2CellUnion const *y) {
         cell_ids_.push_back(*j++);
       } else {
         i = lower_bound(i + 1, x->cell_ids_.end(), jmin);
-        if (*j <= (i - 1)->range_max())
-          --i;
+        if (*j <= (i - 1)->range_max()) --i;
       }
     } else {
       // "i" and "j" have the same range_min(), so one contains the other.
@@ -330,8 +321,7 @@ static void GetDifferenceInternal(S2CellId cell, S2CellUnion const *y,
     S2CellId child = cell.child_begin();
     for (int i = 0;; ++i) {
       GetDifferenceInternal(child, y, cell_ids);
-      if (i == 3)
-        break; // Avoid unnecessary next() computation.
+      if (i == 3) break;  // Avoid unnecessary next() computation.
       child = child.next();
     }
   }
@@ -362,8 +352,7 @@ void S2CellUnion::Expand(int level) {
       id = id.parent(level);
       // Optimization: skip over any cells contained by this one.  This is
       // especially important when very small regions are being expanded.
-      while (i > 0 && id.contains(cell_id(i - 1)))
-        --i;
+      while (i > 0 && id.contains(cell_id(i - 1))) --i;
     }
     output.push_back(id);
     id.AppendAllNeighbors(level, &output);

@@ -61,9 +61,11 @@ class S2Polygon;
 // 4. As a tool for implementing other polygon operations by generating a
 //    collection of directed edges and then assembling them into loops.
 class S2PolygonBuilderOptions {
-public:
+ public:
   S2PolygonBuilderOptions()
-      : undirected_edges_(false), xor_edges_(true), validate_(false),
+      : undirected_edges_(false),
+        xor_edges_(true),
+        validate_(false),
         vertex_merge_radius_(S1Angle::Radians(0)),
         edge_splice_fraction_(0.866) {}
 
@@ -167,7 +169,7 @@ public:
   double edge_splice_fraction() const { return edge_splice_fraction_; }
   void set_edge_splice_fraction(double edge_splice_fraction);
 
-private:
+ private:
   bool undirected_edges_;
   bool xor_edges_;
   bool validate_;
@@ -176,7 +178,7 @@ private:
 };
 
 class S2PolygonBuilder {
-public:
+ public:
   explicit S2PolygonBuilder(S2PolygonBuilderOptions const &options);
   ~S2PolygonBuilder();
 
@@ -243,14 +245,14 @@ public:
   // lat-lng coordinates in degrees.  "m" should be orthonormal.
   void set_debug_matrix(Matrix3x3_d const &m);
 
-protected:
+ protected:
   // These functions print either a single vertex, all edges from a single
   // vertex, or all edges in the builder.
   void DumpVertex(S2Point const &v) const;
   void DumpEdges(S2Point const &v0) const;
   void Dump() const;
 
-private:
+ private:
   // Return true if the given edge exists.
   bool HasEdge(S2Point const &v0, S2Point const &v1);
 
@@ -316,4 +318,4 @@ inline S2PolygonBuilderOptions S2PolygonBuilderOptions::UNDIRECTED_UNION() {
   return options;
 }
 
-#endif // UTIL_GEOMETRY_S2POLYGONBUILDER_H__
+#endif  // UTIL_GEOMETRY_S2POLYGONBUILDER_H__

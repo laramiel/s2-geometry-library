@@ -102,4 +102,4 @@ static inline unsigned char ascii_toupper(unsigned char c) {
   return kAsciiToUpper[c];
 }
 
-#endif // STRINGS_ASCII_CTYPE_H__
+#endif  // STRINGS_ASCII_CTYPE_H__

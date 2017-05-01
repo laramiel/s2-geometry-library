@@ -14,11 +14,11 @@ class S2LatLngRect;
 // collects together common code that is needed to implement polygonal
 // geometry such as polylines, loops, and general polygons.
 class S2EdgeUtil {
-public:
+ public:
   // This class allows a vertex chain v0, v1, v2, ... to be efficiently
   // tested for intersection with a given fixed edge AB.
   class EdgeCrosser {
-  public:
+   public:
     // AB is the given fixed edge, and C is the first vertex of the vertex
     // chain.  All parameters must point to fixed storage that persists for
     // the lifetime of the EdgeCrosser object.
@@ -41,7 +41,7 @@ public:
     // implement point-in-polygon containment tests.
     inline bool EdgeOrVertexCrossing(S2Point const *d);
 
-  private:
+   private:
     // This function handles the "slow path" of RobustCrossing(), which does
     // not need to be inlined.
     int RobustCrossingInternal(S2Point const *d);
@@ -52,8 +52,8 @@ public:
     S2Point const a_cross_b_;
 
     // The fields below are updated for each vertex in the chain.
-    S2Point const *c_; // Previous vertex in the vertex chain.
-    int acb_;          // The orientation of the triangle ACB.
+    S2Point const *c_;  // Previous vertex in the vertex chain.
+    int acb_;           // The orientation of the triangle ACB.
   };
 
   // This class computes a bounding rectangle that contains all edges
@@ -62,7 +62,7 @@ public:
   // the bounding rectangle of its endpoints, e.g. consider an edge that
   // passes through the north pole.
   class RectBounder {
-  public:
+   public:
     RectBounder() : bound_(S2LatLngRect::Empty()) {}
 
     // This method is called to add each vertex to the chain.  'b'
@@ -77,10 +77,10 @@ public:
     // vertices defined so far.
     S2LatLngRect GetBound() const { return bound_; }
 
-  private:
-    S2Point const *a_;   // The previous vertex in the chain.
-    S2LatLng a_latlng_;  // The corresponding latitude-longitude.
-    S2LatLngRect bound_; // The current bounding rectangle.
+   private:
+    S2Point const *a_;    // The previous vertex in the chain.
+    S2LatLng a_latlng_;   // The corresponding latitude-longitude.
+    S2LatLngRect bound_;  // The current bounding rectangle.
   };
 
   // The purpose of this class is to find edges that intersect a given
@@ -89,7 +89,7 @@ public:
   // vertex chain v0, v1, v2, ...  and returns a boolean value indicating
   // whether each edge intersects the specified longitude interval.
   class LongitudePruner {
-  public:
+   public:
     // 'interval' is the longitude interval to be tested against, and
     // 'v0' is the first vertex of edge chain.
     LongitudePruner(S1Interval const &interval, S2Point const &v0);
@@ -98,9 +98,9 @@ public:
     // interval, and then saves 'v1' to be used as the next 'v0'.
     inline bool Intersects(S2Point const &v1);
 
-  private:
-    S1Interval interval_; // The interval to be tested against.
-    double lng0_;         // The longitude of the next v0.
+   private:
+    S1Interval interval_;  // The interval to be tested against.
+    double lng0_;          // The longitude of the next v0.
   };
 
   // Return true if edge AB crosses CD at a point that is interior
@@ -261,10 +261,10 @@ public:
   // Detailed relation from wedges A to wedge B.
   enum WedgeRelation {
     WEDGE_EQUALS,
-    WEDGE_PROPERLY_CONTAINS,     // A is a strict superset of B.
-    WEDGE_IS_PROPERLY_CONTAINED, // A is a strict subset of B.
-    WEDGE_PROPERLY_OVERLAPS, // All of A intsect B, A-B and B-A are non-empty.
-    WEDGE_IS_DISJOINT,       // A is disjoint from B
+    WEDGE_PROPERLY_CONTAINS,      // A is a strict superset of B.
+    WEDGE_IS_PROPERLY_CONTAINED,  // A is a strict subset of B.
+    WEDGE_PROPERLY_OVERLAPS,  // All of A intsect B, A-B and B-A are non-empty.
+    WEDGE_IS_DISJOINT,        // A is disjoint from B
   };
 
   // Return the relation from wedge A to B.
@@ -272,7 +272,7 @@ public:
                                         S2Point const &a2, S2Point const &b0,
                                         S2Point const &b2);
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(S2EdgeUtil); // Contains only static methods.
+  DISALLOW_IMPLICIT_CONSTRUCTORS(S2EdgeUtil);  // Contains only static methods.
 };
 
 inline S2EdgeUtil::EdgeCrosser::EdgeCrosser(S2Point const *a, S2Point const *b,
@@ -298,10 +298,10 @@ inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const *d) {
   int bda = S2::RobustCCW(*a_, *b_, *d, a_cross_b_);
   int result;
   if (bda == -acb_ && bda != 0) {
-    result = -1; // Most common case -- triangles have opposite orientations.
+    result = -1;  // Most common case -- triangles have opposite orientations.
   } else if ((bda & acb_) == 0) {
-    result = 0; // At least one value is zero -- two vertices are identical.
-  } else {      // Slow path.
+    result = 0;  // At least one value is zero -- two vertices are identical.
+  } else {       // Slow path.
     DCHECK_EQ(acb_, bda);
     DCHECK_NE(0, bda);
     result = RobustCrossingInternal(d);
@@ -318,10 +318,8 @@ inline bool S2EdgeUtil::EdgeCrosser::EdgeOrVertexCrossing(S2Point const *d) {
   // We need to copy c_ since it is clobbered by RobustCrossing().
   S2Point const *c = c_;
   int crossing = RobustCrossing(d);
-  if (crossing < 0)
-    return false;
-  if (crossing > 0)
-    return true;
+  if (crossing < 0) return false;
+  if (crossing > 0) return true;
   return VertexCrossing(*a_, *b_, *c, *d);
 }
 
@@ -332,4 +330,4 @@ inline bool S2EdgeUtil::LongitudePruner::Intersects(S2Point const &v1) {
   return result;
 }
 
-#endif // UTIL_GEOMETRY_S2EDGEUTIL_H__
+#endif  // UTIL_GEOMETRY_S2EDGEUTIL_H__

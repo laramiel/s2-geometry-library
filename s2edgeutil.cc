@@ -21,8 +21,7 @@ bool S2EdgeUtil::SimpleCrossing(S2Point const &a, S2Point const &b,
   S2Point ab = a.CrossProd(b);
   double acb = -(ab.DotProd(c));
   double bda = ab.DotProd(d);
-  if (acb * bda <= 0)
-    return false;
+  if (acb * bda <= 0) return false;
 
   S2Point cd = c.CrossProd(d);
   double cbd = -(cd.DotProd(b));
@@ -40,21 +39,16 @@ bool S2EdgeUtil::VertexCrossing(S2Point const &a, S2Point const &b,
                                 S2Point const &c, S2Point const &d) {
   // If A == B or C == D there is no intersection.  We need to check this
   // case first in case 3 or more input points are identical.
-  if (a == b || c == d)
-    return false;
+  if (a == b || c == d) return false;
 
   // If any other pair of vertices is equal, there is a crossing if and only
   // if OrderedCCW() indicates that the edge AB is further CCW around the
   // shared vertex O (either A or B) than the edge CD, starting from an
   // arbitrary fixed reference point.
-  if (a == d)
-    return S2::OrderedCCW(S2::Ortho(a), c, b, a);
-  if (b == c)
-    return S2::OrderedCCW(S2::Ortho(b), d, a, b);
-  if (a == c)
-    return S2::OrderedCCW(S2::Ortho(a), d, b, a);
-  if (b == d)
-    return S2::OrderedCCW(S2::Ortho(b), c, a, b);
+  if (a == d) return S2::OrderedCCW(S2::Ortho(a), c, b, a);
+  if (b == c) return S2::OrderedCCW(S2::Ortho(b), d, a, b);
+  if (a == c) return S2::OrderedCCW(S2::Ortho(a), d, b, a);
+  if (b == d) return S2::OrderedCCW(S2::Ortho(b), c, a, b);
 
   LOG(DFATAL) << "VertexCrossing called with 4 distinct vertices";
   return false;
@@ -63,10 +57,8 @@ bool S2EdgeUtil::VertexCrossing(S2Point const &a, S2Point const &b,
 bool S2EdgeUtil::EdgeOrVertexCrossing(S2Point const &a, S2Point const &b,
                                       S2Point const &c, S2Point const &d) {
   int crossing = RobustCrossing(a, b, c, d);
-  if (crossing < 0)
-    return false;
-  if (crossing > 0)
-    return true;
+  if (crossing < 0) return false;
+  if (crossing > 0) return true;
   return VertexCrossing(a, b, c, d);
 }
 
@@ -99,8 +91,7 @@ S2Point S2EdgeUtil::GetIntersection(S2Point const &a0, S2Point const &a1,
   // intersection point.  We use the sum of all vertices to make sure that the
   // result is unchanged when the edges are reversed or exchanged.
 
-  if (x.DotProd((a0 + a1) + (b0 + b1)) < 0)
-    x = -x;
+  if (x.DotProd((a0 + a1) + (b0 + b1)) < 0) x = -x;
 
   // The calculation above is sufficient to ensure that "x" is within
   // kIntersectionTolerance of the great circles through (a0,a1) and (b0,b1).
@@ -117,14 +108,10 @@ S2Point S2EdgeUtil::GetIntersection(S2Point const &a0, S2Point const &a1,
   // acceptable if it lies between the endpoints of the other line segment.
   double dmin2 = 10;
   S2Point vmin = x;
-  if (S2::OrderedCCW(b0, a0, b1, b_norm))
-    ReplaceIfCloser(x, a0, &dmin2, &vmin);
-  if (S2::OrderedCCW(b0, a1, b1, b_norm))
-    ReplaceIfCloser(x, a1, &dmin2, &vmin);
-  if (S2::OrderedCCW(a0, b0, a1, a_norm))
-    ReplaceIfCloser(x, b0, &dmin2, &vmin);
-  if (S2::OrderedCCW(a0, b1, a1, a_norm))
-    ReplaceIfCloser(x, b1, &dmin2, &vmin);
+  if (S2::OrderedCCW(b0, a0, b1, b_norm)) ReplaceIfCloser(x, a0, &dmin2, &vmin);
+  if (S2::OrderedCCW(b0, a1, b1, b_norm)) ReplaceIfCloser(x, a1, &dmin2, &vmin);
+  if (S2::OrderedCCW(a0, b0, a1, a_norm)) ReplaceIfCloser(x, b0, &dmin2, &vmin);
+  if (S2::OrderedCCW(a0, b1, a1, a_norm)) ReplaceIfCloser(x, b1, &dmin2, &vmin);
 
   DCHECK(S2::OrderedCCW(a0, vmin, a1, a_norm));
   DCHECK(S2::OrderedCCW(b0, vmin, b1, b_norm));
@@ -195,10 +182,8 @@ S2Point S2EdgeUtil::InterpolateAtDistance(S1Angle const &ax, S2Point const &a,
 }
 
 S2Point S2EdgeUtil::Interpolate(double t, S2Point const &a, S2Point const &b) {
-  if (t == 0)
-    return a;
-  if (t == 1)
-    return b;
+  if (t == 0) return a;
+  if (t == 1) return b;
   S1Angle ab(a, b);
   return InterpolateAtDistance(t * ab, a, b, ab);
 }
@@ -220,7 +205,7 @@ S1Angle S2EdgeUtil::GetDistance(S2Point const &x, S2Point const &a,
     // to the corresponding great circle.  The result is accurate for small
     // distances but not necessarily for large distances (approaching Pi/2).
 
-    DCHECK_NE(a, b); // Due to the guarantees of SimpleCCW().
+    DCHECK_NE(a, b);  // Due to the guarantees of SimpleCCW().
     double sin_dist = fabs(x.DotProd(a_cross_b)) / a_cross_b.Norm();
     return S1Angle::Radians(asin(min(1.0, sin_dist)));
   }
@@ -282,15 +267,13 @@ bool S2EdgeUtil::IsEdgeBNearEdgeA(S2Point const &a0, S2Point const &a1,
   // oriented but otherwise might be near each other.  We check orientation and
   // invert rather than computing a_nearest_b0 x a_nearest_b1 because those two
   // points might be equal, and have an unhelpful cross product.
-  if (S2::RobustCCW(a_ortho, a_nearest_b0, a_nearest_b1) < 0)
-    a_ortho *= -1;
+  if (S2::RobustCCW(a_ortho, a_nearest_b0, a_nearest_b1) < 0) a_ortho *= -1;
 
   // To check if all points on B are within tolerance of A, we first check to
   // see if the endpoints of B are near A.  If they are not, B is not near A.
   S1Angle const b0_distance(b0, a_nearest_b0);
   S1Angle const b1_distance(b1, a_nearest_b1);
-  if (b0_distance > tolerance || b1_distance > tolerance)
-    return false;
+  if (b0_distance > tolerance || b1_distance > tolerance) return false;
 
   // If b0 and b1 are both within tolerance of A, we check to see if the angle
   // between the planes containing B and A is greater than tolerance.  If it is
@@ -300,8 +283,7 @@ bool S2EdgeUtil::IsEdgeBNearEdgeA(S2Point const &a0, S2Point const &a1,
   // circ(B) is the angle between their normal vectors.
   S2Point const b_ortho = S2::RobustCrossProd(b0, b1).Normalize();
   S1Angle const planar_angle(a_ortho, b_ortho);
-  if (planar_angle <= tolerance)
-    return true;
+  if (planar_angle <= tolerance) return true;
 
   // As planar_angle approaches M_PI, the projection of a_ortho onto the plane
   // of B approaches the null vector, and normalizing it is numerically
@@ -384,22 +366,19 @@ S2EdgeUtil::WedgeRelation S2EdgeUtil::GetWedgeRelation(S2Point const &a0,
   // We pay extra attention when some of the edges overlap.When edges
   // overlap, several of these orderings can be satisfied, and we take
   // the most specific.
-  if (a0 == b0 && a2 == b2)
-    return WEDGE_EQUALS;
+  if (a0 == b0 && a2 == b2) return WEDGE_EQUALS;
 
   if (S2::OrderedCCW(a0, a2, b2, ab1)) {
     // The cases with this vertex ordering are 1, 5, and 6,
     // although case 2 is also possible if a2 == b2.
-    if (S2::OrderedCCW(b2, b0, a0, ab1))
-      return WEDGE_PROPERLY_CONTAINS;
+    if (S2::OrderedCCW(b2, b0, a0, ab1)) return WEDGE_PROPERLY_CONTAINS;
 
     // We are in case 5 or 6, or case 2 if a2 == b2.
     return (a2 == b2) ? WEDGE_IS_PROPERLY_CONTAINED : WEDGE_PROPERLY_OVERLAPS;
   }
 
   // We are in case 2, 3, or 4.
-  if (S2::OrderedCCW(a0, b0, b2, ab1))
-    return WEDGE_IS_PROPERLY_CONTAINED;
+  if (S2::OrderedCCW(a0, b0, b2, ab1)) return WEDGE_IS_PROPERLY_CONTAINED;
   return S2::OrderedCCW(a0, b0, a2, ab1) ? WEDGE_IS_DISJOINT
                                          : WEDGE_PROPERLY_OVERLAPS;
 }
@@ -409,8 +388,7 @@ int S2EdgeUtil::EdgeCrosser::RobustCrossingInternal(S2Point const *d) {
   // triangles CBD and DAC.
   S2Point c_cross_d = c_->CrossProd(*d);
   int cbd = -S2::RobustCCW(*c_, *d, *b_, c_cross_d);
-  if (cbd != acb_)
-    return -1;
+  if (cbd != acb_) return -1;
 
   int dac = S2::RobustCCW(*c_, *d, *a_, c_cross_d);
   return (dac == acb_) ? 1 : -1;

@@ -22,7 +22,7 @@ using std::multiset;
 using std::vector;
 
 #include "base/commandlineflags.h"
-#include "base/port.h" // for HASH_NAMESPACE_DECLARATION_START
+#include "base/port.h"  // for HASH_NAMESPACE_DECLARATION_START
 #include "s2/s2cap.h"
 #include "s2/s2cell.h"
 #include "s2/s2cellunion.h"
@@ -37,8 +37,11 @@ static const unsigned char kCurrentEncodingVersionNumber = 1;
 typedef pair<S2Point, S2Point> S2Edge;
 
 S2Polygon::S2Polygon()
-    : loops_(), bound_(S2LatLngRect::Empty()), owns_loops_(true),
-      has_holes_(false), num_vertices_(0) {}
+    : loops_(),
+      bound_(S2LatLngRect::Empty()),
+      owns_loops_(true),
+      has_holes_(false),
+      num_vertices_(0) {}
 
 S2Polygon::S2Polygon(vector<S2Loop *> *loops)
     : bound_(S2LatLngRect::Empty()), owns_loops_(true) {
@@ -46,7 +49,9 @@ S2Polygon::S2Polygon(vector<S2Loop *> *loops)
 }
 
 S2Polygon::S2Polygon(S2Cell const &cell)
-    : bound_(S2LatLngRect::Empty()), owns_loops_(true), has_holes_(false),
+    : bound_(S2LatLngRect::Empty()),
+      owns_loops_(true),
+      has_holes_(false),
       num_vertices_(4) {
   S2Loop *loop = new S2Loop(cell);
   bound_ = loop->GetRectBound();
@@ -54,7 +59,9 @@ S2Polygon::S2Polygon(S2Cell const &cell)
 }
 
 S2Polygon::S2Polygon(S2Loop *loop)
-    : bound_(loop->GetRectBound()), owns_loops_(false), has_holes_(false),
+    : bound_(loop->GetRectBound()),
+      owns_loops_(false),
+      has_holes_(false),
       num_vertices_(loop->num_vertices()) {
   loops_.push_back(loop);
 }
@@ -93,8 +100,7 @@ static void DeleteLoopsInVector(vector<S2Loop *> *loops) {
 }
 
 S2Polygon::~S2Polygon() {
-  if (owns_loops_)
-    DeleteLoopsInVector(&loops_);
+  if (owns_loops_) DeleteLoopsInVector(&loops_);
 }
 
 typedef pair<S2Point, S2Point> S2PointPair;
@@ -106,14 +112,15 @@ typedef pair<S2Point, S2Point> S2PointPair;
 #endif
 namespace __gnu_cxx {
 
-template <> struct hash<S2PointPair> {
+template <>
+struct hash<S2PointPair> {
   size_t operator()(S2PointPair const &p) const {
     hash<S2Point> h;
     return h(p.first) + (h(p.second) << 1);
   }
 };
 
-} // namespace __gnu_cxx
+}  // namespace __gnu_cxx
 
 bool S2Polygon::IsValid(const vector<S2Loop *> &loops) {
   // If a loop contains an edge AB, then no other loop may contain AB or BA.
@@ -125,8 +132,7 @@ bool S2Polygon::IsValid(const vector<S2Loop *> &loops) {
         S2PointPair key = make_pair(lp->vertex(j), lp->vertex(j + 1));
         if (edges.insert(make_pair(key, make_pair(i, j))).second) {
           key = make_pair(lp->vertex(j + 1), lp->vertex(j));
-          if (edges.insert(make_pair(key, make_pair(i, j))).second)
-            continue;
+          if (edges.insert(make_pair(key, make_pair(i, j))).second) continue;
         }
         pair<int, int> other = edges[key];
         VLOG(2) << "Duplicate edge: loop " << i << ", edge " << j
@@ -213,12 +219,10 @@ bool S2Polygon::ContainsChild(S2Loop *a, S2Loop *b, LoopMap const &loop_map) {
   // This function is just used to verify that the loop map was
   // constructed correctly.
 
-  if (a == b)
-    return true;
+  if (a == b) return true;
   vector<S2Loop *> const &children = loop_map.find(a)->second;
   for (int i = 0; i < children.size(); ++i) {
-    if (ContainsChild(children[i], b, loop_map))
-      return true;
+    if (ContainsChild(children[i], b, loop_map)) return true;
   }
   return false;
 }
@@ -247,8 +251,7 @@ void S2Polygon::Init(vector<S2Loop *> *loops) {
     // Check that the LoopMap is correct (this is fairly cheap).
     for (int i = 0; i < num_loops(); ++i) {
       for (int j = 0; j < num_loops(); ++j) {
-        if (i == j)
-          continue;
+        if (i == j) continue;
         CHECK_EQ(ContainsChild(loop(i), loop(j), loop_map),
                  loop(i)->ContainsNested(loop(j)));
       }
@@ -269,19 +272,15 @@ void S2Polygon::Init(vector<S2Loop *> *loops) {
 
 int S2Polygon::GetParent(int k) const {
   int depth = loop(k)->depth();
-  if (depth == 0)
-    return -1; // Optimization.
-  while (--k >= 0 && loop(k)->depth() >= depth)
-    continue;
+  if (depth == 0) return -1;  // Optimization.
+  while (--k >= 0 && loop(k)->depth() >= depth) continue;
   return k;
 }
 
 int S2Polygon::GetLastDescendant(int k) const {
-  if (k < 0)
-    return num_loops() - 1;
+  if (k < 0) return num_loops() - 1;
   int depth = loop(k)->depth();
-  while (++k < num_loops() && loop(k)->depth() > depth)
-    continue;
+  while (++k < num_loops() && loop(k)->depth() > depth) continue;
   return k - 1;
 }
 
@@ -305,20 +304,17 @@ int S2Polygon::ContainsOrCrosses(S2Loop const *b) const {
   bool inside = false;
   for (int i = 0; i < num_loops(); ++i) {
     int result = loop(i)->ContainsOrCrosses(b);
-    if (result < 0)
-      return -1; // The loop boundaries intersect.
-    if (result > 0)
-      inside ^= true;
+    if (result < 0) return -1;  // The loop boundaries intersect.
+    if (result > 0) inside ^= true;
   }
-  return static_cast<int>(inside); // True if loop B is contained by the
-                                   // polygon.
+  return static_cast<int>(inside);  // True if loop B is contained by the
+                                    // polygon.
 }
 
 bool S2Polygon::AnyLoopContains(S2Loop const *b) const {
   // Return true if any loop contains the given loop.
   for (int i = 0; i < num_loops(); ++i) {
-    if (loop(i)->Contains(b))
-      return true;
+    if (loop(i)->Contains(b)) return true;
   }
   return false;
 }
@@ -326,8 +322,7 @@ bool S2Polygon::AnyLoopContains(S2Loop const *b) const {
 bool S2Polygon::ContainsAllShells(S2Polygon const *b) const {
   // Return true if this polygon (A) contains all the shells of B.
   for (int j = 0; j < b->num_loops(); ++j) {
-    if (b->loop(j)->sign() < 0)
-      continue;
+    if (b->loop(j)->sign() < 0) continue;
     if (ContainsOrCrosses(b->loop(j)) <= 0) {
       // Shell of B is not contained by A, or the boundaries intersect.
       return false;
@@ -340,8 +335,7 @@ bool S2Polygon::ExcludesAllHoles(S2Polygon const *b) const {
   // Return true if this polygon (A) excludes (i.e. does not intersect)
   // all holes of B.
   for (int j = 0; j < b->num_loops(); ++j) {
-    if (b->loop(j)->sign() > 0)
-      continue;
+    if (b->loop(j)->sign() > 0) continue;
     if (ContainsOrCrosses(b->loop(j)) != 0) {
       // Hole of B is contained by A, or the boundaries intersect.
       return false;
@@ -353,10 +347,8 @@ bool S2Polygon::ExcludesAllHoles(S2Polygon const *b) const {
 bool S2Polygon::IntersectsAnyShell(S2Polygon const *b) const {
   // Return true if this polygon (A) intersects any shell of B.
   for (int j = 0; j < b->num_loops(); ++j) {
-    if (b->loop(j)->sign() < 0)
-      continue;
-    if (IntersectsShell(b->loop(j)) != 0)
-      return true;
+    if (b->loop(j)->sign() < 0) continue;
+    if (IntersectsShell(b->loop(j)) != 0) return true;
   }
   return false;
 }
@@ -391,13 +383,11 @@ bool S2Polygon::Contains(S2Polygon const *b) const {
     // If the union of the bounding boxes spans the full longitude range,
     // it is still possible that polygon A contains B.  (This is only
     // possible if at least one polygon has multiple shells.)
-    if (!bound_.lng().Union(b->bound_.lng()).is_full())
-      return false;
+    if (!bound_.lng().Union(b->bound_.lng()).is_full()) return false;
   }
   if (!has_holes_ && !b->has_holes_) {
     for (int j = 0; j < b->num_loops(); ++j) {
-      if (!AnyLoopContains(b->loop(j)))
-        return false;
+      if (!AnyLoopContains(b->loop(j))) return false;
     }
     return true;
   }
@@ -428,13 +418,11 @@ bool S2Polygon::Intersects(S2Polygon const *b) const {
   // Otherwise if neither polygon has holes, we can still use the more
   // efficient S2Loop::Intersects method.  The polygons intersect if and
   // only if some pair of loop regions intersect.
-  if (!bound_.Intersects(b->bound_))
-    return false;
+  if (!bound_.Intersects(b->bound_)) return false;
   if (!has_holes_ && !b->has_holes_) {
     for (int i = 0; i < num_loops(); ++i) {
       for (int j = 0; j < b->num_loops(); ++j) {
-        if (loop(i)->Intersects(b->loop(j)))
-          return true;
+        if (loop(i)->Intersects(b->loop(j))) return true;
       }
     }
     return false;
@@ -455,8 +443,7 @@ bool S2Polygon::Contains(S2Cell const &cell) const {
 
   // We can't check bound_.Contains(cell.GetRectBound()) because S2Cell's
   // GetRectBound() calculation is not precise.
-  if (!bound_.Contains(cell.GetCenter()))
-    return false;
+  if (!bound_.Contains(cell.GetCenter())) return false;
 
   S2Loop cell_loop(cell);
   S2Polygon cell_poly(&cell_loop);
@@ -478,8 +465,7 @@ bool S2Polygon::MayIntersect(S2Cell const &cell) const {
   if (num_loops() == 1) {
     return loop(0)->MayIntersect(cell);
   }
-  if (!bound_.Intersects(cell.GetRectBound()))
-    return false;
+  if (!bound_.Intersects(cell.GetRectBound())) return false;
 
   S2Loop cell_loop(cell);
   S2Polygon cell_poly(&cell_loop);
@@ -491,26 +477,24 @@ bool S2Polygon::MayIntersect(S2Cell const &cell) const {
 }
 
 bool S2Polygon::VirtualContainsPoint(S2Point const &p) const {
-  return Contains(p); // The same as Contains() below, just virtual.
+  return Contains(p);  // The same as Contains() below, just virtual.
 }
 
 bool S2Polygon::Contains(S2Point const &p) const {
   if (num_loops() == 1) {
-    return loop(0)->Contains(p); // Optimization.
+    return loop(0)->Contains(p);  // Optimization.
   }
-  if (!bound_.Contains(p))
-    return false;
+  if (!bound_.Contains(p)) return false;
   bool inside = false;
   for (int i = 0; i < num_loops(); ++i) {
     inside ^= loop(i)->Contains(p);
-    if (inside && !has_holes_)
-      break; // Shells are disjoint.
+    if (inside && !has_holes_) break;  // Shells are disjoint.
   }
   return inside;
 }
 
 void S2Polygon::Encode(Encoder *const encoder) const {
-  encoder->Ensure(10); // Sufficient
+  encoder->Ensure(10);  // Sufficient
   encoder->put8(kCurrentEncodingVersionNumber);
   encoder->put8(owns_loops_);
   encoder->put8(has_holes_);
@@ -533,11 +517,9 @@ bool S2Polygon::DecodeWithinScope(Decoder *const decoder) {
 
 bool S2Polygon::DecodeInternal(Decoder *const decoder, bool within_scope) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber)
-    return false;
+  if (version > kCurrentEncodingVersionNumber) return false;
 
-  if (owns_loops_)
-    DeleteLoopsInVector(&loops_);
+  if (owns_loops_) DeleteLoopsInVector(&loops_);
 
   owns_loops_ = decoder->get8();
   has_holes_ = decoder->get8();
@@ -548,16 +530,13 @@ bool S2Polygon::DecodeInternal(Decoder *const decoder, bool within_scope) {
   for (int i = 0; i < num_loops; ++i) {
     loops_.push_back(new S2Loop);
     if (within_scope) {
-      if (!loops_.back()->DecodeWithinScope(decoder))
-        return false;
+      if (!loops_.back()->DecodeWithinScope(decoder)) return false;
     } else {
-      if (!loops_.back()->Decode(decoder))
-        return false;
+      if (!loops_.back()->Decode(decoder)) return false;
     }
     num_vertices_ += loops_.back()->num_vertices();
   }
-  if (!bound_.Decode(decoder))
-    return false;
+  if (!bound_.Decode(decoder)) return false;
 
   DCHECK(IsValid(loops_));
 
@@ -575,7 +554,7 @@ bool S2Polygon::DecodeInternal(Decoder *const decoder, bool within_scope) {
 //   - Overwrite EdgeFromTo(), calling DecodeIndex() and accessing your
 //     underlying data with the resulting two indices.
 class S2LoopSequenceIndex : public S2EdgeIndex {
-public:
+ public:
   S2LoopSequenceIndex() : num_edges_(0), num_loops_(0) {}
   ~S2LoopSequenceIndex() {}
 
@@ -618,7 +597,7 @@ public:
     return to;
   }
 
-protected:
+ protected:
   // Map from the unidimensional edge index to the loop this edge
   // belongs to.
   vector<int> index_to_loop_;
@@ -636,7 +615,7 @@ protected:
 
 // Indexing structure for an S2Polygon.
 class S2PolygonIndex : public S2LoopSequenceIndex {
-public:
+ public:
   S2PolygonIndex(S2Polygon const *poly, bool reverse)
       : poly_(poly), reverse_(reverse) {
     for (int iloop = 0; iloop < poly_->num_loops(); ++iloop) {
@@ -664,7 +643,7 @@ public:
     *to = &(loop->vertex(to_index));
   }
 
-private:
+ private:
   S2Polygon const *poly_;
   bool reverse_;
 };
@@ -675,7 +654,7 @@ private:
 // Add each loop individually with AddVector().  The caller owns
 // the vector<S2Point>'s.
 class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
-public:
+ public:
   S2LoopsAsVectorsIndex() {}
   ~S2LoopsAsVectorsIndex() {}
 
@@ -695,7 +674,7 @@ public:
         &loop->at(vertex_in_loop == loop->size() - 1 ? 0 : vertex_in_loop + 1);
   }
 
-private:
+ private:
   vector<vector<S2Point> const *> loops_;
 };
 
@@ -724,8 +703,7 @@ static void AddIntersection(S2Point const &a0, S2Point const &a1,
     // intersection parameter from 0 to 1.
 
     double t = (a0 == b0 || a0 == b1) ? 0 : 1;
-    if (!add_shared_edges && a1 == b1)
-      t = 1;
+    if (!add_shared_edges && a1 == b1) t = 1;
     intersections->push_back(make_pair(t, t == 0 ? a0 : a1));
   }
 }
@@ -744,11 +722,9 @@ static void ClipEdge(S2Point const &a0, S2Point const &a1,
   for (; !it.Done(); it.Next()) {
     S2Point const *const previous_to = to;
     b_index->EdgeFromTo(it.Index(), &from, &to);
-    if (previous_to != from)
-      crosser.RestartAt(from);
+    if (previous_to != from) crosser.RestartAt(from);
     int crossing = crosser.RobustCrossing(to);
-    if (crossing < 0)
-      continue;
+    if (crossing < 0) continue;
     AddIntersection(a0, a1, *from, *to, add_shared_edges, crossing,
                     intersections);
   }
@@ -781,16 +757,13 @@ static void ClipBoundary(S2Polygon const *a, bool reverse_a, S2Polygon const *b,
       intersections.clear();
       ClipEdge(a0, a1, &b_index, add_shared_edges, &intersections);
 
-      if (inside)
-        intersections.push_back(make_pair(0, a0));
+      if (inside) intersections.push_back(make_pair(0, a0));
       inside = (intersections.size() & 1);
       DCHECK_EQ((b->Contains(a1) ^ invert_b), inside);
-      if (inside)
-        intersections.push_back(make_pair(1, a1));
+      if (inside) intersections.push_back(make_pair(1, a1));
       sort(intersections.begin(), intersections.end());
       for (int k = 0; k < intersections.size(); k += 2) {
-        if (intersections[k] == intersections[k + 1])
-          continue;
+        if (intersections[k] == intersections[k + 1]) continue;
         builder->AddEdge(intersections[k].second, intersections[k + 1].second);
       }
     }
@@ -804,8 +777,7 @@ void S2Polygon::InitToIntersection(S2Polygon const *a, S2Polygon const *b) {
 void S2Polygon::InitToIntersectionSloppy(S2Polygon const *a, S2Polygon const *b,
                                          S1Angle vertex_merge_radius) {
   DCHECK_EQ(0, num_loops());
-  if (!a->bound_.Intersects(b->bound_))
-    return;
+  if (!a->bound_.Intersects(b->bound_)) return;
 
   // We want the boundary of A clipped to the interior of B,
   // plus the boundary of B clipped to the interior of A,
@@ -876,8 +848,7 @@ vector<S2Point> *SimplifyLoopAsPolyline(S2Loop const *loop, S1Angle tolerance) {
   S2Polyline line(points);
   vector<int> indices;
   line.SubsampleVertices(tolerance, &indices);
-  if (indices.size() <= 2)
-    return NULL;
+  if (indices.size() <= 2) return NULL;
   // Add them all except the last: it is the same as the first.
   vector<S2Point> *simplified_line = new vector<S2Point>(indices.size() - 1);
   VLOG(4) << "Now simplified to: ";
@@ -907,8 +878,7 @@ void BreakEdgesAndAddToBuilder(S2LoopsAsVectorsIndex *edge_index,
     intersections.push_back(make_pair(1, *to));
     sort(intersections.begin(), intersections.end());
     for (int k = 0; k + 1 < intersections.size(); ++k) {
-      if (intersections[k] == intersections[k + 1])
-        continue;
+      if (intersections[k] == intersections[k + 1]) continue;
       builder->AddEdge(intersections[k].second, intersections[k + 1].second);
     }
   }
@@ -940,8 +910,7 @@ void S2Polygon::InitToSimplified(S2Polygon const *a, S1Angle tolerance) {
   vector<vector<S2Point> *> simplified_loops;
   for (int i = 0; i < a->num_loops(); ++i) {
     vector<S2Point> *simpler = SimplifyLoopAsPolyline(a->loop(i), tolerance);
-    if (NULL == simpler)
-      continue;
+    if (NULL == simpler) continue;
     simplified_loops.push_back(simpler);
     index.AddVector(simpler);
   }
@@ -987,18 +956,15 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
     S2Point const &a0 = a->vertex(j);
     S2Point const &a1 = a->vertex(j + 1);
     ClipEdge(a0, a1, &poly_index, true, &intersections);
-    if (inside)
-      intersections.push_back(make_pair(0, a0));
+    if (inside) intersections.push_back(make_pair(0, a0));
     inside = (intersections.size() & 1);
     DCHECK_EQ((Contains(a1) ^ invert), inside);
-    if (inside)
-      intersections.push_back(make_pair(1, a1));
+    if (inside) intersections.push_back(make_pair(1, a1));
     sort(intersections.begin(), intersections.end());
     // At this point we have a sorted array of vertex pairs representing
     // the edge(s) obtained after clipping (a0,a1) against the polygon.
     for (int k = 0; k < intersections.size(); k += 2) {
-      if (intersections[k] == intersections[k + 1])
-        continue;
+      if (intersections[k] == intersections[k + 1]) continue;
       S2Point const &v0 = intersections[k].second;
       S2Point const &v1 = intersections[k + 1].second;
 
@@ -1011,8 +977,7 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const *a,
       }
       // Append this segment to the current polyline, ignoring any
       // vertices that are too close to the previous vertex.
-      if (vertices.empty())
-        vertices.push_back(v0);
+      if (vertices.empty()) vertices.push_back(v0);
       if (vertices.back().Angle(v1) > merge_radius.radians()) {
         vertices.push_back(v1);
       }
@@ -1056,7 +1021,7 @@ S2Polygon *S2Polygon::DestructiveUnionSloppy(vector<S2Polygon *> *polygons,
   // vertices.  Repeatedly union the two smallest polygons and add the result
   // to the queue until we have a single polygon to return.
   typedef multimap<int, S2Polygon *> QueueType;
-  QueueType queue; // Map from # of vertices to polygon.
+  QueueType queue;  // Map from # of vertices to polygon.
   for (int i = 0; i < polygons->size(); ++i)
     queue.insert(make_pair((*polygons)[i]->num_vertices(), (*polygons)[i]));
   polygons->clear();
@@ -1115,8 +1080,7 @@ bool S2Polygon::IsNormalized() const {
   S2Loop *last_parent = NULL;
   for (int i = 0; i < num_loops(); ++i) {
     S2Loop *child = loop(i);
-    if (child->depth() == 0)
-      continue;
+    if (child->depth() == 0) continue;
     S2Loop *parent = loop(GetParent(i));
     if (parent != last_parent) {
       vertices.clear();
@@ -1127,18 +1091,15 @@ bool S2Polygon::IsNormalized() const {
     }
     int count = 0;
     for (int j = 0; j < child->num_vertices(); ++j) {
-      if (vertices.count(child->vertex(j)) > 0)
-        ++count;
+      if (vertices.count(child->vertex(j)) > 0) ++count;
     }
-    if (count > 1)
-      return false;
+    if (count > 1) return false;
   }
   return true;
 }
 
 bool S2Polygon::BoundaryEquals(S2Polygon const *b) const {
-  if (num_loops() != b->num_loops())
-    return false;
+  if (num_loops() != b->num_loops()) return false;
 
   for (int i = 0; i < num_loops(); ++i) {
     S2Loop *a_loop = loop(i);
@@ -1151,16 +1112,14 @@ bool S2Polygon::BoundaryEquals(S2Polygon const *b) const {
         break;
       }
     }
-    if (!success)
-      return false;
+    if (!success) return false;
   }
   return true;
 }
 
 bool S2Polygon::BoundaryApproxEquals(S2Polygon const *b,
                                      double max_error) const {
-  if (num_loops() != b->num_loops())
-    return false;
+  if (num_loops() != b->num_loops()) return false;
 
   // For now, we assume that there is at most one candidate match for each
   // loop.  (So far this method is just used for testing.)
@@ -1176,15 +1135,13 @@ bool S2Polygon::BoundaryApproxEquals(S2Polygon const *b,
         break;
       }
     }
-    if (!success)
-      return false;
+    if (!success) return false;
   }
   return true;
 }
 
 bool S2Polygon::BoundaryNear(S2Polygon const *b, double max_error) const {
-  if (num_loops() != b->num_loops())
-    return false;
+  if (num_loops() != b->num_loops()) return false;
 
   // For now, we assume that there is at most one candidate match for each
   // loop.  (So far this method is just used for testing.)
@@ -1200,8 +1157,7 @@ bool S2Polygon::BoundaryNear(S2Polygon const *b, double max_error) const {
         break;
       }
     }
-    if (!success)
-      return false;
+    if (!success) return false;
   }
   return true;
 }

@@ -41,7 +41,7 @@ class S2CellUnion;
 // Loops may share vertices, however no vertex may appear twice in a single
 // loop (see s2loop.h).
 class S2Polygon : public S2Region {
-public:
+ public:
   // Creates an empty polygon that should be initialized by calling Init() or
   // Decode().
   S2Polygon();
@@ -250,7 +250,7 @@ public:
   // GetRectBound() guarantees that it will return exact bounds. GetCapBound()
   // does not.
   virtual S2Polygon *Clone() const;
-  virtual S2Cap GetCapBound() const; // Cap surrounding rect bound.
+  virtual S2Cap GetCapBound() const;  // Cap surrounding rect bound.
   virtual S2LatLngRect GetRectBound() const { return bound_; }
 
   virtual bool Contains(S2Cell const &cell) const;
@@ -264,7 +264,7 @@ public:
   virtual bool Decode(Decoder *const decoder);
   virtual bool DecodeWithinScope(Decoder *const decoder);
 
-private:
+ private:
   // Internal constructor that does *not* take ownership of its argument.
   explicit S2Polygon(S2Loop *loop);
 
@@ -305,4 +305,4 @@ private:
   DISALLOW_EVIL_CONSTRUCTORS(S2Polygon);
 };
 
-#endif // UTIL_GEOMETRY_S2POLYGON_H_
+#endif  // UTIL_GEOMETRY_S2POLYGON_H_

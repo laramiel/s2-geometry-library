@@ -15,20 +15,6 @@
 #include <functional>
 using std::less;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_map>
-#else
-#include <hash_map>
-#endif
-using __gnu_cxx::hash_map;
-
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
-using __gnu_cxx::hash_set;
-
 #include <set>
 using std::set;
 using std::multiset;
@@ -52,28 +38,19 @@ using std::vector;
 #ifndef COMPILER_MSVC
 #include <strings.h>
 #endif
-#include <ctype.h> // not needed, but removing it will break the build
-
-using namespace std;
-using namespace __gnu_cxx;
+#include <ctype.h>  // not needed, but removing it will break the build
 
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other
 // string headers depend on it.
 static const int kFastToBufferSize = 32;
 
-#include "ascii_ctype.h"
 #include "base/basictypes.h"
 #include "base/int128.h"
-#include "base/logging.h" // for CHECK
-#include "base/strtoint.h"
-//#include "charset.h"
-//#include "escaping.h"
-//#include "host_port.h"
+#include "base/logging.h"  // for CHECK
 #include "base/port.h"
-#include "base/stl_decl.h"
+#include "base/strtoint.h"
 #include "stringprintf.h"
-//#include "endian.h"
 
 // ----------------------------------------------------------------------
 // FloatToString()
@@ -167,17 +144,22 @@ inline char *FastULongToBuffer(unsigned long i, char *buffer) {
 // The specialization of FastNumToBuffer<>() should always be made explicit:
 //    FastNumToBuffer<int32>(mynums);  // yes
 //    FastNumToBuffer(mynums);         // no
-template <typename T> char *FastNumToBuffer(T, char *);
-template <> inline char *FastNumToBuffer<int32>(int32 i, char *buffer) {
+template <typename T>
+char *FastNumToBuffer(T, char *);
+template <>
+inline char *FastNumToBuffer<int32>(int32 i, char *buffer) {
   return FastInt32ToBuffer(i, buffer);
 }
-template <> inline char *FastNumToBuffer<int64>(int64 i, char *buffer) {
+template <>
+inline char *FastNumToBuffer<int64>(int64 i, char *buffer) {
   return FastInt64ToBuffer(i, buffer);
 }
-template <> inline char *FastNumToBuffer<uint32>(uint32 i, char *buffer) {
+template <>
+inline char *FastNumToBuffer<uint32>(uint32 i, char *buffer) {
   return FastUInt32ToBuffer(i, buffer);
 }
-template <> inline char *FastNumToBuffer<uint64>(uint64 i, char *buffer) {
+template <>
+inline char *FastNumToBuffer<uint64>(uint64 i, char *buffer) {
   return FastUInt64ToBuffer(i, buffer);
 }
 
@@ -197,10 +179,10 @@ template <> inline char *FastNumToBuffer<uint64>(uint64 i, char *buffer) {
 // terminating the string).
 // ----------------------------------------------------------------------
 
-char *FastInt32ToBufferLeft(int32 i, char *buffer);   // at least 12 bytes
-char *FastUInt32ToBufferLeft(uint32 i, char *buffer); // at least 12 bytes
-char *FastInt64ToBufferLeft(int64 i, char *buffer);   // at least 22 bytes
-char *FastUInt64ToBufferLeft(uint64 i, char *buffer); // at least 22 bytes
+char *FastInt32ToBufferLeft(int32 i, char *buffer);    // at least 12 bytes
+char *FastUInt32ToBufferLeft(uint32 i, char *buffer);  // at least 12 bytes
+char *FastInt64ToBufferLeft(int64 i, char *buffer);    // at least 22 bytes
+char *FastUInt64ToBufferLeft(uint64 i, char *buffer);  // at least 22 bytes
 
 // Just define these in terms of the above.
 inline char *FastUInt32ToBuffer(uint32 i, char *buffer) {

@@ -93,8 +93,7 @@ inline static void MaybeInit() { pthread_once(&init_once, Init); }
 
 int S2CellId::level() const {
   // Fast path for leaf cells.
-  if (is_leaf())
-    return kMaxLevel;
+  if (is_leaf()) return kMaxLevel;
 
   uint32 x = static_cast<uint32>(id_);
   int level = -1;
@@ -105,23 +104,18 @@ int S2CellId::level() const {
   }
   // We only need to look at even-numbered bits to determine the
   // level of a valid cell id.
-  x &= -x; // Get lowest bit.
-  if (x & 0x00005555)
-    level += 8;
-  if (x & 0x00550055)
-    level += 4;
-  if (x & 0x05050505)
-    level += 2;
-  if (x & 0x11111111)
-    level += 1;
+  x &= -x;  // Get lowest bit.
+  if (x & 0x00005555) level += 8;
+  if (x & 0x00550055) level += 4;
+  if (x & 0x05050505) level += 2;
+  if (x & 0x11111111) level += 1;
   DCHECK_GE(level, 0);
   DCHECK_LE(level, kMaxLevel);
   return level;
 }
 
 S2CellId S2CellId::advance(int64 steps) const {
-  if (steps == 0)
-    return *this;
+  if (steps == 0) return *this;
 
   // We clamp the number of steps if necessary to ensure that we do not
   // advance past the End() or before the Begin() of this level.  Note that
@@ -130,20 +124,17 @@ S2CellId S2CellId::advance(int64 steps) const {
   int step_shift = 2 * (kMaxLevel - level()) + 1;
   if (steps < 0) {
     int64 min_steps = -static_cast<int64>(id_ >> step_shift);
-    if (steps < min_steps)
-      steps = min_steps;
+    if (steps < min_steps) steps = min_steps;
   } else {
     int64 max_steps = (kWrapOffset + lsb() - id_) >> step_shift;
-    if (steps > max_steps)
-      steps = max_steps;
+    if (steps > max_steps) steps = max_steps;
   }
   return S2CellId(id_ + (steps << step_shift));
 }
 
 S2CellId S2CellId::advance_wrap(int64 steps) const {
   DCHECK(is_valid());
-  if (steps == 0)
-    return *this;
+  if (steps == 0) return *this;
 
   int step_shift = 2 * (kMaxLevel - level()) + 1;
   if (steps < 0) {
@@ -151,8 +142,7 @@ S2CellId S2CellId::advance_wrap(int64 steps) const {
     if (steps < min_steps) {
       int64 step_wrap = kWrapOffset >> step_shift;
       steps %= step_wrap;
-      if (steps < min_steps)
-        steps += step_wrap;
+      if (steps < min_steps) steps += step_wrap;
     }
   } else {
     // Unlike advance(), we don't want to return End(level).
@@ -160,8 +150,7 @@ S2CellId S2CellId::advance_wrap(int64 steps) const {
     if (steps > max_steps) {
       int64 step_wrap = kWrapOffset >> step_shift;
       steps %= step_wrap;
-      if (steps > max_steps)
-        steps -= step_wrap;
+      if (steps > max_steps) steps -= step_wrap;
     }
   }
   return S2CellId(id_ + (steps << step_shift));
@@ -190,12 +179,11 @@ string S2CellId::ToToken() const {
       return string(digits, len);
     }
   }
-  return "X"; // Invalid hex string.
+  return "X";  // Invalid hex string.
 }
 
 S2CellId S2CellId::FromToken(string const &token) {
-  if (token.size() > 16)
-    return S2CellId::None();
+  if (token.size() > 16) return S2CellId::None();
   char digits[17] = "0000000000000000";
   memcpy(digits, token.data(), token.size());
   return S2CellId(ParseLeadingHex64Value(digits, 0));
@@ -235,14 +223,14 @@ S2CellId S2CellId::FromFaceIJ(int face, int i, int j) {
 // "iiiijjjjoo" to a 10-bit value of the form "ppppppppoo", where the
 // letters [ijpo] denote bits of "i", "j", Hilbert curve position, and
 // Hilbert curve orientation respectively.
-#define GET_BITS(k)                                                            \
-  do {                                                                         \
-    int const mask = (1 << kLookupBits) - 1;                                   \
-    bits += ((i >> (k * kLookupBits)) & mask) << (kLookupBits + 2);            \
-    bits += ((j >> (k * kLookupBits)) & mask) << 2;                            \
-    bits = lookup_pos[bits];                                                   \
-    n[k >> 2] |= (bits >> 2) << ((k & 3) * 2 * kLookupBits);                   \
-    bits &= (kSwapMask | kInvertMask);                                         \
+#define GET_BITS(k)                                                 \
+  do {                                                              \
+    int const mask = (1 << kLookupBits) - 1;                        \
+    bits += ((i >> (k * kLookupBits)) & mask) << (kLookupBits + 2); \
+    bits += ((j >> (k * kLookupBits)) & mask) << 2;                 \
+    bits = lookup_pos[bits];                                        \
+    n[k >> 2] |= (bits >> 2) << ((k & 3) * 2 * kLookupBits);        \
+    bits &= (kSwapMask | kInvertMask);                              \
   } while (0)
 
   GET_BITS(7);
@@ -286,16 +274,16 @@ int S2CellId::ToFaceIJOrientation(int *pi, int *pj, int *orientation) const {
 //
 // On the first iteration we need to be careful to clear out the bits
 // representing the cube face.
-#define GET_BITS(k)                                                            \
-  do {                                                                         \
-    int const nbits = (k == 7) ? (kMaxLevel - 7 * kLookupBits) : kLookupBits;  \
-    bits += (static_cast<int>(id_ >> (k * 2 * kLookupBits + 1)) &              \
-             ((1 << (2 * nbits)) - 1))                                         \
-            << 2;                                                              \
-    bits = lookup_ij[bits];                                                    \
-    i += (bits >> (kLookupBits + 2)) << (k * kLookupBits);                     \
-    j += ((bits >> 2) & ((1 << kLookupBits) - 1)) << (k * kLookupBits);        \
-    bits &= (kSwapMask | kInvertMask);                                         \
+#define GET_BITS(k)                                                           \
+  do {                                                                        \
+    int const nbits = (k == 7) ? (kMaxLevel - 7 * kLookupBits) : kLookupBits; \
+    bits += (static_cast<int>(id_ >> (k * 2 * kLookupBits + 1)) &             \
+             ((1 << (2 * nbits)) - 1))                                        \
+            << 2;                                                             \
+    bits = lookup_ij[bits];                                                   \
+    i += (bits >> (kLookupBits + 2)) << (k * kLookupBits);                    \
+    j += ((bits >> 2) & ((1 << kLookupBits) - 1)) << (k * kLookupBits);       \
+    bits &= (kSwapMask | kInvertMask);                                        \
   } while (0)
 
   GET_BITS(7);
@@ -507,8 +495,7 @@ void S2CellId::AppendAllNeighbors(int nbr_level,
     output->push_back(
         FromFaceIJSame(face, i + size, j + k, same_face && i + size < kMaxSize)
             .parent(nbr_level));
-    if (k >= size)
-      break;
+    if (k >= size) break;
   }
 }
 

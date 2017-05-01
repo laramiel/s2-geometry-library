@@ -18,7 +18,7 @@
 // the default copy constructor and assignment operator, however it is
 // not a "plain old datatype" (POD) because it has virtual functions.
 class S2Cell : public S2Region {
-public:
+ public:
   // The default constructor is required in order to use freelists.
   // Cells should otherwise always be constructed explicitly.
   S2Cell() {}
@@ -104,7 +104,7 @@ public:
   virtual bool Contains(S2Cell const &cell) const;
   virtual bool MayIntersect(S2Cell const &cell) const;
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' does not need to be normalized.
@@ -115,7 +115,7 @@ public:
   }
   virtual bool Decode(Decoder *const decoder) { return false; }
 
-private:
+ private:
   // Internal method that does the actual work in the constructors.
   void Init(S2CellId const &id);
 
@@ -136,4 +136,4 @@ inline int S2Cell::GetSizeIJ() const { return S2CellId::GetSizeIJ(level()); }
 
 inline double S2Cell::GetSizeST() const { return S2CellId::GetSizeST(level()); }
 
-#endif // UTIL_GEOMETRY_S2CELL_H_
+#endif  // UTIL_GEOMETRY_S2CELL_H_

@@ -21,7 +21,7 @@ class S2Cell;
 // Unlike polygons, cells have a fixed hierarchical structure.  This makes
 // them more suitable for optimizations based on preprocessing.
 class S2CellUnion : public S2Region {
-public:
+ public:
   // The default constructor does nothing.  The cell union cannot be used
   // until one of the Init() methods is called.
   S2CellUnion() {}
@@ -183,7 +183,7 @@ public:
   virtual bool MayIntersect(S2Cell const &cell) const;
 
   virtual bool VirtualContainsPoint(S2Point const &p) const {
-    return Contains(p); // The same as Contains() below, just virtual.
+    return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   virtual void Encode(Encoder *const encoder) const {
@@ -195,7 +195,7 @@ public:
   // This is a fast operation (logarithmic in the size of the cell union).
   bool Contains(S2Point const &p) const;
 
-private:
+ private:
   vector<S2CellId> cell_ids_;
 
   DISALLOW_EVIL_CONSTRUCTORS(S2CellUnion);
@@ -204,4 +204,4 @@ private:
 // Return true if two cell unions are identical.
 bool operator==(S2CellUnion const &x, S2CellUnion const &y);
 
-#endif // UTIL_GEOMETRY_S2CELLUNION_H_
+#endif  // UTIL_GEOMETRY_S2CELLUNION_H_

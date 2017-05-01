@@ -79,7 +79,7 @@ class S2Cell;
 // TODO(user): Get a better API without the clumsy GetCandidates().
 //   Maybe edge_index.GetIterator()?
 class S2EdgeIndex {
-public:
+ public:
   S2EdgeIndex() { Reset(); }
 
   virtual ~S2EdgeIndex() {}
@@ -91,7 +91,7 @@ public:
   // The current edge in the iteration has index Index(), goes between
   // From() and To().
   class Iterator {
-  public:
+   public:
     explicit Iterator(S2EdgeIndex *edge_index) : edge_index_(edge_index) {}
 
     // Initializes the iterator to iterate over a set of candidates that may
@@ -107,7 +107,7 @@ public:
     // Iterate to the next available candidate.
     void Next();
 
-  private:
+   private:
     // The structure containing the data edges.
     S2EdgeIndex *edge_index_;
 
@@ -160,7 +160,7 @@ public:
   virtual S2Point const *edge_from(int index) const = 0;
   virtual S2Point const *edge_to(int index) const = 0;
 
-protected:
+ protected:
   // Appends to result all edge references in the map that cross the
   // query edge, and possibly some more.
   void FindCandidateCrossings(S2Point const &a, S2Point const &b,
@@ -170,7 +170,7 @@ protected:
   // Useful to compute when to switch to quad tree.
   void IncrementQueryCount();
 
-private:
+ private:
   typedef multimap<S2CellId, int> CellEdgeMultimap;
 
   // Inserts the given directed edge into the quad tree.
@@ -250,4 +250,4 @@ inline void S2EdgeIndex::Iterator::Next() {
   }
 }
 
-#endif // UTIL_GEOMETRY_S2EDGEINDEX_H_
+#endif  // UTIL_GEOMETRY_S2EDGEINDEX_H_

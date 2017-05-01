@@ -20,7 +20,7 @@ using __gnu_cxx::hash_map;
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/port.h" // for HASH_NAMESPACE_DECLARATION_START
+#include "base/port.h"  // for HASH_NAMESPACE_DECLARATION_START
 #include "util/math/matrix3x3.h"
 #include "util/math/vector3-inl.h"
 
@@ -39,9 +39,12 @@ typedef Vector3_d S2Point;
 
 namespace __gnu_cxx {
 
-template <> struct hash<S2Point> { size_t operator()(S2Point const &p) const; };
+template <>
+struct hash<S2Point> {
+  size_t operator()(S2Point const &p) const;
+};
 
-} // namespace __gnu_cxx
+}  // namespace __gnu_cxx
 
 // The S2 class is simply a namespace for constants and static utility
 // functions related to spherical geometry, such as area calculations and edge
@@ -68,7 +71,7 @@ template <> struct hash<S2Point> { size_t operator()(S2Point const &p) const; };
 // This class is not thread-safe for loops and objects that use loops.
 //
 class S2 {
-public:
+ public:
   // Return a unique "origin" on the sphere for operations that need a fixed
   // reference point.  In particular, this is the "point at infinity" used for
   // point-in-polygon testing (by counting the number of edge crossings).
@@ -442,8 +445,9 @@ public:
   // somewhat conservative for very large cells (e.g. face cells).
 
   // Defines a cell metric of the given dimension (1 == length, 2 == area).
-  template <int dim> class Metric {
-  public:
+  template <int dim>
+  class Metric {
+   public:
     explicit Metric(double deriv) : deriv_(deriv) {}
 
     // The "deriv" value of a metric is a derivative, and must be multiplied by
@@ -475,7 +479,7 @@ public:
     // always a valid level.
     int GetMaxLevel(double value) const;
 
-  private:
+   private:
     double const deriv_;
     DISALLOW_EVIL_CONSTRUCTORS(Metric);
   };
@@ -557,7 +561,7 @@ public:
   // longest diagonal length to its shortest diagonal length.
   static double const kMaxDiagAspect;
 
-private:
+ private:
   // Given a *valid* face for the given point p (meaning that dot product
   // of p with the face normal is positive), return the corresponding
   // u and v values (which may lie outside the range [-1,1]).
@@ -578,7 +582,7 @@ private:
   // the class definition, even though GCC doesn't enforce it.
   static double const kMaxDetError;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(S2); // Contains only static methods.
+  DISALLOW_IMPLICIT_CONSTRUCTORS(S2);  // Contains only static methods.
 };
 
 // Uncomment the following line for testing purposes only.  It greatly
@@ -588,7 +592,7 @@ private:
 
 inline S2Point S2::Origin() {
 #ifdef S2_TEST_DEGENERACIES
-  return S2Point(0, 0, 1); // This makes polygon operations much slower.
+  return S2Point(0, 0, 1);  // This makes polygon operations much slower.
 #else
   return S2Point(0.00457, 1, 0.0321).Normalize();
 #endif
@@ -605,18 +609,15 @@ inline int S2::TriageCCW(S2Point const &a, S2Point const &b, S2Point const &c,
   DCHECK(fabs(det) < kMaxDetError || fabs(det) > 100 * kMaxDetError ||
          det * ExpensiveCCW(a, b, c) > 0);
 
-  if (det > kMaxDetError)
-    return 1;
-  if (det < -kMaxDetError)
-    return -1;
+  if (det > kMaxDetError) return 1;
+  if (det < -kMaxDetError) return -1;
   return 0;
 }
 
 inline int S2::RobustCCW(S2Point const &a, S2Point const &b, S2Point const &c,
                          S2Point const &a_cross_b) {
   int ccw = TriageCCW(a, b, c, a_cross_b);
-  if (ccw == 0)
-    ccw = ExpensiveCCW(a, b, c);
+  if (ccw == 0) ccw = ExpensiveCCW(a, b, c);
   return ccw;
 }
 
@@ -721,18 +722,18 @@ inline double S2::UVtoST(double u) {
 
 inline S2Point S2::FaceUVtoXYZ(int face, double u, double v) {
   switch (face) {
-  case 0:
-    return S2Point(1, u, v);
-  case 1:
-    return S2Point(-u, 1, v);
-  case 2:
-    return S2Point(-u, -v, 1);
-  case 3:
-    return S2Point(-1, -v, -u);
-  case 4:
-    return S2Point(v, -1, -u);
-  default:
-    return S2Point(v, u, -1);
+    case 0:
+      return S2Point(1, u, v);
+    case 1:
+      return S2Point(-u, 1, v);
+    case 2:
+      return S2Point(-u, -v, 1);
+    case 3:
+      return S2Point(-1, -v, -u);
+    case 4:
+      return S2Point(v, -1, -u);
+    default:
+      return S2Point(v, u, -1);
   }
 }
 
@@ -740,37 +741,36 @@ inline void S2::ValidFaceXYZtoUV(int face, S2Point const &p, double *pu,
                                  double *pv) {
   DCHECK_GT(p.DotProd(FaceUVtoXYZ(face, 0, 0)), 0);
   switch (face) {
-  case 0:
-    *pu = p[1] / p[0];
-    *pv = p[2] / p[0];
-    break;
-  case 1:
-    *pu = -p[0] / p[1];
-    *pv = p[2] / p[1];
-    break;
-  case 2:
-    *pu = -p[0] / p[2];
-    *pv = -p[1] / p[2];
-    break;
-  case 3:
-    *pu = p[2] / p[0];
-    *pv = p[1] / p[0];
-    break;
-  case 4:
-    *pu = p[2] / p[1];
-    *pv = -p[0] / p[1];
-    break;
-  default:
-    *pu = -p[1] / p[2];
-    *pv = -p[0] / p[2];
-    break;
+    case 0:
+      *pu = p[1] / p[0];
+      *pv = p[2] / p[0];
+      break;
+    case 1:
+      *pu = -p[0] / p[1];
+      *pv = p[2] / p[1];
+      break;
+    case 2:
+      *pu = -p[0] / p[2];
+      *pv = -p[1] / p[2];
+      break;
+    case 3:
+      *pu = p[2] / p[0];
+      *pv = p[1] / p[0];
+      break;
+    case 4:
+      *pu = p[2] / p[1];
+      *pv = -p[0] / p[1];
+      break;
+    default:
+      *pu = -p[1] / p[2];
+      *pv = -p[0] / p[2];
+      break;
   }
 }
 
 inline int S2::XYZtoFaceUV(S2Point const &p, double *pu, double *pv) {
   int face = p.LargestAbsComponent();
-  if (p[face] < 0)
-    face += 3;
+  if (p[face] < 0) face += 3;
   ValidFaceXYZtoUV(face, p, pu, pv);
   return face;
 }
@@ -778,11 +778,9 @@ inline int S2::XYZtoFaceUV(S2Point const &p, double *pu, double *pv) {
 inline bool S2::FaceXYZtoUV(int face, S2Point const &p, double *pu,
                             double *pv) {
   if (face < 3) {
-    if (p[face] <= 0)
-      return false;
+    if (p[face] <= 0) return false;
   } else {
-    if (p[face - 3] >= 0)
-      return false;
+    if (p[face - 3] >= 0) return false;
   }
   ValidFaceXYZtoUV(face, p, pu, pv);
   return true;
@@ -790,35 +788,35 @@ inline bool S2::FaceXYZtoUV(int face, S2Point const &p, double *pu,
 
 inline S2Point S2::GetUNorm(int face, double u) {
   switch (face) {
-  case 0:
-    return S2Point(u, -1, 0);
-  case 1:
-    return S2Point(1, u, 0);
-  case 2:
-    return S2Point(1, 0, u);
-  case 3:
-    return S2Point(-u, 0, 1);
-  case 4:
-    return S2Point(0, -u, 1);
-  default:
-    return S2Point(0, -1, -u);
+    case 0:
+      return S2Point(u, -1, 0);
+    case 1:
+      return S2Point(1, u, 0);
+    case 2:
+      return S2Point(1, 0, u);
+    case 3:
+      return S2Point(-u, 0, 1);
+    case 4:
+      return S2Point(0, -u, 1);
+    default:
+      return S2Point(0, -1, -u);
   }
 }
 
 inline S2Point S2::GetVNorm(int face, double v) {
   switch (face) {
-  case 0:
-    return S2Point(-v, 0, 1);
-  case 1:
-    return S2Point(0, -v, 1);
-  case 2:
-    return S2Point(0, -1, -v);
-  case 3:
-    return S2Point(v, -1, 0);
-  case 4:
-    return S2Point(1, v, 0);
-  default:
-    return S2Point(1, 0, v);
+    case 0:
+      return S2Point(-v, 0, 1);
+    case 1:
+      return S2Point(0, -v, 1);
+    case 2:
+      return S2Point(0, -1, -v);
+    case 3:
+      return S2Point(v, -1, 0);
+    case 4:
+      return S2Point(1, v, 0);
+    default:
+      return S2Point(1, 0, v);
   }
 }
 
@@ -826,41 +824,41 @@ inline S2Point S2::GetNorm(int face) { return S2::FaceUVtoXYZ(face, 0, 0); }
 
 inline S2Point S2::GetUAxis(int face) {
   switch (face) {
-  case 0:
-    return S2Point(0, 1, 0);
-  case 1:
-    return S2Point(-1, 0, 0);
-  case 2:
-    return S2Point(-1, 0, 0);
-  case 3:
-    return S2Point(0, 0, -1);
-  case 4:
-    return S2Point(0, 0, -1);
-  default:
-    return S2Point(0, 1, 0);
+    case 0:
+      return S2Point(0, 1, 0);
+    case 1:
+      return S2Point(-1, 0, 0);
+    case 2:
+      return S2Point(-1, 0, 0);
+    case 3:
+      return S2Point(0, 0, -1);
+    case 4:
+      return S2Point(0, 0, -1);
+    default:
+      return S2Point(0, 1, 0);
   }
 }
 
 inline S2Point S2::GetVAxis(int face) {
   switch (face) {
-  case 0:
-    return S2Point(0, 0, 1);
-  case 1:
-    return S2Point(0, 0, 1);
-  case 2:
-    return S2Point(0, -1, 0);
-  case 3:
-    return S2Point(0, -1, 0);
-  case 4:
-    return S2Point(1, 0, 0);
-  default:
-    return S2Point(1, 0, 0);
+    case 0:
+      return S2Point(0, 0, 1);
+    case 1:
+      return S2Point(0, 0, 1);
+    case 2:
+      return S2Point(0, -1, 0);
+    case 3:
+      return S2Point(0, -1, 0);
+    case 4:
+      return S2Point(1, 0, 0);
+    default:
+      return S2Point(1, 0, 0);
   }
 }
 
-template <int dim> int S2::Metric<dim>::GetMinLevel(double value) const {
-  if (value <= 0)
-    return S2::kMaxCellLevel;
+template <int dim>
+int S2::Metric<dim>::GetMinLevel(double value) const {
+  if (value <= 0) return S2::kMaxCellLevel;
 
   // This code is equivalent to computing a floating-point "level"
   // value and rounding up.  frexp() returns a fraction in the
@@ -873,9 +871,9 @@ template <int dim> int S2::Metric<dim>::GetMinLevel(double value) const {
   return level;
 }
 
-template <int dim> int S2::Metric<dim>::GetMaxLevel(double value) const {
-  if (value <= 0)
-    return S2::kMaxCellLevel;
+template <int dim>
+int S2::Metric<dim>::GetMaxLevel(double value) const {
+  if (value <= 0) return S2::kMaxCellLevel;
 
   // This code is equivalent to computing a floating-point "level"
   // value and rounding down.
@@ -887,8 +885,9 @@ template <int dim> int S2::Metric<dim>::GetMaxLevel(double value) const {
   return level;
 }
 
-template <int dim> int S2::Metric<dim>::GetClosestLevel(double value) const {
+template <int dim>
+int S2::Metric<dim>::GetClosestLevel(double value) const {
   return GetMinLevel((dim == 1 ? M_SQRT2 : 2) * value);
 }
 
-#endif // UTIL_GEOMETRY_S2_H_
+#endif  // UTIL_GEOMETRY_S2_H_

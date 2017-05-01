@@ -6,14 +6,14 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <float.h>   // for DBL_DIG and FLT_DIG
-#include <math.h>    // for HUGE_VAL
-#include <pthread.h> // for gmtime_r (on Windows)
+#include <float.h>    // for DBL_DIG and FLT_DIG
+#include <math.h>     // for HUGE_VAL
+#include <pthread.h>  // for gmtime_r (on Windows)
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h> // for FastTimeToBuffer()
+#include <time.h>  // for FastTimeToBuffer()
 
 #include <algorithm>
 using std::min;
@@ -36,7 +36,6 @@ using std::string;
 using std::vector;
 
 #include "base/logging.h"
-#include "base/scoped_ptr.h"
 //#include "strutil-inl.h"
 //#include "third_party/utf/utf.h"  // for runetochar
 //#include "util/gtl/stl_util-inl.h"  // for string_as_array
@@ -44,8 +43,8 @@ using std::vector;
 #include "split.h"
 
 #ifdef OS_WINDOWS
-#include <pthread.h> // for gmtime_r
-#ifdef min           // windows.h defines this to something silly
+#include <pthread.h>  // for gmtime_r
+#ifdef min            // windows.h defines this to something silly
 #undef min
 #endif
 #endif
@@ -137,8 +136,8 @@ char *FastHexToBuffer(int i, char *buffer) {
   char *p = buffer + 21;
   *p-- = '\0';
   do {
-    *p-- = hexdigits[i & 15]; // mod by 16
-    i >>= 4;                  // divide by 16
+    *p-- = hexdigits[i & 15];  // mod by 16
+    i >>= 4;                   // divide by 16
   } while (i > 0);
   return p + 1;
 }
@@ -207,30 +206,30 @@ char *FastUInt32ToBufferLeft(uint32 u, char *buffer) {
   // The huge-number case is first, in the hopes that the compiler will output
   // that case in one branch-free block of code, and only output conditional
   // branches into it from below.
-  if (u >= 1000000000) {    // >= 1,000,000,000
-    digits = u / 100000000; // 100,000,000
+  if (u >= 1000000000) {     // >= 1,000,000,000
+    digits = u / 100000000;  // 100,000,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
   sublt100_000_000:
-    u -= digits * 100000000; // 100,000,000
+    u -= digits * 100000000;  // 100,000,000
   lt100_000_000:
-    digits = u / 1000000; // 1,000,000
+    digits = u / 1000000;  // 1,000,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
   sublt1_000_000:
-    u -= digits * 1000000; // 1,000,000
+    u -= digits * 1000000;  // 1,000,000
   lt1_000_000:
-    digits = u / 10000; // 10,000
+    digits = u / 10000;  // 10,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
   sublt10_000:
-    u -= digits * 10000; // 10,000
+    u -= digits * 10000;  // 10,000
   lt10_000:
     digits = u / 100;
     ASCII_digits = two_ASCII_digits[digits];
@@ -252,34 +251,30 @@ char *FastUInt32ToBufferLeft(uint32 u, char *buffer) {
 
   if (u < 100) {
     digits = u;
-    if (u >= 10)
-      goto lt100;
+    if (u >= 10) goto lt100;
     *buffer++ = '0' + digits;
     goto done;
   }
-  if (u < 10000) { // 10,000
-    if (u >= 1000)
-      goto lt10_000;
+  if (u < 10000) {  // 10,000
+    if (u >= 1000) goto lt10_000;
     digits = u / 100;
     *buffer++ = '0' + digits;
     goto sublt100;
   }
-  if (u < 1000000) { // 1,000,000
-    if (u >= 100000)
-      goto lt1_000_000;
-    digits = u / 10000; //    10,000
+  if (u < 1000000) {  // 1,000,000
+    if (u >= 100000) goto lt1_000_000;
+    digits = u / 10000;  //    10,000
     *buffer++ = '0' + digits;
     goto sublt10_000;
   }
-  if (u < 100000000) { // 100,000,000
-    if (u >= 10000000)
-      goto lt100_000_000;
-    digits = u / 1000000; //   1,000,000
+  if (u < 100000000) {  // 100,000,000
+    if (u >= 10000000) goto lt100_000_000;
+    digits = u / 1000000;  //   1,000,000
     *buffer++ = '0' + digits;
     goto sublt1_000_000;
   }
   // we already know that u < 1,000,000,000
-  digits = u / 100000000; // 100,000,000
+  digits = u / 100000000;  // 100,000,000
   *buffer++ = '0' + digits;
   goto sublt100_000_000;
 }
@@ -301,32 +296,31 @@ char *FastUInt64ToBufferLeft(uint64 u64, char *buffer) {
   const char *ASCII_digits = NULL;
 
   uint32 u = static_cast<uint32>(u64);
-  if (u == u64)
-    return FastUInt32ToBufferLeft(u, buffer);
+  if (u == u64) return FastUInt32ToBufferLeft(u, buffer);
 
   uint64 top_11_digits = u64 / 1000000000;
   buffer = FastUInt64ToBufferLeft(top_11_digits, buffer);
   u = u64 - (top_11_digits * 1000000000);
 
-  digits = u / 10000000; // 10,000,000
+  digits = u / 10000000;  // 10,000,000
   DCHECK_LT(digits, 100);
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
   buffer[1] = ASCII_digits[1];
   buffer += 2;
-  u -= digits * 10000000; // 10,000,000
-  digits = u / 100000;    // 100,000
+  u -= digits * 10000000;  // 10,000,000
+  digits = u / 100000;     // 100,000
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
   buffer[1] = ASCII_digits[1];
   buffer += 2;
-  u -= digits * 100000; // 100,000
-  digits = u / 1000;    // 1,000
+  u -= digits * 100000;  // 100,000
+  digits = u / 1000;     // 1,000
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
   buffer[1] = ASCII_digits[1];
   buffer += 2;
-  u -= digits * 1000; // 1,000
+  u -= digits * 1000;  // 1,000
   digits = u / 10;
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
@@ -374,69 +368,69 @@ char *FastTimeToBuffer(time_t s, char *buffer) {
 
   const char *weekday_name = "Xxx";
   switch (tm.tm_wday) {
-  default: { DCHECK(false); } break;
-  case 0:
-    weekday_name = "Sun";
-    break;
-  case 1:
-    weekday_name = "Mon";
-    break;
-  case 2:
-    weekday_name = "Tue";
-    break;
-  case 3:
-    weekday_name = "Wed";
-    break;
-  case 4:
-    weekday_name = "Thu";
-    break;
-  case 5:
-    weekday_name = "Fri";
-    break;
-  case 6:
-    weekday_name = "Sat";
-    break;
+    default: { DCHECK(false); } break;
+    case 0:
+      weekday_name = "Sun";
+      break;
+    case 1:
+      weekday_name = "Mon";
+      break;
+    case 2:
+      weekday_name = "Tue";
+      break;
+    case 3:
+      weekday_name = "Wed";
+      break;
+    case 4:
+      weekday_name = "Thu";
+      break;
+    case 5:
+      weekday_name = "Fri";
+      break;
+    case 6:
+      weekday_name = "Sat";
+      break;
   }
 
   const char *month_name = "Xxx";
   switch (tm.tm_mon) {
-  default: { DCHECK(false); } break;
-  case 0:
-    month_name = "Jan";
-    break;
-  case 1:
-    month_name = "Feb";
-    break;
-  case 2:
-    month_name = "Mar";
-    break;
-  case 3:
-    month_name = "Apr";
-    break;
-  case 4:
-    month_name = "May";
-    break;
-  case 5:
-    month_name = "Jun";
-    break;
-  case 6:
-    month_name = "Jul";
-    break;
-  case 7:
-    month_name = "Aug";
-    break;
-  case 8:
-    month_name = "Sep";
-    break;
-  case 9:
-    month_name = "Oct";
-    break;
-  case 10:
-    month_name = "Nov";
-    break;
-  case 11:
-    month_name = "Dec";
-    break;
+    default: { DCHECK(false); } break;
+    case 0:
+      month_name = "Jan";
+      break;
+    case 1:
+      month_name = "Feb";
+      break;
+    case 2:
+      month_name = "Mar";
+      break;
+    case 3:
+      month_name = "Apr";
+      break;
+    case 4:
+      month_name = "May";
+      break;
+    case 5:
+      month_name = "Jun";
+      break;
+    case 6:
+      month_name = "Jul";
+      break;
+    case 7:
+      month_name = "Aug";
+      break;
+    case 8:
+      month_name = "Sep";
+      break;
+    case 9:
+      month_name = "Oct";
+      break;
+    case 10:
+      month_name = "Nov";
+      break;
+    case 11:
+      month_name = "Dec";
+      break;
   }
 
   // Write out the buffer.
@@ -524,7 +518,7 @@ bool DictionaryParse(const string &encoded_str,
   for (int i = 0; i < entries.size(); ++i) {
     vector<string> fields;
     SplitStringAllowEmpty(entries[i], ":", &fields);
-    if (fields.size() != 2) // parsing error
+    if (fields.size() != 2)  // parsing error
       return false;
     items->push_back(make_pair(fields[0], fields[1]));
   }

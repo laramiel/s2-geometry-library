@@ -46,13 +46,21 @@ S2Point const *S2LoopIndex::edge_to(int index) const {
 int S2LoopIndex::num_edges() const { return loop_->num_vertices(); }
 
 S2Loop::S2Loop()
-    : num_vertices_(0), vertices_(NULL), owns_vertices_(false),
-      bound_(S2LatLngRect::Empty()), depth_(0), index_(this),
+    : num_vertices_(0),
+      vertices_(NULL),
+      owns_vertices_(false),
+      bound_(S2LatLngRect::Empty()),
+      depth_(0),
+      index_(this),
       num_find_vertex_calls_(0) {}
 
 S2Loop::S2Loop(vector<S2Point> const &vertices)
-    : num_vertices_(0), vertices_(NULL), owns_vertices_(false),
-      bound_(S2LatLngRect::Full()), depth_(0), index_(this),
+    : num_vertices_(0),
+      vertices_(NULL),
+      owns_vertices_(false),
+      bound_(S2LatLngRect::Full()),
+      depth_(0),
+      index_(this),
       num_find_vertex_calls_(0) {
   Init(vertices);
 }
@@ -66,8 +74,7 @@ void S2Loop::ResetMutableFields() {
 void S2Loop::Init(vector<S2Point> const &vertices) {
   ResetMutableFields();
 
-  if (owns_vertices_)
-    delete[] vertices_;
+  if (owns_vertices_) delete[] vertices_;
   num_vertices_ = vertices.size();
   if (vertices.empty()) {
     vertices_ = NULL;
@@ -117,8 +124,7 @@ bool S2Loop::IsValid() const {
       // There is no need to test the same thing twice.  Moreover, two edges
       // that abut at ai+1 will have been tested for equality above.
       if (ai > i + 1) {
-        if (previous_index != ai)
-          crosser.RestartAt(&vertex(ai));
+        if (previous_index != ai) crosser.RestartAt(&vertex(ai));
         // Beware, this may return the loop is valid if there is a
         // "vertex crossing".
         // TODO(user): Fix that.
@@ -134,16 +140,14 @@ bool S2Loop::IsValid() const {
         }
       }
     }
-    if (crosses)
-      break;
+    if (crosses) break;
   }
 
   return !crosses;
 }
 
 bool S2Loop::IsValid(vector<S2Point> const &vertices, int max_adjacent) {
-  if (vertices.size() < 3)
-    return false;
+  if (vertices.size() < 3) return false;
 
   S2Loop loop(vertices);
   return loop.IsValid();
@@ -169,11 +173,10 @@ void S2Loop::InitOrigin() {
   // the fixed vector R = S2::Ortho(B) is on the left side of the wedge ABC.
   // The test below is written so that B is inside if C=R but not if A=R.
 
-  origin_inside_ = false; // Initialize before calling Contains().
+  origin_inside_ = false;  // Initialize before calling Contains().
   bool v1_inside =
       S2::OrderedCCW(S2::Ortho(vertex(1)), vertex(0), vertex(2), vertex(1));
-  if (v1_inside != Contains(vertex(1)))
-    origin_inside_ = true;
+  if (v1_inside != Contains(vertex(1))) origin_inside_ = true;
 }
 
 void S2Loop::InitBound() {
@@ -225,9 +228,13 @@ S2Loop::~S2Loop() {
 }
 
 S2Loop::S2Loop(S2Loop const *src)
-    : num_vertices_(src->num_vertices_), vertices_(new S2Point[num_vertices_]),
-      owns_vertices_(true), bound_(src->bound_),
-      origin_inside_(src->origin_inside_), depth_(src->depth_), index_(this),
+    : num_vertices_(src->num_vertices_),
+      vertices_(new S2Point[num_vertices_]),
+      owns_vertices_(true),
+      bound_(src->bound_),
+      origin_inside_(src->origin_inside_),
+      depth_(src->depth_),
+      index_(this),
       num_find_vertex_calls_(0) {
   memcpy(vertices_, src->vertices_, num_vertices_ * sizeof(vertices_[0]));
 }
@@ -239,13 +246,12 @@ int S2Loop::FindVertex(S2Point const &p) const {
   if (num_vertices() < 10 || num_find_vertex_calls_ < 20) {
     // Exhaustive search
     for (int i = 1; i <= num_vertices(); ++i) {
-      if (vertex(i) == p)
-        return i;
+      if (vertex(i) == p) return i;
     }
     return -1;
   }
 
-  if (vertex_to_index_.empty()) { // We haven't computed it yet.
+  if (vertex_to_index_.empty()) {  // We haven't computed it yet.
     for (int i = num_vertices(); i > 0; --i) {
       vertex_to_index_[vertex(i)] = i;
     }
@@ -253,16 +259,14 @@ int S2Loop::FindVertex(S2Point const &p) const {
 
   map<S2Point, int>::const_iterator it;
   it = vertex_to_index_.find(p);
-  if (it == vertex_to_index_.end())
-    return -1;
+  if (it == vertex_to_index_.end()) return -1;
   return it->second;
 }
 
 bool S2Loop::IsNormalized() const {
   // Optimization: if the longitude span is less than 180 degrees, then the
   // loop covers less than half the sphere and is therefore normalized.
-  if (bound_.lng().GetLength() < M_PI)
-    return true;
+  if (bound_.lng().GetLength() < M_PI) return true;
 
   // We allow some error so that hemispheres are always considered normalized.
   // TODO(user): This might not be necessary once S2Polygon is enhanced so
@@ -272,8 +276,7 @@ bool S2Loop::IsNormalized() const {
 
 void S2Loop::Normalize() {
   CHECK(owns_vertices_);
-  if (!IsNormalized())
-    Invert();
+  if (!IsNormalized()) Invert();
   DCHECK(IsNormalized());
 }
 
@@ -315,8 +318,7 @@ int S2Loop::GetCanonicalFirstVertex(int *dir) const {
   int first = 0;
   int n = num_vertices();
   for (int i = 1; i < n; ++i) {
-    if (vertex(i) < vertex(first))
-      first = i;
+    if (vertex(i) < vertex(first)) first = i;
   }
   if (vertex(first + 1) < vertex(first + n - 1)) {
     *dir = 1;
@@ -331,8 +333,7 @@ int S2Loop::GetCanonicalFirstVertex(int *dir) const {
 
 double S2Loop::GetTurningAngle() const {
   // Don't crash even if the loop is not well-defined.
-  if (num_vertices() < 3)
-    return 0;
+  if (num_vertices() < 3) return 0;
 
   // To ensure that we get the same result when the loop vertex order is
   // rotated, and that we get the same result with the opposite sign when the
@@ -358,8 +359,7 @@ bool S2Loop::Contains(S2Cell const &cell) const {
 
   // It's not necessarily true that bound_.Contains(cell.GetRectBound())
   // because S2Cell bounds are slightly conservative.
-  if (!bound_.Contains(cell.GetCenter()))
-    return false;
+  if (!bound_.Contains(cell.GetCenter())) return false;
   S2Loop cell_loop(cell);
   return Contains(&cell_loop);
 }
@@ -369,14 +369,12 @@ bool S2Loop::MayIntersect(S2Cell const &cell) const {
   // a general polygon.  A future optimization could also take advantage of
   // the fact than an S2Cell is convex.
 
-  if (!bound_.Intersects(cell.GetRectBound()))
-    return false;
+  if (!bound_.Intersects(cell.GetRectBound())) return false;
   return S2Loop(cell).Intersects(this);
 }
 
 bool S2Loop::Contains(S2Point const &p) const {
-  if (!bound_.Contains(p))
-    return false;
+  if (!bound_.Contains(p)) return false;
 
   bool inside = origin_inside_;
   S2Point origin = S2::Origin();
@@ -395,8 +393,7 @@ bool S2Loop::Contains(S2Point const &p) const {
   int previous_index = -2;
   for (it.GetCandidates(origin, p); !it.Done(); it.Next()) {
     int ai = it.Index();
-    if (previous_index != ai - 1)
-      crosser.RestartAt(&vertex(ai));
+    if (previous_index != ai - 1) crosser.RestartAt(&vertex(ai));
     previous_index = ai;
     inside ^= crosser.EdgeOrVertexCrossing(&vertex(ai + 1));
   }
@@ -404,7 +401,7 @@ bool S2Loop::Contains(S2Point const &p) const {
 }
 
 void S2Loop::Encode(Encoder *const encoder) const {
-  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 20); // sufficient
+  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 20);  // sufficient
 
   encoder->put8(kCurrentEncodingVersionNumber);
   encoder->put32(num_vertices_);
@@ -426,12 +423,10 @@ bool S2Loop::DecodeWithinScope(Decoder *const decoder) {
 
 bool S2Loop::DecodeInternal(Decoder *const decoder, bool within_scope) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber)
-    return false;
+  if (version > kCurrentEncodingVersionNumber) return false;
 
   num_vertices_ = decoder->get32();
-  if (owns_vertices_)
-    delete[] vertices_;
+  if (owns_vertices_) delete[] vertices_;
   if (within_scope) {
     vertices_ = const_cast<S2Point *>(
         reinterpret_cast<S2Point const *>(decoder->ptr()));
@@ -444,8 +439,7 @@ bool S2Loop::DecodeInternal(Decoder *const decoder, bool within_scope) {
   }
   origin_inside_ = decoder->get8();
   depth_ = decoder->get32();
-  if (!bound_.Decode(decoder))
-    return false;
+  if (!bound_.Decode(decoder)) return false;
 
   DCHECK(IsValid());
 
@@ -464,7 +458,7 @@ bool S2Loop::DecodeInternal(Decoder *const decoder, bool within_scope) {
 // then query this internal state in the function that called
 // AreBoundariesCrossing.
 class WedgeProcessor {
-public:
+ public:
   virtual ~WedgeProcessor() {}
 
   virtual bool ProcessWedge(S2Point const &a0, S2Point const &ab1,
@@ -484,14 +478,11 @@ bool S2Loop::AreBoundariesCrossing(S2Loop const *b,
     for (it.GetCandidates(b->vertex(j), b->vertex(j + 1)); !it.Done();
          it.Next()) {
       int ai = it.Index();
-      if (previous_index != ai - 1)
-        crosser.RestartAt(&vertex(ai));
+      if (previous_index != ai - 1) crosser.RestartAt(&vertex(ai));
       previous_index = ai;
       int crossing = crosser.RobustCrossing(&vertex(ai + 1));
-      if (crossing < 0)
-        continue;
-      if (crossing > 0)
-        return true;
+      if (crossing < 0) continue;
+      if (crossing > 0) return true;
       // We only need to check each shared vertex once, so we only
       // consider the case where vertex(i+1) == b->vertex(j+1).
       if (vertex(ai + 1) == b->vertex(j + 1) &&
@@ -510,11 +501,11 @@ bool S2Loop::AreBoundariesCrossing(S2Loop const *b,
 // contained in the associated wedge of A (and hence loop B is not
 // contained in loop A).
 class ContainsWedgeProcessor : public WedgeProcessor {
-public:
+ public:
   ContainsWedgeProcessor() : doesnt_contain_(false) {}
   bool DoesntContain() { return doesnt_contain_; }
 
-protected:
+ protected:
   virtual bool ProcessWedge(S2Point const &a0, S2Point const &ab1,
                             S2Point const &a2, S2Point const &b0,
                             S2Point const &b2) {
@@ -522,7 +513,7 @@ protected:
     return doesnt_contain_;
   }
 
-private:
+ private:
   bool doesnt_contain_;
 };
 
@@ -543,14 +534,12 @@ bool S2Loop::Contains(S2Loop const *b) const {
   // union is the entire sphere, i.e. two loops that contains each other's
   // boundaries but not each other's interiors.
 
-  if (!bound_.Contains(b->bound_))
-    return false;
+  if (!bound_.Contains(b->bound_)) return false;
 
   // Unless there are shared vertices, we need to check whether A contains a
   // vertex of B.  Since shared vertices are rare, it is more efficient to do
   // this test up front as a quick rejection test.
-  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0)
-    return false;
+  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0) return false;
 
   // Now check whether there are any edge crossings, and also check the loop
   // relationship at any shared vertices.
@@ -564,8 +553,7 @@ bool S2Loop::Contains(S2Loop const *b) const {
   // the case mentioned above, where (A union B) is the entire sphere.
   // Normally this check is very cheap due to the bounding box precondition.
   if (bound_.Union(b->bound_).is_full()) {
-    if (b->Contains(vertex(0)) && b->FindVertex(vertex(0)) < 0)
-      return false;
+    if (b->Contains(vertex(0)) && b->FindVertex(vertex(0)) < 0) return false;
   }
   return true;
 }
@@ -574,11 +562,11 @@ bool S2Loop::Contains(S2Loop const *b) const {
 // Intersects() then returns true when A and B have at least one pair
 // of associated wedges that intersect.
 class IntersectsWedgeProcessor : public WedgeProcessor {
-public:
+ public:
   IntersectsWedgeProcessor() : intersects_(false) {}
   bool Intersects() { return intersects_; }
 
-protected:
+ protected:
   virtual bool ProcessWedge(S2Point const &a0, S2Point const &ab1,
                             S2Point const &a2, S2Point const &b0,
                             S2Point const &b2) {
@@ -586,7 +574,7 @@ protected:
     return intersects_;
   }
 
-private:
+ private:
   bool intersects_;
 };
 
@@ -596,17 +584,14 @@ bool S2Loop::Intersects(S2Loop const *b) const {
   // where both loops enclose less than half of the sphere.
 
   // The largest of the two loops should be edgeindex'd.
-  if (b->num_vertices() > num_vertices())
-    return b->Intersects(this);
+  if (b->num_vertices() > num_vertices()) return b->Intersects(this);
 
-  if (!bound_.Intersects(b->bound_))
-    return false;
+  if (!bound_.Intersects(b->bound_)) return false;
 
   // Unless there are shared vertices, we need to check whether A contains a
   // vertex of B.  Since shared vertices are rare, it is more efficient to do
   // this test up front as a quick acceptance test.
-  if (Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0)
-    return true;
+  if (Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0) return true;
 
   // Now check whether there are any edge crossings, and also check the loop
   // relationship at any shared vertices.
@@ -621,8 +606,7 @@ bool S2Loop::Intersects(S2Loop const *b) const {
   // arbitrary non-shared vertex of A.  Note that this check is usually cheap
   // because of the bounding box precondition.
   if (b->bound_.Contains(bound_)) {
-    if (b->Contains(vertex(0)) && b->FindVertex(vertex(0)) < 0)
-      return true;
+    if (b->Contains(vertex(0)) && b->FindVertex(vertex(0)) < 0) return true;
   }
   return false;
 }
@@ -633,20 +617,20 @@ bool S2Loop::Intersects(S2Loop const *b) const {
 // CrossesOrMayContain() then returns -1 if A crossed B, 0 if it is
 // not possible for A to contain B, and 1 otherwise.
 class ContainsOrCrossesProcessor : public WedgeProcessor {
-public:
+ public:
   ContainsOrCrossesProcessor()
-      : has_boundary_crossing_(false), a_has_strictly_super_wedge_(false),
-        b_has_strictly_super_wedge_(false), has_disjoint_wedge_(false) {}
+      : has_boundary_crossing_(false),
+        a_has_strictly_super_wedge_(false),
+        b_has_strictly_super_wedge_(false),
+        has_disjoint_wedge_(false) {}
 
   int CrossesOrMayContain() {
-    if (has_boundary_crossing_)
-      return -1;
-    if (has_disjoint_wedge_ || b_has_strictly_super_wedge_)
-      return 0;
+    if (has_boundary_crossing_) return -1;
+    if (has_disjoint_wedge_ || b_has_strictly_super_wedge_) return 0;
     return 1;
   }
 
-protected:
+ protected:
   virtual bool ProcessWedge(S2Point const &a0, S2Point const &ab1,
                             S2Point const &a2, S2Point const &b0,
                             S2Point const &b2) {
@@ -670,7 +654,7 @@ protected:
     return false;
   }
 
-private:
+ private:
   // True if any crossing on the boundary is discovered.
   bool has_boundary_crossing_;
   // True if A (B) has a strictly superwedge on a pair of wedges that
@@ -684,8 +668,7 @@ private:
 
 int S2Loop::ContainsOrCrosses(S2Loop const *b) const {
   // There can be containment or crossing only if the bounds intersect.
-  if (!bound_.Intersects(b->bound_))
-    return 0;
+  if (!bound_.Intersects(b->bound_)) return 0;
 
   // Now check whether there are any edge crossings, and also check the loop
   // relationship at any shared vertices.  Note that unlike Contains() or
@@ -696,24 +679,20 @@ int S2Loop::ContainsOrCrosses(S2Loop const *b) const {
     return -1;
   }
   const int result = p_wedge.CrossesOrMayContain();
-  if (result <= 0)
-    return result;
+  if (result <= 0) return result;
 
   // At this point we know that the boundaries do not intersect, and we are
   // given that (A union B) is a proper subset of the sphere.  Furthermore
   // either A contains B, or there are no shared vertices (due to the check
   // above).  So now we just need to distinguish the case where A contains B
   // from the case where B contains A or the two loops are disjoint.
-  if (!bound_.Contains(b->bound_))
-    return 0;
-  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0)
-    return 0;
+  if (!bound_.Contains(b->bound_)) return 0;
+  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0) return 0;
   return 1;
 }
 
 bool S2Loop::ContainsNested(S2Loop const *b) const {
-  if (!bound_.Contains(b->bound_))
-    return false;
+  if (!bound_.Contains(b->bound_)) return false;
 
   // We are given that A and B do not share any edges, and that either one
   // loop contains the other or they do not intersect.
@@ -729,14 +708,12 @@ bool S2Loop::ContainsNested(S2Loop const *b) const {
 }
 
 bool S2Loop::BoundaryEquals(S2Loop const *b) const {
-  if (num_vertices() != b->num_vertices())
-    return false;
+  if (num_vertices() != b->num_vertices()) return false;
   for (int offset = 0; offset < num_vertices(); ++offset) {
     if (vertex(offset) == b->vertex(0)) {
       // There is at most one starting offset since loop vertices are unique.
       for (int i = 0; i < num_vertices(); ++i) {
-        if (vertex(i + offset) != b->vertex(i))
-          return false;
+        if (vertex(i + offset) != b->vertex(i)) return false;
       }
       return true;
     }
@@ -745,8 +722,7 @@ bool S2Loop::BoundaryEquals(S2Loop const *b) const {
 }
 
 bool S2Loop::BoundaryApproxEquals(S2Loop const *b, double max_error) const {
-  if (num_vertices() != b->num_vertices())
-    return false;
+  if (num_vertices() != b->num_vertices()) return false;
   for (int offset = 0; offset < num_vertices(); ++offset) {
     if (S2::ApproxEquals(vertex(offset), b->vertex(0), max_error)) {
       bool success = true;
@@ -756,8 +732,7 @@ bool S2Loop::BoundaryApproxEquals(S2Loop const *b, double max_error) const {
           break;
         }
       }
-      if (success)
-        return true;
+      if (success) return true;
       // Otherwise continue looping.  There may be more than one candidate
       // starting offset since vertices are only matched approximately.
     }
@@ -794,8 +769,7 @@ static bool MatchBoundaries(S2Loop const *a, S2Loop const *b, int a_offset,
     // then (i+1+offset) overflows the [0, 2*na-1] range allowed by vertex().
     // So we reduce the range if necessary.
     int io = i + a_offset;
-    if (io >= a->num_vertices())
-      io -= a->num_vertices();
+    if (io >= a->num_vertices()) io -= a->num_vertices();
 
     if (i < a->num_vertices() && done.count(make_pair(i + 1, j)) == 0 &&
         S2EdgeUtil::GetDistance(a->vertex(io + 1), b->vertex(j),
@@ -815,8 +789,7 @@ static bool MatchBoundaries(S2Loop const *a, S2Loop const *b, int a_offset,
 
 bool S2Loop::BoundaryNear(S2Loop const *b, double max_error) const {
   for (int a_offset = 0; a_offset < num_vertices(); ++a_offset) {
-    if (MatchBoundaries(this, b, a_offset, max_error))
-      return true;
+    if (MatchBoundaries(this, b, a_offset, max_error)) return true;
   }
   return false;
 }
