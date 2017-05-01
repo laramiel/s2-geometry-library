@@ -1,4 +1,5 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
+#include "s2/s2loop.h"
 
 #include <algorithm>
 using std::min;
@@ -23,8 +24,6 @@ using __gnu_cxx::hash_map;
 #include <utility>
 using std::pair;
 using std::make_pair;
-
-#include "s2/s2loop.h"
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"

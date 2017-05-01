@@ -1,5 +1,7 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include "s2/s2polyline.h"
+
 #include <set>
 using std::set;
 using std::multiset;
@@ -9,14 +11,12 @@ using std::vector;
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "s2/s2polyline.h"
-#include "util/math/matrix3x3-inl.h"
-
 #include "s2/s2cap.h"
 #include "s2/s2cell.h"
 #include "s2/s2edgeutil.h"
 #include "s2/s2latlng.h"
 #include "util/coding/coder.h"
+#include "util/math/matrix3x3-inl.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 

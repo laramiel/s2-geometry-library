@@ -1,5 +1,7 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include "s2/s1angle.h"
+
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
@@ -7,7 +9,6 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-#include "s2/s1angle.h"
 #include "s2/s2latlng.h"
 
 S1Angle::S1Angle(S2Point const &x, S2Point const &y) : radians_(x.Angle(y)) {}

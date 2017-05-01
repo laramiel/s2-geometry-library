@@ -1,5 +1,7 @@
 // Copyright 2002 and onwards Google Inc.
 
+#include "stringprintf.h"
+
 #include <stdarg.h> // For va_list and related operations
 #include <stdio.h>  // MSVC requires this for _vsnprintf
 #include <vector>
@@ -8,7 +10,7 @@ using std::vector;
 #include <string>
 using std::string;
 #include "base/logging.h"
-#include "stringprintf.h"
+
 // Max arguments supported by StringPrintVector
 const int kStringPrintfVectorMaxArgs = 32;
 

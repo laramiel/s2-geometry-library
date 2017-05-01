@@ -37,6 +37,8 @@ using __gnu_cxx::hash_set;
 using namespace std;
 using namespace __gnu_cxx;
 
+#include "base/integral_types.h"
+
 // ----------------------------------------------------------------------
 // SplitStringAllowEmpty()
 // SplitStringToHashsetAllowEmpty()

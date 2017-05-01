@@ -1,4 +1,5 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
+#include "s2/s2polygon.h"
 
 #include <algorithm>
 using std::min;
@@ -21,8 +22,6 @@ using std::multiset;
 using std::vector;
 
 #include "base/commandlineflags.h"
-#include "s2/s2polygon.h"
-
 #include "base/port.h" // for HASH_NAMESPACE_DECLARATION_START
 #include "s2/s2cap.h"
 #include "s2/s2cell.h"

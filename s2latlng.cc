@@ -1,6 +1,7 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
 #include "s2/s2latlng.h"
+
 #include "base/logging.h"
 #include "strings/stringprintf.h"
 

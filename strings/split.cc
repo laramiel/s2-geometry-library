@@ -1,4 +1,5 @@
 // Copyright 2008 and onwards Google Inc.  All rights reserved.
+#include "strings/split.h"
 
 #include <limits>
 using std::numeric_limits;
@@ -9,8 +10,7 @@ using std::numeric_limits;
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strtoint.h"
-#include "split.h"
-#include "strutil.h"
+#include "strings/strutil.h"
 #include "util/hash/hash_jenkins_lookup2.h"
 
 static const uint32 MIX32 = 0x12b9b0a1UL; // pi; an arbitrary number

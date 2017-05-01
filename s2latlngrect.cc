@@ -1,12 +1,11 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
+#include "s2/s2latlngrect.h"
 
 #include <algorithm>
 using std::min;
 using std::max;
 using std::swap;
 using std::reverse;
-
-#include "s2/s2latlngrect.h"
 
 #include "base/logging.h"
 #include "s2/s2cap.h"
