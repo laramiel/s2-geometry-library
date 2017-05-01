@@ -280,7 +280,7 @@ inline bool loose_enum_test(int e_val) {
   static_assert(enum_limits<Enum>::is_specialized, "missing_MAKE_ENUM_LIMITS");
   const Enum e_min = enum_limits<Enum>::min_enumerator;
   const Enum e_max = enum_limits<Enum>::max_enumerator;
-  static_assert(sizeof(e_val) == 4 || sizeof(e_val) == 8, unexpected_int_size);
+  static_assert(sizeof(e_val) == 4 || sizeof(e_val) == 8, "unexpected_int_size");
 
   // Find the unary bounding negative number of e_min and e_max.
 
